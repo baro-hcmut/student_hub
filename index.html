@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Góc Học Tập của Sinh Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #e5e7eb;
+        }
+        .sidebar {
+            background-color: #1f2937;
+        }
+        .main-content {
+            background-color: #111827;
+        }
+        .nav-link.active {
+            background-color: #374151;
+            color: #fff;
+            font-weight: 600;
+        }
+        .card {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        .task-item.completed span, .goal-item.completed span, .project-task.completed span {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        .timetable-table td {
+            height: 80px;
+            min-width: 100px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .timetable-table .time-slot-cell {
+            cursor: default;
+        }
+        .timetable-table td:not(.time-slot-cell):hover {
+            background-color: #374151;
+        }
+        .timetable-entry {
+            font-size: 0.8rem;
+            padding: 4px;
+            border-radius: 4px;
+            background-color: #4f46e5;
+            color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+         .modal-backdrop {
+            background-color: rgba(0,0,0,0.5);
+        }
+        .habit-day {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #4b5563;
+        }
+        .habit-day.completed {
+            background-color: #22c55e;
+            border-color: #16a34a;
+        }
+        .habit-day.today {
+            border-color: #3b82f6;
+            cursor: pointer;
+        }
+        .progress-bar {
+            background-color: #374151;
+        }
+        .progress-bar-inner {
+            background-color: #4f46e5;
+        }
+        .countdown-digits {
+            background-color: #111827;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        /* Custom styles for GPA calculator inputs */
+        .gpa-input {
+             background-color: #374151;
+             border: 1px solid #4b5563;
+             color: white;
+             border-radius: 0.375rem;
+             padding: 0.5rem;
+             width: 100%;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 flex-shrink-0 flex flex-col p-4 border-r border-gray-700 overflow-y-auto">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i data-lucide="brain-circuit" class="text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold text-white">Student Hub</h1>
+            </div>
+            <nav class="flex flex-col gap-2 flex-grow">
+                <a href="#" data-target="dashboard" class="nav-link active flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="layout-dashboard"></i> Bảng điều khiển
+                </a>
+                <a href="#" data-target="timetable" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="calendar-days"></i> Thời khóa biểu
+                </a>
+                 <a href="#" data-target="gpa-calculator" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="calculator"></i> Máy tính GPA
+                </a>
+                <a href="#" data-target="events" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="calendar-clock"></i> Lịch thi & Hạn chót
+                </a>
+                <a href="#" data-target="projects" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="kanban-square"></i> Dự án & Bài tập lớn
+                </a>
+                <a href="#" data-target="tasks" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="check-square"></i> Công việc hàng ngày
+                </a>
+                <a href="#" data-target="habits" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="repeat"></i> Theo dõi Thói quen
+                </a>
+                <a href="#" data-target="goals" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="target"></i> Mục tiêu
+                </a>
+                <a href="#" data-target="pomodoro" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="timer"></i> Hẹn giờ Pomodoro
+                </a>
+                <a href="#" data-target="notes" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="notebook-pen"></i> Ghi chú nhanh
+                </a>
+                <a href="#" data-target="resources" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="link"></i> Tài nguyên học tập
+                </a>
+                 <a href="#" data-target="music" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i data-lucide="music-4"></i> Nhạc tập trung
+                </a>
+            </nav>
+            <div class="mt-auto">
+                <div class="flex items-center gap-3 p-2 rounded-lg card">
+                    <img src="https://placehold.co/40x40/7c3aed/ffffff?text=User" alt="User Avatar" class="rounded-full">
+                    <div>
+                        <p class="font-semibold text-white">Tên Sinh Viên</p>
+                        <p class="text-xs text-gray-400">Xem hồ sơ</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content flex-1 p-6 lg:p-8 overflow-y-auto">
+            <!-- Dashboard View -->
+            <section id="dashboard" class="content-section">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white">Chào mừng trở lại!</h2>
+                        <p class="text-gray-400" id="current-date">Hôm nay là ngày tuyệt vời để học tập.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Upcoming Event Countdown -->
+                    <div class="card p-6 rounded-lg md:col-span-2 lg:col-span-4 bg-indigo-900/50 border-indigo-700">
+                        <div id="upcoming-event-dashboard">
+                           <!-- JS will populate this -->
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Cards -->
+                    <div class="md:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                        <div class="card p-4 rounded-lg flex items-center gap-4">
+                            <div class="bg-teal-600/20 text-teal-400 p-3 rounded-lg"><i data-lucide="graduation-cap"></i></div>
+                            <div>
+                                <p class="text-gray-400 text-sm">GPA học kỳ</p>
+                                <p class="text-2xl font-bold text-white" id="gpa-dashboard">N/A</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-center gap-4">
+                            <div class="bg-blue-600/20 text-blue-400 p-3 rounded-lg"><i data-lucide="list-checks"></i></div>
+                            <div>
+                                <p class="text-gray-400 text-sm">Công việc cần làm</p>
+                                <p class="text-2xl font-bold text-white" id="task-count">0</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-center gap-4">
+                            <div class="bg-green-600/20 text-green-400 p-3 rounded-lg"><i data-lucide="repeat"></i></div>
+                            <div>
+                                <p class="text-gray-400 text-sm">Thói quen hôm nay</p>
+                                <p class="text-2xl font-bold text-white" id="habit-count">0/0</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-center gap-4">
+                            <div class="bg-orange-600/20 text-orange-400 p-3 rounded-lg"><i data-lucide="kanban-square"></i></div>
+                            <div>
+                                <p class="text-gray-400 text-sm">Dự án đang làm</p>
+                                <p class="text-2xl font-bold text-white" id="project-count">0</p>
+                            </div>
+                        </div>
+                        <div class="card p-4 rounded-lg flex items-center gap-4">
+                            <div class="bg-purple-600/20 text-purple-400 p-3 rounded-lg"><i data-lucide="target"></i></div>
+                            <div>
+                                <p class="text-gray-400 text-sm">Mục tiêu đang theo đuổi</p>
+                                <p class="text-2xl font-bold text-white" id="goal-count">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's Classes -->
+                    <div class="card p-6 rounded-lg md:col-span-2">
+                        <h3 class="font-bold text-white mb-4">Lớp học hôm nay</h3>
+                        <ul id="today-classes-list" class="space-y-2">
+                           <!-- JS will populate this -->
+                        </ul>
+                    </div>
+                    
+                     <!-- Pomodoro Sessions -->
+                    <div class="card p-6 rounded-lg flex flex-col justify-center items-center text-center">
+                         <div class="bg-yellow-600/20 text-yellow-400 p-3 rounded-lg mb-3"><i data-lucide="timer"></i></div>
+                         <p class="text-gray-400 text-sm mb-1">Phiên Pomodoro</p>
+                         <p class="text-4xl font-bold text-white" id="pomodoro-sessions">0</p>
+                    </div>
+
+                    <!-- Motivational Quote -->
+                    <div class="card p-6 rounded-lg flex flex-col justify-center items-center text-center">
+                         <div class="bg-pink-600/20 text-pink-400 p-3 rounded-lg mb-3"><i data-lucide="quote"></i></div>
+                        <p class="italic text-gray-300">"Học, học nữa, học mãi."</p>
+                        <p class="text-xs text-gray-500 mt-2">- V.I. Lenin</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Timetable View -->
+            <section id="timetable" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Thời khóa biểu</h2>
+                <div class="card p-4 rounded-lg overflow-x-auto">
+                    <table class="w-full border-collapse text-center timetable-table">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="p-2 w-32">Thời gian</th>
+                                <th class="p-2">Thứ Hai</th>
+                                <th class="p-2">Thứ Ba</th>
+                                <th class="p-2">Thứ Tư</th>
+                                <th class="p-2">Thứ Năm</th>
+                                <th class="p-2">Thứ Sáu</th>
+                                <th class="p-2 text-blue-400">Thứ Bảy</th>
+                                <th class="p-2 text-red-400">Chủ Nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetable-body"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="pt-4" colspan="8">
+                                    <button id="add-time-slot-btn" class="w-full bg-indigo-600/80 text-white font-semibold py-2 rounded-lg hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2">
+                                        <i data-lucide="plus"></i> Thêm giờ học
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+            
+             <!-- GPA Calculator View -->
+            <section id="gpa-calculator" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Máy tính GPA</h2>
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="card p-6 rounded-lg flex-grow">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="p-2 w-2/4">Tên môn học</th>
+                                    <th class="p-2 text-center">Số tín chỉ</th>
+                                    <th class="p-2 text-center">Điểm (Hệ 10)</th>
+                                    <th class="p-2 text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="gpa-subjects-list">
+                                <!-- JS will populate subjects -->
+                            </tbody>
+                        </table>
+                        <button id="add-gpa-subject-btn" class="w-full mt-4 bg-indigo-600/80 text-white font-semibold py-2 rounded-lg hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="plus"></i> Thêm môn học
+                        </button>
+                    </div>
+                    <div class="card p-6 rounded-lg lg:w-64 flex-shrink-0 flex flex-col justify-center items-center text-center">
+                        <div class="bg-teal-600/20 text-teal-400 p-3 rounded-lg mb-3"><i data-lucide="graduation-cap"></i></div>
+                        <p class="text-gray-400 text-sm mb-1">Điểm trung bình học kỳ</p>
+                        <p id="gpa-result" class="text-5xl font-bold text-white">0.00</p>
+                        <p id="gpa-result-4" class="text-gray-400 text-lg mt-1">(Hệ 4: 0.00)</p>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Events/Countdown View -->
+            <section id="events" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Lịch thi & Hạn chót</h2>
+                <div class="card p-6 rounded-lg">
+                    <form id="event-form" class="flex flex-wrap gap-4 mb-6 items-end">
+                        <div class="flex-grow min-w-[200px]">
+                            <label for="event-input" class="text-sm text-gray-400">Tên sự kiện</label>
+                            <input type="text" id="event-input" placeholder="VD: Thi cuối kỳ Giải tích" class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                        </div>
+                        <div class="flex-grow min-w-[200px]">
+                             <label for="event-date-input" class="text-sm text-gray-400">Ngày và giờ</label>
+                            <input type="datetime-local" id="event-date-input" class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                        </div>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Thêm</button>
+                    </form>
+                    <div id="event-list" class="space-y-4"></div>
+                </div>
+            </section>
+
+            <!-- Projects View -->
+            <section id="projects" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Dự án & Bài tập lớn</h2>
+                 <div class="card p-6 rounded-lg mb-6">
+                    <form id="project-form" class="flex gap-4">
+                        <input type="text" id="project-input" placeholder="Thêm dự án mới (VD: Nghiên cứu khoa học)" class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Tạo dự án</button>
+                    </form>
+                </div>
+                <div id="project-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+            </section>
+
+            <!-- Task Manager View -->
+            <section id="tasks" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Công việc hàng ngày</h2>
+                <div class="card p-6 rounded-lg">
+                    <form id="task-form" class="flex gap-4 mb-6">
+                        <input type="text" id="task-input" placeholder="Thêm một công việc mới..." class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Thêm</button>
+                    </form>
+                    <ul id="task-list" class="space-y-3"></ul>
+                </div>
+            </section>
+
+            <!-- Habit Tracker View -->
+            <section id="habits" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Theo dõi Thói quen</h2>
+                <div class="card p-6 rounded-lg">
+                    <form id="habit-form" class="flex gap-4 mb-6">
+                        <input type="text" id="habit-input" placeholder="Thêm một thói quen mới (VD: Đọc sách 30 phút)" class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Thêm</button>
+                    </form>
+                    <div id="habit-list" class="space-y-4"></div>
+                </div>
+            </section>
+            
+             <!-- Goal Manager View -->
+            <section id="goals" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Mục tiêu học tập</h2>
+                <div class="card p-6 rounded-lg">
+                    <form id="goal-form" class="flex gap-4 mb-6">
+                        <input type="text" id="goal-input" placeholder="VD: Đạt 8.0 GPA kỳ này..." class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700">Thêm mục tiêu</button>
+                    </form>
+                    <ul id="goal-list" class="space-y-3"></ul>
+                </div>
+            </section>
+
+            <!-- Pomodoro Timer View -->
+            <section id="pomodoro" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Hẹn giờ Pomodoro</h2>
+                <div class="card p-8 rounded-lg flex flex-col items-center max-w-lg mx-auto">
+                    <div class="flex flex-wrap justify-center gap-2 mb-6">
+                        <button id="pomodoro-btn" class="px-4 py-2 rounded-md bg-red-600 text-white font-semibold">Pomodoro (25')</button>
+                        <button id="long-focus-btn" class="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white font-semibold">Tập trung dài (50')</button>
+                        <button id="short-break-btn" class="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white font-semibold">Nghỉ ngắn (5')</button>
+                        <button id="long-break-btn" class="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white font-semibold">Nghỉ dài (15')</button>
+                    </div>
+                    <div class="text-8xl font-bold my-8 text-white" id="timer-display">25:00</div>
+                    <div class="flex gap-4">
+                        <button id="start-pause-btn" class="bg-green-600 text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-green-700">Bắt đầu</button>
+                        <button id="reset-btn" class="bg-gray-700 text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-gray-600">
+                            <i data-lucide="rotate-cw"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Notes View -->
+            <section id="notes" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Ghi chú nhanh</h2>
+                <div class="card p-2 rounded-lg h-[60vh]">
+                     <textarea id="notes-textarea" class="w-full h-full bg-gray-800 border-none rounded-lg p-4 focus:ring-2 focus:ring-indigo-500 text-white resize-none" placeholder="Viết ghi chú của bạn ở đây..."></textarea>
+                </div>
+            </section>
+
+            <!-- Resources View -->
+            <section id="resources" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-white mb-6">Tài nguyên học tập</h2>
+                <div class="card p-6 rounded-lg">
+                    <form id="resource-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <input type="text" id="resource-name-input" placeholder="Tên tài nguyên" class="md:col-span-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white" required>
+                        <input type="url" id="resource-url-input" placeholder="https://..." class="md:col-span-2 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white" required>
+                        <button type="submit" class="md:col-span-3 bg-indigo-600 text-white font-semibold py-2 rounded-lg hover:bg-indigo-700">Thêm tài nguyên</button>
+                    </form>
+                    <ul id="resource-list" class="space-y-3"></ul>
+                </div>
+            </section>
+            
+            <!-- Music View -->
+            <section id="music" class="content-section hidden">
+                 <h2 class="text-3xl font-bold text-white mb-6">Nhạc tập trung</h2>
+                 <p class="text-gray-400 mb-4">Sử dụng những giai điệu này để giúp bạn tập trung vào công việc.</p>
+                 <div class="aspect-w-16 aspect-h-9">
+                    <iframe class="rounded-lg shadow-lg" src="https://www.youtube.com/embed/jfKfPfyJRdk?si=v_XF3hF4y-Xl8B4P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Modals -->
+    <!-- Schedule Modal -->
+    <div id="schedule-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="card p-6 rounded-lg w-full max-w-md mx-auto mt-20 shadow-lg">
+            <h3 class="text-xl font-bold mb-4 text-white" id="modal-title">Thêm/Sửa Lịch học</h3>
+            <form id="schedule-form">
+                <input type="hidden" id="modal-cell-id">
+                <div class="mb-4">
+                    <label for="subject-name" class="block text-sm font-medium text-gray-300 mb-1">Tên môn học</label>
+                    <input type="text" id="subject-name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white" required>
+                </div>
+                <div class="mb-6">
+                    <label for="subject-room" class="block text-sm font-medium text-gray-300 mb-1">Phòng/Địa điểm</label>
+                    <input type="text" id="subject-room" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="delete-schedule-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
+                    <button type="button" id="close-schedule-modal-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Hủy</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Time Slot Modal -->
+    <div id="add-time-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="card p-6 rounded-lg w-full max-w-sm mx-auto mt-20 shadow-lg">
+            <h3 class="text-xl font-bold mb-4 text-white">Thêm khung giờ mới</h3>
+            <form id="add-time-form">
+                <div class="mb-4">
+                    <label for="new-time-input" class="block text-sm font-medium text-gray-300 mb-1">Thời gian (HH:MM)</label>
+                    <input type="time" id="new-time-input" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white" required>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="close-add-time-modal-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Hủy</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Confirm Delete Modal -->
+     <div id="confirm-delete-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="card p-6 rounded-lg w-full max-w-sm mx-auto mt-20 shadow-lg">
+            <h3 class="text-xl font-bold mb-2 text-white">Xác nhận xóa</h3>
+            <p id="confirm-delete-message" class="text-gray-300 mb-6"></p>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="cancel-delete-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Hủy</button>
+                <button type="button" id="confirm-delete-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            // --- State Initialization ---
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            let goals = JSON.parse(localStorage.getItem('goals')) || [];
+            let habits = JSON.parse(localStorage.getItem('habits')) || [];
+            let resources = JSON.parse(localStorage.getItem('resources')) || [];
+            let projects = JSON.parse(localStorage.getItem('projects')) || [];
+            let events = JSON.parse(localStorage.getItem('events')) || [];
+            let gpaSubjects = JSON.parse(localStorage.getItem('gpaSubjects')) || [];
+            let pomodoroSessions = parseInt(localStorage.getItem('pomodoroSessions')) || 0;
+            let notes = localStorage.getItem('notes') || '';
+            let schedule = JSON.parse(localStorage.getItem('schedule')) || {};
+            let timeSlots = JSON.parse(localStorage.getItem('timeSlots')) || ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+            let timeToDeleteHolder = null; // Variable to hold time to be deleted
+
+            // --- NAVIGATION ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    link.classList.add('active');
+                    contentSections.forEach(section => {
+                        section.id === targetId ? section.classList.remove('hidden') : section.classList.add('hidden');
+                    });
+                });
+            });
+            
+            // --- GENERAL & DASHBOARD ---
+            const currentDateEl = document.getElementById('current-date');
+            currentDateEl.textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const taskCountEl = document.getElementById('task-count');
+            const habitCountEl = document.getElementById('habit-count');
+            const projectCountEl = document.getElementById('project-count');
+            const goalCountEl = document.getElementById('goal-count');
+            const gpaDashboardEl = document.getElementById('gpa-dashboard');
+            const todayClassesList = document.getElementById('today-classes-list');
+            const upcomingEventDashboard = document.getElementById('upcoming-event-dashboard');
+
+            function getTodayDateString() {
+                const today = new Date();
+                return today.toISOString().split('T')[0]; // YYYY-MM-DD
+            }
+
+            function updateDashboard() {
+                taskCountEl.textContent = tasks.filter(t => !t.completed).length;
+                goalCountEl.textContent = goals.filter(g => !g.completed).length;
+                projectCountEl.textContent = projects.length;
+                
+                const todayStr = getTodayDateString();
+                const completedHabitsToday = habits.filter(h => h.completedDates.includes(todayStr)).length;
+                habitCountEl.textContent = `${completedHabitsToday}/${habits.length}`;
+
+                updateTodayClasses();
+                updateUpcomingEventOnDashboard();
+                calculateAndDisplayGpa(); // Update GPA on dashboard
+            }
+            
+            function updateTodayClasses() {
+                todayClassesList.innerHTML = '';
+                const dayMap = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                const today = dayMap[new Date().getDay()];
+                
+                const todayEntries = Object.entries(schedule).filter(([key]) => key.startsWith(today));
+                
+                if (todayEntries.length === 0) {
+                    todayClassesList.innerHTML = `<p class="text-gray-500">Không có lớp học nào hôm nay.</p>`;
+                    return;
+                }
+                
+                todayEntries.sort(([keyA], [keyB]) => {
+                    const timeA = keyA.split('-')[1];
+                    const timeB = keyB.split('-')[1];
+                    return timeA.localeCompare(timeB);
+                }).forEach(([key, value]) => {
+                    const time = key.split('-')[1];
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center text-sm';
+                    li.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-white">${value.subject}</p>
+                            <p class="text-gray-400">${value.room || ''}</p>
+                        </div>
+                        <span class="font-mono bg-gray-700 text-gray-300 px-2 py-1 rounded">${time}</span>
+                    `;
+                    todayClassesList.appendChild(li);
+                });
+            }
+
+            // --- TIMETABLE ---
+            const timetableBody = document.getElementById('timetable-body');
+            const scheduleModal = document.getElementById('schedule-modal');
+            const closeScheduleModalBtn = document.getElementById('close-schedule-modal-btn');
+            const scheduleForm = document.getElementById('schedule-form');
+            const modalCellId = document.getElementById('modal-cell-id');
+            const subjectNameInput = document.getElementById('subject-name');
+            const subjectRoomInput = document.getElementById('subject-room');
+            const deleteScheduleBtn = document.getElementById('delete-schedule-btn');
+            const addTimeSlotBtn = document.getElementById('add-time-slot-btn');
+            const addTimeModal = document.getElementById('add-time-modal');
+            const addTimeForm = document.getElementById('add-time-form');
+            const newTimeInput = document.getElementById('new-time-input');
+            const closeAddTimeModalBtn = document.getElementById('close-add-time-modal-btn');
+            const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+            const confirmDeleteMessage = document.getElementById('confirm-delete-message');
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+            function generateTimetable() {
+                timetableBody.innerHTML = '';
+                const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+                
+                timeSlots.sort().forEach(time => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-800';
+                    const timeCell = document.createElement('td');
+                    timeCell.className = 'time-slot-cell p-2 border-r border-gray-800 font-semibold text-gray-400';
+                    timeCell.innerHTML = `<div class="flex items-center justify-center gap-2"><span>${time}</span><button data-time="${time}" class="delete-time-slot-btn text-gray-600 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                    row.appendChild(timeCell);
+                    days.forEach(day => {
+                        const cell = document.createElement('td');
+                        cell.className = 'p-1 border-r border-gray-800 align-top';
+                        cell.dataset.id = `${day}-${time}`;
+                        row.appendChild(cell);
+                    });
+                    timetableBody.appendChild(row);
+                });
+                lucide.createIcons();
+                renderSchedule();
+            }
+            function renderSchedule() {
+                document.querySelectorAll('#timetable-body td[data-id]').forEach(cell => {
+                    cell.innerHTML = '';
+                    const cellId = cell.dataset.id;
+                    if (schedule[cellId]) {
+                        const entry = document.createElement('div');
+                        entry.className = 'timetable-entry';
+                        entry.innerHTML = `<p class="font-bold">${schedule[cellId].subject}</p><p>${schedule[cellId].room || ''}</p>`;
+                        cell.appendChild(entry);
+                    }
+                });
+                updateDashboard();
+            }
+            timetableBody.addEventListener('click', (e) => {
+                const cell = e.target.closest('td[data-id]');
+                if (cell) {
+                    const cellId = cell.dataset.id;
+                    modalCellId.value = cellId;
+                    const [day, time] = cellId.split('-');
+                    document.getElementById('modal-title').textContent = `Lịch học: ${day} lúc ${time}`;
+                    if (schedule[cellId]) {
+                        subjectNameInput.value = schedule[cellId].subject;
+                        subjectRoomInput.value = schedule[cellId].room;
+                        deleteScheduleBtn.classList.remove('hidden');
+                    } else {
+                        scheduleForm.reset();
+                        deleteScheduleBtn.classList.add('hidden');
+                    }
+                    scheduleModal.classList.remove('hidden');
+                    scheduleModal.classList.add('flex');
+                }
+                const deleteBtn = e.target.closest('.delete-time-slot-btn');
+                if (deleteBtn) {
+                    timeToDeleteHolder = deleteBtn.dataset.time;
+                    confirmDeleteMessage.textContent = `Bạn có chắc muốn xóa khung giờ ${timeToDeleteHolder} và tất cả các lớp học trong đó không?`;
+                    confirmDeleteModal.classList.remove('hidden');
+                    confirmDeleteModal.classList.add('flex');
+                }
+            });
+            addTimeSlotBtn.addEventListener('click', () => { addTimeModal.classList.remove('hidden'); addTimeModal.classList.add('flex'); });
+            closeAddTimeModalBtn.addEventListener('click', () => { addTimeModal.classList.add('hidden'); addTimeModal.classList.remove('flex'); });
+            addTimeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newTime = newTimeInput.value;
+                 if (newTime) {
+                    if (!timeSlots.includes(newTime)) {
+                        timeSlots.push(newTime);
+                        localStorage.setItem('timeSlots', JSON.stringify(timeSlots));
+                        generateTimetable();
+                    }
+                    addTimeForm.reset();
+                    addTimeModal.classList.add('hidden');
+                    addTimeModal.classList.remove('flex');
+                }
+            });
+            cancelDeleteBtn.addEventListener('click', () => { confirmDeleteModal.classList.add('hidden'); confirmDeleteModal.classList.remove('flex'); timeToDeleteHolder = null; });
+            confirmDeleteBtn.addEventListener('click', () => {
+                if(timeToDeleteHolder) {
+                    timeSlots = timeSlots.filter(t => t !== timeToDeleteHolder);
+                    Object.keys(schedule).forEach(key => { if (key.endsWith(`-${timeToDeleteHolder}`)) { delete schedule[key]; } });
+                    localStorage.setItem('timeSlots', JSON.stringify(timeSlots));
+                    localStorage.setItem('schedule', JSON.stringify(schedule));
+                    generateTimetable();
+                    confirmDeleteModal.classList.add('hidden');
+                    confirmDeleteModal.classList.remove('flex');
+                    timeToDeleteHolder = null;
+                }
+            });
+            closeScheduleModalBtn.addEventListener('click', () => { scheduleModal.classList.add('hidden'); scheduleModal.classList.remove('flex'); });
+            scheduleForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const cellId = modalCellId.value;
+                const subject = subjectNameInput.value.trim();
+                const room = subjectRoomInput.value.trim();
+                if (cellId && subject) {
+                    schedule[cellId] = { subject, room };
+                    localStorage.setItem('schedule', JSON.stringify(schedule));
+                    renderSchedule();
+                    scheduleModal.classList.add('hidden');
+                    scheduleModal.classList.remove('flex');
+                }
+            });
+            deleteScheduleBtn.addEventListener('click', () => {
+                 const cellId = modalCellId.value;
+                 if (cellId && schedule[cellId]) {
+                     delete schedule[cellId];
+                     localStorage.setItem('schedule', JSON.stringify(schedule));
+                     renderSchedule();
+                     scheduleModal.classList.add('hidden');
+                     scheduleModal.classList.remove('flex');
+                 }
+            });
+            
+            // --- GPA CALCULATOR ---
+            const gpaSubjectsList = document.getElementById('gpa-subjects-list');
+            const addGpaSubjectBtn = document.getElementById('add-gpa-subject-btn');
+            const gpaResultEl = document.getElementById('gpa-result');
+            const gpaResult4El = document.getElementById('gpa-result-4');
+
+            function convertToScale4(score10) {
+                if (score10 >= 8.5) return 4.0;
+                if (score10 >= 8.0) return 3.5;
+                if (score10 >= 7.0) return 3.0;
+                if (score10 >= 6.5) return 2.5;
+                if (score10 >= 5.5) return 2.0;
+                if (score10 >= 5.0) return 1.5;
+                if (score10 >= 4.0) return 1.0;
+                return 0.0;
+            }
+
+            function calculateAndDisplayGpa() {
+                let totalPoints = 0;
+                let totalCredits = 0;
+                let totalPoints4 = 0;
+
+                gpaSubjects.forEach(subject => {
+                    const credits = parseFloat(subject.credits) || 0;
+                    const score = parseFloat(subject.score) || 0;
+                    if (credits > 0) {
+                        totalCredits += credits;
+                        totalPoints += score * credits;
+                        totalPoints4 += convertToScale4(score) * credits;
+                    }
+                });
+
+                const gpa10 = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+                const gpa4 = totalCredits > 0 ? (totalPoints4 / totalCredits) : 0;
+
+                gpaResultEl.textContent = gpa10.toFixed(2);
+                gpaResult4El.textContent = `(Hệ 4: ${gpa4.toFixed(2)})`;
+                gpaDashboardEl.textContent = gpa10 > 0 ? gpa10.toFixed(2) : 'N/A';
+            }
+
+            function renderGpaSubjects() {
+                gpaSubjectsList.innerHTML = '';
+                gpaSubjects.forEach((subject, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-2"><input type="text" class="gpa-input" data-index="${index}" data-field="name" value="${subject.name}" placeholder="Tên môn học"></td>
+                        <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="credits" value="${subject.credits}" min="0" placeholder="0"></td>
+                        <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="score" value="${subject.score}" min="0" max="10" step="0.1" placeholder="0.0"></td>
+                        <td class="p-2 text-center">
+                            <button class="delete-gpa-subject-btn text-gray-500 hover:text-red-500" data-index="${index}"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </td>
+                    `;
+                    gpaSubjectsList.appendChild(tr);
+                });
+                lucide.createIcons();
+                calculateAndDisplayGpa();
+            }
+
+            addGpaSubjectBtn.addEventListener('click', () => {
+                gpaSubjects.push({ name: '', credits: '', score: '' });
+                renderGpaSubjects();
+            });
+
+            gpaSubjectsList.addEventListener('input', e => {
+                if(e.target.matches('.gpa-input')) {
+                    const index = e.target.dataset.index;
+                    const field = e.target.dataset.field;
+                    gpaSubjects[index][field] = e.target.value;
+                    localStorage.setItem('gpaSubjects', JSON.stringify(gpaSubjects));
+                    calculateAndDisplayGpa();
+                }
+            });
+
+            gpaSubjectsList.addEventListener('click', e => {
+                 if(e.target.closest('.delete-gpa-subject-btn')) {
+                    const index = e.target.closest('.delete-gpa-subject-btn').dataset.index;
+                    gpaSubjects.splice(index, 1);
+                    localStorage.setItem('gpaSubjects', JSON.stringify(gpaSubjects));
+                    renderGpaSubjects();
+                }
+            });
+
+            // --- TASK MANAGER ---
+            const taskForm = document.getElementById('task-form');
+            const taskInput = document.getElementById('task-input');
+            const taskList = document.getElementById('task-list');
+
+            function renderTasks() {
+                taskList.innerHTML = '';
+                if (tasks.length === 0) taskList.innerHTML = `<p class="text-gray-500">Chưa có công việc nào.</p>`;
+                tasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    li.className = `task-item flex items-center justify-between p-3 rounded-lg border border-gray-700 hover:bg-gray-800 ${task.completed ? 'completed' : ''}`;
+                    li.innerHTML = `<div class="flex items-center gap-3"><input type="checkbox" data-index="${index}" class="form-checkbox h-5 w-5 rounded bg-gray-700 border-gray-600 text-indigo-600" ${task.completed ? 'checked' : ''}><span class="text-white">${task.text}</span></div><button data-index="${index}" class="delete-task-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`;
+                    taskList.appendChild(li);
+                });
+                lucide.createIcons();
+                updateDashboard();
+            }
+            taskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = taskInput.value.trim();
+                if (text) {
+                    tasks.push({ text, completed: false });
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    renderTasks();
+                    taskForm.reset();
+                }
+            });
+            taskList.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.matches('input[type="checkbox"]')) {
+                    tasks[target.dataset.index].completed = target.checked;
+                } else if (target.closest('.delete-task-btn')) {
+                    tasks.splice(target.closest('.delete-task-btn').dataset.index, 1);
+                }
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+            });
+
+            // --- HABIT TRACKER ---
+            const habitForm = document.getElementById('habit-form');
+            const habitInput = document.getElementById('habit-input');
+            const habitList = document.getElementById('habit-list');
+
+            function renderHabits() {
+                habitList.innerHTML = '';
+                if (habits.length === 0) habitList.innerHTML = `<p class="text-gray-500">Hãy bắt đầu xây dựng những thói quen tốt!</p>`;
+                const todayStr = getTodayDateString();
+                habits.forEach((habit, index) => {
+                    const habitEl = document.createElement('div');
+                    habitEl.className = 'flex items-center justify-between p-3 rounded-lg border border-gray-700';
+                    let daysHTML = '';
+                    for (let i = 6; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        const dateStr = date.toISOString().split('T')[0];
+                        const isCompleted = habit.completedDates.includes(dateStr);
+                        const isToday = (dateStr === todayStr);
+                        daysHTML += `<div class="habit-day rounded-full flex items-center justify-center ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" data-habit-index="${index}" title="${date.toLocaleDateString('vi-VN')}"></div>`;
+                    }
+                    habitEl.innerHTML = `<span class="text-white">${habit.name}</span><div class="flex items-center gap-2">${daysHTML}<button data-index="${index}" class="delete-habit-btn text-gray-500 hover:text-red-500 ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
+                    habitList.appendChild(habitEl);
+                });
+                lucide.createIcons();
+                updateDashboard();
+            }
+            habitForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = habitInput.value.trim();
+                if (name) {
+                    habits.push({ name: name, completedDates: [] });
+                    localStorage.setItem('habits', JSON.stringify(habits));
+                    renderHabits();
+                    habitForm.reset();
+                }
+            });
+            habitList.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.closest('.delete-habit-btn')) {
+                    habits.splice(target.closest('.delete-habit-btn').dataset.index, 1);
+                } else if (target.classList.contains('today')) {
+                    const dateStr = target.dataset.date;
+                    const habitIndex = target.dataset.habitIndex;
+                    const dateIndex = habits[habitIndex].completedDates.indexOf(dateStr);
+                    if (dateIndex > -1) {
+                        habits[habitIndex].completedDates.splice(dateIndex, 1);
+                    } else {
+                        habits[habitIndex].completedDates.push(dateStr);
+                    }
+                }
+                localStorage.setItem('habits', JSON.stringify(habits));
+                renderHabits();
+            });
+            
+            // --- GOAL MANAGER ---
+            const goalForm = document.getElementById('goal-form');
+            const goalInput = document.getElementById('goal-input');
+            const goalList = document.getElementById('goal-list');
+            function renderGoals() {
+                goalList.innerHTML = '';
+                if (goals.length === 0) goalList.innerHTML = `<p class="text-gray-500">Chưa có mục tiêu nào được đặt ra.</p>`;
+                goals.forEach((goal, index) => {
+                    const li = document.createElement('li');
+                    li.className = `goal-item flex items-center justify-between p-3 rounded-lg border border-gray-700 hover:bg-gray-800 ${goal.completed ? 'completed' : ''}`;
+                    li.innerHTML = `<div class="flex items-center gap-3"><input type="checkbox" data-index="${index}" class="form-checkbox h-5 w-5 rounded bg-gray-700 border-gray-600 text-indigo-600" ${goal.completed ? 'checked' : ''}><span class="text-white">${goal.text}</span></div><button data-index="${index}" class="delete-goal-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`;
+                    goalList.appendChild(li);
+                });
+                lucide.createIcons();
+                updateDashboard();
+            }
+            goalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = goalInput.value.trim();
+                if (text) {
+                    goals.push({ text, completed: false });
+                    localStorage.setItem('goals', JSON.stringify(goals));
+                    renderGoals();
+                    goalForm.reset();
+                }
+            });
+            goalList.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.matches('input[type="checkbox"]')) {
+                    goals[target.dataset.index].completed = target.checked;
+                } else if (target.closest('.delete-goal-btn')) {
+                    goals.splice(target.closest('.delete-goal-btn').dataset.index, 1);
+                }
+                localStorage.setItem('goals', JSON.stringify(goals));
+                renderGoals();
+            });
+
+            // --- PROJECT MANAGER ---
+            const projectForm = document.getElementById('project-form');
+            const projectInput = document.getElementById('project-input');
+            const projectList = document.getElementById('project-list');
+
+            function renderProjects() {
+                projectList.innerHTML = '';
+                if(projects.length === 0) projectList.innerHTML = `<p class="text-gray-500 col-span-full text-center">Chưa có dự án nào. Hãy bắt đầu một dự án mới!</p>`;
+                projects.forEach(project => {
+                    const projectCard = document.createElement('div');
+                    projectCard.className = 'card p-4 rounded-lg flex flex-col gap-4';
+                    const completedTasks = project.tasks.filter(t => t.completed).length;
+                    const progress = project.tasks.length > 0 ? (completedTasks / project.tasks.length) * 100 : 0;
+                    let tasksHTML = '<ul class="space-y-2">';
+                    project.tasks.forEach((task, taskIndex) => {
+                         tasksHTML += `<li class="project-task flex items-center justify-between text-sm ${task.completed ? 'completed' : ''}"><div class="flex items-center gap-2"><input type="checkbox" data-project-id="${project.id}" data-task-index="${taskIndex}" class="form-checkbox h-4 w-4 rounded bg-gray-700 border-gray-600 text-indigo-600" ${task.completed ? 'checked' : ''}><span>${task.text}</span></div><button data-project-id="${project.id}" data-task-index="${taskIndex}" class="delete-project-task-btn text-gray-600 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></li>`;
+                    });
+                    tasksHTML += '</ul>';
+                    projectCard.innerHTML = `<div><div class="flex justify-between items-start"><h3 class="font-bold text-white text-lg">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-gray-400"><div class="progress-bar w-full h-2 rounded-full"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${completedTasks}/${project.tasks.length}</span></div></div><div>${tasksHTML}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 text-sm" required><button type="submit" class="bg-indigo-600/50 text-white text-xs font-semibold px-3 py-1 rounded-lg hover:bg-indigo-600/80">+</button></form>`;
+                    projectList.appendChild(projectCard);
+                });
+                lucide.createIcons();
+                updateDashboard();
+            }
+
+            projectForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = projectInput.value.trim();
+                if (name) {
+                    projects.push({ id: Date.now(), name: name, tasks: [] });
+                    localStorage.setItem('projects', JSON.stringify(projects));
+                    renderProjects();
+                    projectForm.reset();
+                }
+            });
+
+            projectList.addEventListener('click', (e) => {
+                const target = e.target;
+                let dataChanged = false;
+
+                const deleteBtn = target.closest('.delete-project-btn');
+                if (deleteBtn) {
+                    const projectId = parseInt(deleteBtn.dataset.projectId, 10);
+                    projects = projects.filter(p => p.id !== projectId);
+                    dataChanged = true;
+                }
+
+                const checkbox = target.closest('.project-task input[type="checkbox"]');
+                if (checkbox) {
+                    const projectId = parseInt(checkbox.dataset.projectId, 10);
+                    const taskIndex = parseInt(checkbox.dataset.taskIndex, 10);
+                    const project = projects.find(p => p.id === projectId);
+                    if (project) {
+                        project.tasks[taskIndex].completed = checkbox.checked;
+                        dataChanged = true;
+                    }
+                }
+                
+                const deleteTaskBtn = target.closest('.delete-project-task-btn');
+                if (deleteTaskBtn) {
+                    const projectId = parseInt(deleteTaskBtn.dataset.projectId, 10);
+                    const taskIndex = parseInt(deleteTaskBtn.dataset.taskIndex, 10);
+                    const project = projects.find(p => p.id === projectId);
+                    if (project) {
+                        project.tasks.splice(taskIndex, 1);
+                        dataChanged = true;
+                    }
+                }
+                
+                if (dataChanged) {
+                    localStorage.setItem('projects', JSON.stringify(projects));
+                    renderProjects();
+                }
+            });
+            
+             projectList.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if(e.target.classList.contains('add-project-task-form')) {
+                    const form = e.target;
+                    const input = form.querySelector('input');
+                    const text = input.value.trim();
+                    if(text) {
+                        const projectId = parseInt(input.dataset.projectId, 10);
+                        const project = projects.find(p => p.id === projectId);
+                        if (project) {
+                            project.tasks.push({ text: text, completed: false });
+                            localStorage.setItem('projects', JSON.stringify(projects));
+                            renderProjects();
+                            form.reset();
+                        }
+                    }
+                }
+            });
+
+             // --- EVENT COUNTDOWN ---
+            const eventForm = document.getElementById('event-form');
+            const eventInput = document.getElementById('event-input');
+            const eventDateInput = document.getElementById('event-date-input');
+            const eventList = document.getElementById('event-list');
+
+            function renderEvents() {
+                eventList.innerHTML = '';
+                if(events.length === 0) eventList.innerHTML = `<p class="text-gray-500 text-center">Chưa có sự kiện nào được thêm.</p>`;
+                events.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(event => {
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'flex items-center justify-between p-4 rounded-lg border border-gray-700';
+                    eventEl.innerHTML = `<div><p class="font-semibold text-white">${event.name}</p><p class="text-sm text-gray-400">${new Date(event.date).toLocaleString('vi-VN')}</p></div><div class="flex items-center gap-4"><div id="countdown-${event.id}" class="text-lg font-semibold text-indigo-400"></div><button data-event-id="${event.id}" class="delete-event-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
+                    eventList.appendChild(eventEl);
+                });
+                lucide.createIcons();
+                updateDashboard();
+            }
+            eventForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const name = eventInput.value.trim();
+                const date = eventDateInput.value;
+                if(name && date) {
+                    events.push({ id: Date.now(), name, date });
+                    localStorage.setItem('events', JSON.stringify(events));
+                    renderEvents();
+                    eventForm.reset();
+                }
+            });
+            eventList.addEventListener('click', e => {
+                if(e.target.closest('.delete-event-btn')) {
+                    const eventId = parseInt(e.target.closest('.delete-event-btn').dataset.eventId);
+                    events = events.filter(ev => ev.id !== eventId);
+                    localStorage.setItem('events', JSON.stringify(events));
+                    renderEvents();
+                }
+            });
+            function updateCountdowns() {
+                events.forEach(event => {
+                    const countdownEl = document.getElementById(`countdown-${event.id}`);
+                    if (countdownEl) {
+                        const diff = new Date(event.date) - new Date();
+                        if (diff > 0) {
+                            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            countdownEl.textContent = `${days}d ${hours}h ${minutes}m`;
+                        } else {
+                            countdownEl.textContent = "Đã qua";
+                        }
+                    }
+                });
+                updateUpcomingEventOnDashboard();
+            }
+            function updateUpcomingEventOnDashboard() {
+                const now = new Date();
+                const upcomingEvents = events.filter(e => new Date(e.date) > now).sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (upcomingEvents.length > 0) {
+                    const nextEvent = upcomingEvents[0];
+                    const diff = new Date(nextEvent.date) - now;
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    upcomingEventDashboard.innerHTML = `<p class="text-sm text-center text-indigo-300 mb-2">SỰ KIỆN SẮP TỚI</p><h3 class="text-xl font-bold text-center text-white mb-4">${nextEvent.name}</h3><div class="flex justify-center items-center gap-2 md:gap-4 text-center"><div><span class="countdown-digits">${String(days).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">NGÀY</span></div><div><span class="countdown-digits">${String(hours).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">GIỜ</span></div><div><span class="countdown-digits">${String(minutes).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">PHÚT</span></div><div><span class="countdown-digits">${String(seconds).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">GIÂY</span></div></div>`;
+                } else {
+                    upcomingEventDashboard.innerHTML = `<p class="text-center text-gray-400">Không có sự kiện nào sắp tới. Hãy thêm lịch thi hoặc hạn chót mới!</p>`;
+                }
+            }
+
+            // --- POMODORO TIMER ---
+            const timerDisplay = document.getElementById('timer-display');
+            const startPauseBtn = document.getElementById('start-pause-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const pomodoroBtn = document.getElementById('pomodoro-btn');
+            const longFocusBtn = document.getElementById('long-focus-btn');
+            const shortBreakBtn = document.getElementById('short-break-btn');
+            const longBreakBtn = document.getElementById('long-break-btn');
+            const pomodoroSessionsEl = document.getElementById('pomodoro-sessions');
+            let timer;
+            let timeInSeconds = 25 * 60;
+            let isRunning = false;
+            let currentMode = 'pomodoro';
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeInSeconds / 60);
+                const seconds = timeInSeconds % 60;
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                pomodoroSessionsEl.textContent = pomodoroSessions;
+            }
+            function startTimer() {
+                isRunning = true;
+                startPauseBtn.textContent = 'Tạm dừng';
+                timer = setInterval(() => {
+                    timeInSeconds--;
+                    updateTimerDisplay();
+                    if (timeInSeconds <= 0) {
+                        clearInterval(timer);
+                        isRunning = false;
+                        if (currentMode === 'pomodoro' || currentMode === 'long-focus') {
+                            pomodoroSessions++;
+                            localStorage.setItem('pomodoroSessions', pomodoroSessions);
+                        }
+                    }
+                }, 1000);
+            }
+            function pauseTimer() { isRunning = false; startPauseBtn.textContent = 'Bắt đầu'; clearInterval(timer); }
+            function resetTimer() {
+                pauseTimer();
+                let minutes;
+                if(currentMode === 'pomodoro') minutes = 25; else if (currentMode === 'long-focus') minutes = 50; else if (currentMode === 'short') minutes = 5; else if (currentMode === 'long') minutes = 15;
+                timeInSeconds = minutes * 60;
+                updateTimerDisplay();
+            }
+            startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
+            resetBtn.addEventListener('click', resetTimer);
+            pomodoroBtn.addEventListener('click', () => switchMode('pomodoro', 25));
+            longFocusBtn.addEventListener('click', () => switchMode('long-focus', 50));
+            shortBreakBtn.addEventListener('click', () => switchMode('short', 5));
+            longBreakBtn.addEventListener('click', () => switchMode('long', 15));
+            function switchMode(mode, minutes) {
+                currentMode = mode;
+                pauseTimer();
+                timeInSeconds = minutes * 60;
+                updateTimerDisplay();
+                [pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn].forEach(btn => btn.classList.replace('bg-red-600', 'bg-gray-600'));
+                const btnMap = {pomodoro: pomodoroBtn, 'long-focus': longFocusBtn, short: shortBreakBtn, long: longBreakBtn};
+                if(btnMap[mode]) btnMap[mode].classList.replace('bg-gray-600', 'bg-red-600');
+            }
+
+            // --- NOTES ---
+            const notesTextarea = document.getElementById('notes-textarea');
+            notesTextarea.value = notes;
+            notesTextarea.addEventListener('input', () => { localStorage.setItem('notes', notesTextarea.value); });
+            
+            // --- RESOURCES ---
+            const resourceForm = document.getElementById('resource-form');
+            const resourceList = document.getElementById('resource-list');
+            function renderResources() {
+                resourceList.innerHTML = '';
+                if (resources.length === 0) resourceList.innerHTML = `<p class="text-gray-500">Chưa có tài nguyên nào.</p>`;
+                resources.forEach((resource, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between p-3 rounded-lg border border-gray-700';
+                    li.innerHTML = `<a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-indigo-400 hover:underline"><i data-lucide="link-2" class="w-5 h-5"></i><span>${resource.name}</span></a><button data-index="${index}" class="delete-resource-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`;
+                    resourceList.appendChild(li);
+                });
+                lucide.createIcons();
+            }
+            resourceForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('resource-name-input').value.trim();
+                const url = document.getElementById('resource-url-input').value.trim();
+                if (name && url) {
+                    resources.push({name, url});
+                    localStorage.setItem('resources', JSON.stringify(resources));
+                    renderResources();
+                    e.target.reset();
+                }
+            });
+             resourceList.addEventListener('click', (e) => {
+                if (e.target.closest('.delete-resource-btn')) {
+                    const index = e.target.closest('.delete-resource-btn').dataset.index;
+                    resources.splice(index, 1);
+                    localStorage.setItem('resources', JSON.stringify(resources));
+                    renderResources();
+                }
+            });
+
+            // --- Initial Render ---
+            renderTasks();
+            renderGoals();
+            renderHabits();
+            renderResources();
+            renderProjects();
+            renderEvents();
+            renderGpaSubjects();
+            generateTimetable();
+            updateTimerDisplay();
+            updateDashboard();
+            setInterval(updateCountdowns, 1000);
+        });
+    </script>
+</body>
+</html>
+
