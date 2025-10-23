@@ -8,633 +8,1283 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* --- Cài đặt cơ bản & Thanh cuộn --- */
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827;
-            color: #e5e7eb;
+            background-color: #0f172a; /* Nền tối hơn slate-900 */
+            color: #cbd5e1; /* slate-300 */
+            background: linear-gradient(to bottom right, #1e293b, #0f172a); /* Nền gradient nhẹ */
+            overflow-x: hidden; /* Ngăn cuộn ngang không mong muốn */
         }
-        .sidebar {
-            background-color: #1f2937;
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 3px;} /* slate-800 */
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; } /* slate-600 */
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; } /* slate-500 */
+
+        /* --- Giao diện chung --- */
+        .sidebar { background-color: #1e293b; /* slate-800 */ border-right-color: #334155; /* slate-700 */}
+        .card {
+            background-color: #1e293b; /* slate-800 */
+            border: 1px solid #334155; /* slate-700 */
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow nhẹ */
+            border-radius: 0.75rem; /* Bo góc lớn hơn */
         }
-        .main-content {
-            background-color: #111827;
+        .card:hover {
+            border-color: #6366f1; /* indigo-500 */
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); /* Shadow sáng hơn khi hover */
         }
+        .nav-link { border-radius: 0.5rem; /* Rounded corners for nav links */ }
         .nav-link.active {
-            background-color: #374151;
+            background-color: #4338ca; /* indigo-700 */
             color: #fff;
             font-weight: 600;
         }
-        .card {
-            background-color: #1f2937;
-            border: 1px solid #374151;
+        .nav-link:not(.active):hover {
+             background-color: #334155; /* slate-700 */
+             color: #f1f5f9; /* slate-100 */
         }
-        ::-webkit-scrollbar {
-            width: 8px;
+        
+        /* --- Checkbox tùy chỉnh --- */
+        .custom-checkbox {
+            -webkit-appearance: none; appearance: none;
+            background-color: #334155; border: 1px solid #475569;
+            width: 1.25rem; height: 1.25rem; border-radius: 0.375rem;
+            cursor: pointer; display: inline-block; position: relative;
+            transition: all 0.2s; flex-shrink: 0;
         }
-        ::-webkit-scrollbar-track {
-            background: #1f2937;
+        .custom-checkbox:checked { background-color: #6366f1; border-color: #6366f1; }
+        .custom-checkbox:checked::after {
+            content: ''; position: absolute; left: 6px; top: 2px;
+            width: 5px; height: 10px; border: solid white;
+            border-width: 0 3px 3px 0; transform: rotate(45deg);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280;
+        .custom-checkbox:focus {
+            outline: none; box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #6366f1;
         }
         .task-item.completed span, .goal-item.completed span, .project-task.completed span {
-            text-decoration: line-through;
-            color: #6b7280;
+            text-decoration: line-through; color: #64748b; /* slate-500 */
         }
-        .timetable-table td {
-            height: 80px;
-            min-width: 100px;
-            cursor: pointer;
-            transition: background-color 0.2s;
+
+        /* --- Các thành phần khác --- */
+        .timetable-table td { height: 70px; min-width: 90px; cursor: pointer; transition: background-color: 0.2s; border-color: #334155;}
+        .timetable-table th { border-color: #475569;}
+        .timetable-table .time-slot-cell { cursor: default; }
+        .timetable-table td:not(.time-slot-cell):hover { background-color: #334155; }
+        .timetable-entry { font-size: 0.8rem; padding: 4px; border-radius: 4px; background-color: #6366f1; color: white; overflow: hidden; text-overflow: ellipsis; }
+        .modal-backdrop { background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); } /* Nền modal đậm hơn */
+        .habit-day { width: 30px; height: 30px; border: 2px solid #475569; }
+        .habit-day.completed { background-color: #22c55e; border-color: #16a34a; }
+        .habit-day.today { border-color: #3b82f6; cursor: pointer; }
+        .progress-bar { background-color: #334155; }
+        .progress-bar-inner { background-color: #6366f1; }
+        .countdown-digits { background-color: #0f172a; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 2rem; line-height: 2.25rem; font-weight: 700; color: white; }
+        .gpa-input, .auth-input, .app-input {
+            background-color: #334155; border: 1px solid #475569; color: #cbd5e1; border-radius: 0.5rem; padding: 0.75rem 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .timetable-table .time-slot-cell {
-            cursor: default;
+        .auth-input:focus, .app-input:focus {
+            outline: none; border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
         }
-        .timetable-table td:not(.time-slot-cell):hover {
-            background-color: #374151;
+        .btn {
+            padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-semibold;
+            transition: all 0.15s ease-in-out; /* Nhanh hơn */
+            transform: scale(1);
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
         }
-        .timetable-entry {
-            font-size: 0.8rem;
-            padding: 4px;
-            border-radius: 4px;
-            background-color: #4f46e5;
-            color: white;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+        .btn-primary {
+            background-color: #6366f1; color: white;
+            box-shadow: 0 4px 10px -4px rgba(99, 102, 241, 0.5);
         }
-         .modal-backdrop {
-            background-color: rgba(0,0,0,0.5);
-        }
-        .habit-day {
-            width: 32px;
-            height: 32px;
-            border: 2px solid #4b5563;
-        }
-        .habit-day.completed {
-            background-color: #22c55e;
-            border-color: #16a34a;
-        }
-        .habit-day.today {
-            border-color: #3b82f6;
-            cursor: pointer;
-        }
-        .progress-bar {
-            background-color: #374151;
-        }
-        .progress-bar-inner {
-            background-color: #4f46e5;
-        }
-        .countdown-digits {
-            background-color: #111827;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 2.25rem;
-            line-height: 2.5rem;
+        .btn-primary:hover { background-color: #4f46e5; transform: translateY(-1px); }
+        .btn-primary:active { transform: scale(0.98); } /* Hiệu ứng nhấn nút */
+        .btn-secondary { background-color: #334155; color: #cbd5e1; }
+        .btn-secondary:hover { background-color: #475569; }
+        .btn-secondary:active { transform: scale(0.98); }
+        .btn-danger { background-color: #ef4444; color: white; } /* red-500 */
+        .btn-danger:hover { background-color: #dc2626; } /* red-600 */
+        .btn-danger:active { transform: scale(0.98); }
+        .icon-btn { padding: 0.5rem; } /* Nút chỉ chứa icon */
+        .icon-btn i { width: 1.125rem; height: 1.125rem; }
+        
+        .section-title {
+            font-size: 1.875rem; /* text-3xl */
             font-weight: 700;
-            color: white;
+            color: #f1f5f9; /* slate-100 */
+            margin-bottom: 1.5rem; /* mb-6 */
         }
-        /* Custom styles for GPA calculator inputs */
-        .gpa-input {
-             background-color: #374151;
-             border: 1px solid #4b5563;
-             color: white;
-             border-radius: 0.375rem;
-             padding: 0.5rem;
-             width: 100%;
+        
+        /* Cải thiện hiển thị danh sách */
+        .list-item {
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
+             padding: 0.75rem; /* p-3 */
+             border-radius: 0.5rem; /* rounded-lg */
+             border: 1px solid #334155; /* border-slate-700 */
+             transition: background-color 0.2s;
         }
+         .list-item:hover {
+              background-color: rgba(51, 65, 85, 0.5); /* bg-slate-800/50 */
+         }
+         .list-item-content {
+             display: flex;
+             align-items: center;
+             gap: 1rem; /* gap-4 */
+             min-width: 0; /* Cho phép text wrap */
+         }
+         .list-item-text {
+             color: #f1f5f9; /* text-white */
+             word-break: break-word; /* Wrap text */
+         }
+         .list-item-actions {
+             flex-shrink: 0;
+             margin-left: 0.5rem; /* ml-2 */
+         }
     </style>
 </head>
 <body class="antialiased">
 
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside class="sidebar w-64 flex-shrink-0 flex flex-col p-4 border-r border-gray-700 overflow-y-auto">
-            <div class="flex items-center gap-3 mb-8">
-                <div class="bg-indigo-600 p-2 rounded-lg">
-                    <i data-lucide="brain-circuit" class="text-white"></i>
-                </div>
-                <h1 class="text-xl font-bold text-white">Student Hub</h1>
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="flex items-center justify-center min-h-screen bg-slate-900 px-4">
+        <div class="card p-8 rounded-xl w-full max-w-sm shadow-2xl">
+            <div class="text-center mb-6">
+                <i data-lucide="brain-circuit" class="mx-auto h-12 w-12 text-indigo-400"></i>
+                <h2 id="auth-title" class="mt-4 text-2xl font-bold text-white">Đăng nhập vào Student Hub</h2>
+                <p class="text-slate-400">Sử dụng tài khoản của bạn để tiếp tục</p>
             </div>
-            <nav class="flex flex-col gap-2 flex-grow">
-                <a href="#" data-target="dashboard" class="nav-link active flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="layout-dashboard"></i> Bảng điều khiển
-                </a>
-                <a href="#" data-target="timetable" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="calendar-days"></i> Thời khóa biểu
-                </a>
-                 <a href="#" data-target="gpa-calculator" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="calculator"></i> Máy tính GPA
-                </a>
-                <a href="#" data-target="events" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="calendar-clock"></i> Lịch thi & Hạn chót
-                </a>
-                <a href="#" data-target="projects" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="kanban-square"></i> Dự án & Bài tập lớn
-                </a>
-                <a href="#" data-target="tasks" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="check-square"></i> Công việc hàng ngày
-                </a>
-                <a href="#" data-target="habits" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="repeat"></i> Theo dõi Thói quen
-                </a>
-                <a href="#" data-target="goals" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="target"></i> Mục tiêu
-                </a>
-                <a href="#" data-target="pomodoro" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="timer"></i> Hẹn giờ Pomodoro
-                </a>
-                <a href="#" data-target="notes" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="notebook-pen"></i> Ghi chú nhanh
-                </a>
-                <a href="#" data-target="resources" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="link"></i> Tài nguyên học tập
-                </a>
-                 <a href="#" data-target="music" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i data-lucide="music-4"></i> Nhạc tập trung
-                </a>
-            </nav>
-            <div class="mt-auto">
-                <div class="flex items-center gap-3 p-2 rounded-lg card">
-                    <img src="https://placehold.co/40x40/7c3aed/ffffff?text=User" alt="User Avatar" class="rounded-full">
-                    <div>
-                        <p class="font-semibold text-white">Tên Sinh Viên</p>
-                        <p class="text-xs text-gray-400">Xem hồ sơ</p>
-                    </div>
+            <form id="auth-form" class="space-y-4">
+                 <div id="name-field-container" class="hidden">
+                    <input type="text" id="name-input" placeholder="Họ và tên" class="auth-input w-full" required>
                 </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content flex-1 p-6 lg:p-8 overflow-y-auto">
-            <!-- Dashboard View -->
-            <section id="dashboard" class="content-section">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-3xl font-bold text-white">Chào mừng trở lại!</h2>
-                        <p class="text-gray-400" id="current-date">Hôm nay là ngày tuyệt vời để học tập.</p>
-                    </div>
+                <div>
+                    <input type="email" id="email-input" placeholder="Email" class="auth-input w-full" required>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Upcoming Event Countdown -->
-                    <div class="card p-6 rounded-lg md:col-span-2 lg:col-span-4 bg-indigo-900/50 border-indigo-700">
-                        <div id="upcoming-event-dashboard">
-                           <!-- JS will populate this -->
-                        </div>
-                    </div>
-                    
-                    <!-- Summary Cards -->
-                    <div class="md:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                        <div class="card p-4 rounded-lg flex items-center gap-4">
-                            <div class="bg-teal-600/20 text-teal-400 p-3 rounded-lg"><i data-lucide="graduation-cap"></i></div>
-                            <div>
-                                <p class="text-gray-400 text-sm">GPA học kỳ</p>
-                                <p class="text-2xl font-bold text-white" id="gpa-dashboard">N/A</p>
-                            </div>
-                        </div>
-                        <div class="card p-4 rounded-lg flex items-center gap-4">
-                            <div class="bg-blue-600/20 text-blue-400 p-3 rounded-lg"><i data-lucide="list-checks"></i></div>
-                            <div>
-                                <p class="text-gray-400 text-sm">Công việc cần làm</p>
-                                <p class="text-2xl font-bold text-white" id="task-count">0</p>
-                            </div>
-                        </div>
-                        <div class="card p-4 rounded-lg flex items-center gap-4">
-                            <div class="bg-green-600/20 text-green-400 p-3 rounded-lg"><i data-lucide="repeat"></i></div>
-                            <div>
-                                <p class="text-gray-400 text-sm">Thói quen hôm nay</p>
-                                <p class="text-2xl font-bold text-white" id="habit-count">0/0</p>
-                            </div>
-                        </div>
-                        <div class="card p-4 rounded-lg flex items-center gap-4">
-                            <div class="bg-orange-600/20 text-orange-400 p-3 rounded-lg"><i data-lucide="kanban-square"></i></div>
-                            <div>
-                                <p class="text-gray-400 text-sm">Dự án đang làm</p>
-                                <p class="text-2xl font-bold text-white" id="project-count">0</p>
-                            </div>
-                        </div>
-                        <div class="card p-4 rounded-lg flex items-center gap-4">
-                            <div class="bg-purple-600/20 text-purple-400 p-3 rounded-lg"><i data-lucide="target"></i></div>
-                            <div>
-                                <p class="text-gray-400 text-sm">Mục tiêu đang theo đuổi</p>
-                                <p class="text-2xl font-bold text-white" id="goal-count">0</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Today's Classes -->
-                    <div class="card p-6 rounded-lg md:col-span-2">
-                        <h3 class="font-bold text-white mb-4">Lớp học hôm nay</h3>
-                        <ul id="today-classes-list" class="space-y-2">
-                           <!-- JS will populate this -->
-                        </ul>
-                    </div>
-                    
-                     <!-- Pomodoro Sessions -->
-                    <div class="card p-6 rounded-lg flex flex-col justify-center items-center text-center">
-                         <div class="bg-yellow-600/20 text-yellow-400 p-3 rounded-lg mb-3"><i data-lucide="timer"></i></div>
-                         <p class="text-gray-400 text-sm mb-1">Phiên Pomodoro</p>
-                         <p class="text-4xl font-bold text-white" id="pomodoro-sessions">0</p>
-                    </div>
-
-                    <!-- Motivational Quote -->
-                    <div class="card p-6 rounded-lg flex flex-col justify-center items-center text-center">
-                         <div class="bg-pink-600/20 text-pink-400 p-3 rounded-lg mb-3"><i data-lucide="quote"></i></div>
-                        <p class="italic text-gray-300">"Học, học nữa, học mãi."</p>
-                        <p class="text-xs text-gray-500 mt-2">- V.I. Lenin</p>
-                    </div>
+                <div>
+                    <input type="password" id="password-input" placeholder="Mật khẩu (ít nhất 6 ký tự)" class="auth-input w-full" required>
                 </div>
-            </section>
+                <div id="auth-error" class="text-red-400 text-sm text-center hidden"></div>
+                <button type="submit" id="auth-submit-btn" class="w-full btn btn-primary">Đăng nhập</button>
+            </form>
+            <p class="mt-6 text-center text-sm text-slate-400">
+                <span id="auth-toggle-text">Chưa có tài khoản?</span>
+                <a href="#" id="auth-toggle-link" class="font-semibold text-indigo-400 hover:text-indigo-300">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main Application -->
+    <div id="app-container" class="hidden">
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden"></div>
+        
+        <div class="relative min-h-screen lg:flex">
+            <!-- Mobile Menu Button -->
+            <button id="menu-toggle" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-indigo-600/80 text-white rounded-full shadow-lg backdrop-blur-sm">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
             
-            <!-- Timetable View -->
-            <section id="timetable" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Thời khóa biểu</h2>
-                <div class="card p-4 rounded-lg overflow-x-auto">
-                    <table class="w-full border-collapse text-center timetable-table">
-                        <thead>
-                            <tr class="border-b border-gray-700">
-                                <th class="p-2 w-32">Thời gian</th>
-                                <th class="p-2">Thứ Hai</th>
-                                <th class="p-2">Thứ Ba</th>
-                                <th class="p-2">Thứ Tư</th>
-                                <th class="p-2">Thứ Năm</th>
-                                <th class="p-2">Thứ Sáu</th>
-                                <th class="p-2 text-blue-400">Thứ Bảy</th>
-                                <th class="p-2 text-red-400">Chủ Nhật</th>
-                            </tr>
-                        </thead>
-                        <tbody id="timetable-body"></tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="pt-4" colspan="8">
-                                    <button id="add-time-slot-btn" class="w-full bg-indigo-600/80 text-white font-semibold py-2 rounded-lg hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2">
-                                        <i data-lucide="plus"></i> Thêm giờ học
-                                    </button>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </section>
-            
-             <!-- GPA Calculator View -->
-            <section id="gpa-calculator" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Máy tính GPA</h2>
-                <div class="flex flex-col lg:flex-row gap-6">
-                    <div class="card p-6 rounded-lg flex-grow">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="border-b border-gray-700">
-                                    <th class="p-2 w-2/4">Tên môn học</th>
-                                    <th class="p-2 text-center">Số tín chỉ</th>
-                                    <th class="p-2 text-center">Điểm (Hệ 10)</th>
-                                    <th class="p-2 text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="gpa-subjects-list">
-                                <!-- JS will populate subjects -->
-                            </tbody>
-                        </table>
-                        <button id="add-gpa-subject-btn" class="w-full mt-4 bg-indigo-600/80 text-white font-semibold py-2 rounded-lg hover:bg-indigo-600 transition-colors flex items-center justify-center gap-2">
-                            <i data-lucide="plus"></i> Thêm môn học
-                        </button>
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar w-64 flex-shrink-0 flex flex-col p-4 border-r fixed inset-y-0 left-0 z-40 transform -translate-x-full transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0"> <!-- Nhanh hơn -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-indigo-600 p-2 rounded-lg">
+                        <i data-lucide="brain-circuit" class="text-white"></i>
                     </div>
-                    <div class="card p-6 rounded-lg lg:w-64 flex-shrink-0 flex flex-col justify-center items-center text-center">
-                        <div class="bg-teal-600/20 text-teal-400 p-3 rounded-lg mb-3"><i data-lucide="graduation-cap"></i></div>
-                        <p class="text-gray-400 text-sm mb-1">Điểm trung bình học kỳ</p>
-                        <p id="gpa-result" class="text-5xl font-bold text-white">0.00</p>
-                        <p id="gpa-result-4" class="text-gray-400 text-lg mt-1">(Hệ 4: 0.00)</p>
-                    </div>
+                    <h1 class="text-xl font-bold text-white">Student Hub</h1>
                 </div>
-            </section>
-
-             <!-- Events/Countdown View -->
-            <section id="events" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Lịch thi & Hạn chót</h2>
-                <div class="card p-6 rounded-lg">
-                    <form id="event-form" class="flex flex-wrap gap-4 mb-6 items-end">
-                        <div class="flex-grow min-w-[200px]">
-                            <label for="event-input" class="text-sm text-gray-400">Tên sự kiện</label>
-                            <input type="text" id="event-input" placeholder="VD: Thi cuối kỳ Giải tích" class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
+                <nav class="flex flex-col gap-1 flex-grow"> <!-- Giảm gap giữa các link nav -->
+                    <a href="#" data-target="dashboard" class="nav-link active flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Bảng điều khiển
+                    </a>
+                    <a href="#" data-target="timetable" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="calendar-days" class="w-5 h-5"></i> Thời khóa biểu
+                    </a>
+                    <a href="#" data-target="gpa-calculator" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="calculator" class="w-5 h-5"></i> Máy tính GPA
+                    </a>
+                    <a href="#" data-target="events" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="calendar-clock" class="w-5 h-5"></i> Lịch thi & Hạn chót
+                    </a>
+                    <a href="#" data-target="projects" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="kanban-square" class="w-5 h-5"></i> Dự án & Bài tập lớn
+                    </a>
+                    <a href="#" data-target="tasks" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="check-square" class="w-5 h-5"></i> Công việc hàng ngày
+                    </a>
+                    <a href="#" data-target="habits" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="repeat" class="w-5 h-5"></i> Theo dõi Thói quen
+                    </a>
+                    <a href="#" data-target="goals" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="target" class="w-5 h-5"></i> Mục tiêu
+                    </a>
+                    <a href="#" data-target="pomodoro" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="timer" class="w-5 h-5"></i> Hẹn giờ Pomodoro
+                    </a>
+                    <a href="#" data-target="notes" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="notebook-pen" class="w-5 h-5"></i> Ghi chú nhanh
+                    </a>
+                    <a href="#" data-target="resources" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="link" class="w-5 h-5"></i> Tài nguyên học tập
+                    </a>
+                    <a href="#" data-target="music" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="music-4" class="w-5 h-5"></i> Nhạc tập trung
+                    </a>
+                </nav>
+                <div class="mt-auto">
+                     <div class="flex items-center justify-between gap-3 p-2 rounded-xl card">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <img src="https://placehold.co/40x40/7c3aed/ffffff?text=User" alt="User Avatar" class="rounded-full flex-shrink-0">
+                            <div class="min-w-0">
+                                <p id="user-display-name" class="font-semibold text-white text-sm truncate">Tên Sinh Viên</p>
+                                <p id="user-email" class="text-xs text-slate-400 truncate">email@example.com</p>
+                            </div>
                         </div>
-                        <div class="flex-grow min-w-[200px]">
-                             <label for="event-date-input" class="text-sm text-gray-400">Ngày và giờ</label>
-                            <input type="datetime-local" id="event-date-input" class="w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
-                        </div>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Thêm</button>
-                    </form>
-                    <div id="event-list" class="space-y-4"></div>
-                </div>
-            </section>
-
-            <!-- Projects View -->
-            <section id="projects" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Dự án & Bài tập lớn</h2>
-                 <div class="card p-6 rounded-lg mb-6">
-                    <form id="project-form" class="flex gap-4">
-                        <input type="text" id="project-input" placeholder="Thêm dự án mới (VD: Nghiên cứu khoa học)" class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Tạo dự án</button>
-                    </form>
-                </div>
-                <div id="project-list" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
-            </section>
-
-            <!-- Task Manager View -->
-            <section id="tasks" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Công việc hàng ngày</h2>
-                <div class="card p-6 rounded-lg">
-                    <form id="task-form" class="flex gap-4 mb-6">
-                        <input type="text" id="task-input" placeholder="Thêm một công việc mới..." class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Thêm</button>
-                    </form>
-                    <ul id="task-list" class="space-y-3"></ul>
-                </div>
-            </section>
-
-            <!-- Habit Tracker View -->
-            <section id="habits" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Theo dõi Thói quen</h2>
-                <div class="card p-6 rounded-lg">
-                    <form id="habit-form" class="flex gap-4 mb-6">
-                        <input type="text" id="habit-input" placeholder="Thêm một thói quen mới (VD: Đọc sách 30 phút)" class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Thêm</button>
-                    </form>
-                    <div id="habit-list" class="space-y-4"></div>
-                </div>
-            </section>
-            
-             <!-- Goal Manager View -->
-            <section id="goals" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Mục tiêu học tập</h2>
-                <div class="card p-6 rounded-lg">
-                    <form id="goal-form" class="flex gap-4 mb-6">
-                        <input type="text" id="goal-input" placeholder="VD: Đạt 8.0 GPA kỳ này..." class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 text-white" required>
-                        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700">Thêm mục tiêu</button>
-                    </form>
-                    <ul id="goal-list" class="space-y-3"></ul>
-                </div>
-            </section>
-
-            <!-- Pomodoro Timer View -->
-            <section id="pomodoro" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Hẹn giờ Pomodoro</h2>
-                <div class="card p-8 rounded-lg flex flex-col items-center max-w-lg mx-auto">
-                    <div class="flex flex-wrap justify-center gap-2 mb-6">
-                        <button id="pomodoro-btn" class="px-4 py-2 rounded-md bg-red-600 text-white font-semibold">Pomodoro (25')</button>
-                        <button id="long-focus-btn" class="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white font-semibold">Tập trung dài (50')</button>
-                        <button id="short-break-btn" class="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white font-semibold">Nghỉ ngắn (5')</button>
-                        <button id="long-break-btn" class="px-4 py-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white font-semibold">Nghỉ dài (15')</button>
-                    </div>
-                    <div class="text-8xl font-bold my-8 text-white" id="timer-display">25:00</div>
-                    <div class="flex gap-4">
-                        <button id="start-pause-btn" class="bg-green-600 text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-green-700">Bắt đầu</button>
-                        <button id="reset-btn" class="bg-gray-700 text-white font-bold px-8 py-3 rounded-lg text-lg hover:bg-gray-600">
-                            <i data-lucide="rotate-cw"></i>
+                        <button id="logout-btn" title="Đăng xuất" class="text-slate-400 hover:text-white flex-shrink-0 p-1.5 rounded-md hover:bg-slate-700">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
-            </section>
+            </aside>
 
-            <!-- Quick Notes View -->
-            <section id="notes" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Ghi chú nhanh</h2>
-                <div class="card p-2 rounded-lg h-[60vh]">
-                     <textarea id="notes-textarea" class="w-full h-full bg-gray-800 border-none rounded-lg p-4 focus:ring-2 focus:ring-indigo-500 text-white resize-none" placeholder="Viết ghi chú của bạn ở đây..."></textarea>
-                </div>
-            </section>
+            <!-- Main Content -->
+            <main class="main-content flex-1 p-6 sm:p-8 lg:p-10 overflow-y-auto lg:ml-64"> <!-- Adjusted padding -->
+                <div class="pt-16 lg:pt-0"> <!-- Container chung cho nội dung -->
+                    <!-- Dashboard View -->
+                    <section id="dashboard" class="content-section">
+                        <div class="mb-8">
+                            <h2 id="welcome-heading" class="section-title">Chào mừng trở lại!</h2>
+                            <p class="text-slate-400" id="current-date">Hôm nay là ngày tuyệt vời để học tập.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                            <!-- Upcoming Event Countdown -->
+                            <div class="card p-6 md:col-span-2 lg:col-span-4 xl:col-span-5 bg-gradient-to-br from-indigo-700/60 to-indigo-900/40 border-indigo-700/80">
+                                <div id="upcoming-event-dashboard">
+                                <!-- JS will populate this -->
+                                </div>
+                            </div>
+                            
+                            <!-- Summary Cards -->
+                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
+                                <div class="flex justify-between items-start">
+                                    <p class="text-slate-400 text-sm font-medium leading-tight">GPA học kỳ</p>
+                                    <div class="bg-teal-600/20 text-teal-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="graduation-cap" class="w-5 h-5"></i></div>
+                                </div>
+                                <p class="text-3xl font-bold text-white mt-2" id="gpa-dashboard">N/A</p>
+                            </div>
+                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
+                                 <div class="flex justify-between items-start">
+                                    <p class="text-slate-400 text-sm font-medium leading-tight">Công việc cần làm</p>
+                                    <div class="bg-blue-600/20 text-blue-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="list-checks" class="w-5 h-5"></i></div>
+                                </div>
+                                <p class="text-3xl font-bold text-white mt-2" id="task-count">0</p>
+                            </div>
+                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
+                                 <div class="flex justify-between items-start">
+                                    <p class="text-slate-400 text-sm font-medium leading-tight">Thói quen hôm nay</p>
+                                    <div class="bg-green-600/20 text-green-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="repeat" class="w-5 h-5"></i></div>
+                                </div>
+                                <p class="text-3xl font-bold text-white mt-2" id="habit-count">0/0</p>
+                            </div>
+                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
+                                 <div class="flex justify-between items-start">
+                                    <p class="text-slate-400 text-sm font-medium leading-tight">Dự án đang làm</p>
+                                    <div class="bg-orange-600/20 text-orange-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="kanban-square" class="w-5 h-5"></i></div>
+                                </div>
+                                <p class="text-3xl font-bold text-white mt-2" id="project-count">0</p>
+                            </div>
+                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
+                                 <div class="flex justify-between items-start">
+                                    <p class="text-slate-400 text-sm font-medium leading-tight">Mục tiêu đang theo</p>
+                                    <div class="bg-purple-600/20 text-purple-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="target" class="w-5 h-5"></i></div>
+                                </div>
+                                <p class="text-3xl font-bold text-white mt-2" id="goal-count">0</p>
+                            </div>
+                            
+                            <!-- Bố cục cân đối hơn cho phần dưới -->
+                            <div class="card p-6 md:col-span-2 lg:col-span-2 xl:col-span-3">
+                                <h3 class="font-semibold text-white mb-4 text-lg">Lớp học hôm nay</h3>
+                                <ul id="today-classes-list" class="space-y-3">
+                                <!-- JS will populate this -->
+                                </ul>
+                            </div>
+                            
+                            <div class="card p-6 flex flex-col justify-center items-center text-center lg:col-span-1 xl:col-span-1">
+                                <div class="bg-yellow-600/20 text-yellow-400 p-3 rounded-lg mb-3"><i data-lucide="timer"></i></div>
+                                <p class="text-slate-400 text-sm mb-1">Phiên Pomodoro</p>
+                                <p class="text-4xl font-bold text-white" id="pomodoro-sessions">0</p>
+                            </div>
 
-            <!-- Resources View -->
-            <section id="resources" class="content-section hidden">
-                <h2 class="text-3xl font-bold text-white mb-6">Tài nguyên học tập</h2>
-                <div class="card p-6 rounded-lg">
-                    <form id="resource-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <input type="text" id="resource-name-input" placeholder="Tên tài nguyên" class="md:col-span-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white" required>
-                        <input type="url" id="resource-url-input" placeholder="https://..." class="md:col-span-2 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white" required>
-                        <button type="submit" class="md:col-span-3 bg-indigo-600 text-white font-semibold py-2 rounded-lg hover:bg-indigo-700">Thêm tài nguyên</button>
-                    </form>
-                    <ul id="resource-list" class="space-y-3"></ul>
+                            <div class="card p-6 flex flex-col justify-center items-center text-center lg:col-span-1 xl:col-span-1">
+                                <div class="bg-pink-600/20 text-pink-400 p-3 rounded-lg mb-3"><i data-lucide="quote"></i></div>
+                                <p class="italic text-slate-300">"Học, học nữa, học mãi."</p>
+                                <p class="text-xs text-slate-500 mt-2">- V.I. Lenin</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Timetable View -->
+                    <section id="timetable" class="content-section hidden">
+                        <h2 class="section-title">Thời khóa biểu</h2>
+                        <div class="card p-4 overflow-x-auto">
+                            <table class="w-full border-collapse text-center timetable-table">
+                                <thead>
+                                    <tr class="border-b border-slate-700">
+                                        <th class="p-2 w-32">Thời gian</th>
+                                        <th class="p-2">Thứ Hai</th>
+                                        <th class="p-2">Thứ Ba</th>
+                                        <th class="p-2">Thứ Tư</th>
+                                        <th class="p-2">Thứ Năm</th>
+                                        <th class="p-2">Thứ Sáu</th>
+                                        <th class="p-2 text-blue-400">Thứ Bảy</th>
+                                        <th class="p-2 text-red-400">Chủ Nhật</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timetable-body"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="pt-4" colspan="8">
+                                            <button id="add-time-slot-btn" class="w-full btn btn-primary">
+                                                <i data-lucide="plus" class="w-5 h-5"></i> Thêm giờ học
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </section>
+                    
+                    <!-- GPA Calculator View -->
+                    <section id="gpa-calculator" class="content-section hidden">
+                        <h2 class="section-title">Máy tính GPA</h2>
+                        <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
+                            <div class="card p-6 flex-grow lg:w-2/3">
+                                <div class="overflow-x-auto">
+                                <table class="w-full text-left min-w-[500px]">
+                                    <thead>
+                                        <tr class="border-b border-slate-700">
+                                            <th class="p-2 w-2/4">Tên môn học</th>
+                                            <th class="p-2 text-center w-28">Số tín chỉ</th>
+                                            <th class="p-2 text-center w-28">Điểm (Hệ 10)</th>
+                                            <th class="p-2 text-center w-16"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gpa-subjects-list"></tbody>
+                                </table>
+                                </div>
+                                <button id="add-gpa-subject-btn" class="w-full mt-4 btn btn-primary">
+                                    <i data-lucide="plus" class="w-5 h-5"></i> Thêm môn học
+                                </button>
+                            </div>
+                            <div class="card p-6 lg:w-1/3 flex-shrink-0 flex flex-col justify-center items-center text-center lg:sticky lg:top-10"> <!-- Adjusted top -->
+                                <div class="bg-teal-600/20 text-teal-400 p-3 rounded-lg mb-3"><i data-lucide="graduation-cap"></i></div>
+                                <p class="text-slate-400 text-sm mb-1">Điểm trung bình học kỳ</p>
+                                <p id="gpa-result" class="text-5xl font-bold text-white">0.00</p>
+                                <p id="gpa-result-4" class="text-slate-400 text-lg mt-1">(Hệ 4: 0.00)</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Events/Countdown View -->
+                    <section id="events" class="content-section hidden">
+                        <h2 class="section-title">Lịch thi & Hạn chót</h2>
+                        <div class="card p-6">
+                            <form id="event-form" class="flex flex-wrap gap-4 mb-6 items-end">
+                                <div class="flex-grow min-w-[200px]">
+                                    <label for="event-input" class="text-sm text-slate-400">Tên sự kiện</label>
+                                    <input type="text" id="event-input" placeholder="VD: Thi cuối kỳ Giải tích" class="w-full mt-1 app-input" required>
+                                </div>
+                                <div class="flex-grow min-w-[200px]">
+                                    <label for="event-date-input" class="text-sm text-slate-400">Ngày và giờ</label>
+                                    <input type="datetime-local" id="event-date-input" class="w-full mt-1 app-input" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm</button>
+                            </form>
+                            <div id="event-list" class="space-y-4"></div>
+                        </div>
+                    </section>
+
+                    <!-- Projects View -->
+                    <section id="projects" class="content-section hidden">
+                        <h2 class="section-title">Dự án & Bài tập lớn</h2>
+                        <div class="card p-6 mb-6">
+                            <form id="project-form" class="flex gap-4">
+                                <input type="text" id="project-input" placeholder="Thêm dự án mới (VD: Nghiên cứu khoa học)" class="flex-grow app-input" required>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Tạo dự án</button>
+                            </form>
+                        </div>
+                        <div id="project-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                    </section>
+
+                    <!-- Task Manager View -->
+                    <section id="tasks" class="content-section hidden">
+                        <h2 class="section-title">Công việc hàng ngày</h2>
+                        <div class="card p-6">
+                            <form id="task-form" class="flex gap-4 mb-6">
+                                <input type="text" id="task-input" placeholder="Thêm một công việc mới..." class="flex-grow app-input" required>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm</button>
+                            </form>
+                            <ul id="task-list" class="space-y-3"></ul>
+                        </div>
+                    </section>
+
+                    <!-- Habit Tracker View -->
+                    <section id="habits" class="content-section hidden">
+                        <h2 class="section-title">Theo dõi Thói quen</h2>
+                        <div class="card p-6">
+                            <form id="habit-form" class="flex gap-4 mb-6">
+                                <input type="text" id="habit-input" placeholder="Thêm một thói quen mới (VD: Đọc sách 30 phút)" class="flex-grow app-input" required>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm</button>
+                            </form>
+                            <div id="habit-list" class="space-y-4"></div>
+                        </div>
+                    </section>
+                    
+                    <!-- Goal Manager View -->
+                    <section id="goals" class="content-section hidden">
+                        <h2 class="section-title">Mục tiêu học tập</h2>
+                        <div class="card p-6">
+                            <form id="goal-form" class="flex gap-4 mb-6">
+                                <input type="text" id="goal-input" placeholder="VD: Đạt 8.0 GPA kỳ này..." class="flex-grow app-input" required>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm mục tiêu</button>
+                            </form>
+                            <ul id="goal-list" class="space-y-3"></ul>
+                        </div>
+                    </section>
+
+                    <!-- Pomodoro Timer View -->
+                    <section id="pomodoro" class="content-section hidden">
+                        <h2 class="section-title">Hẹn giờ Pomodoro</h2>
+                        <div class="card p-8 flex flex-col items-center max-w-md mx-auto">
+                            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                                <button id="pomodoro-btn" class="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold transition-colors">Pomodoro (25')</button>
+                                <button id="long-focus-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition-colors">Tập trung dài (50')</button>
+                                <button id="short-break-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition-colors">Nghỉ ngắn (5')</button>
+                                <button id="long-break-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition-colors">Nghỉ dài (15')</button>
+                            </div>
+                            <div class="text-8xl font-bold my-8 text-white" id="timer-display">25:00</div>
+                            <div class="flex gap-4">
+                                <button id="start-pause-btn" class="btn bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 text-lg">Bắt đầu</button>
+                                <button id="reset-btn" class="btn btn-secondary icon-btn text-lg">
+                                    <i data-lucide="rotate-cw" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quick Notes View -->
+                    <section id="notes" class="content-section hidden">
+                        <h2 class="section-title">Ghi chú nhanh</h2>
+                        <div class="card p-2 h-[60vh] md:h-[70vh]">
+                            <textarea id="notes-textarea" class="w-full h-full bg-transparent border-none rounded-lg p-4 focus:ring-0 text-slate-300 resize-none" placeholder="Viết ghi chú của bạn ở đây..."></textarea>
+                        </div>
+                    </section>
+
+                    <!-- Resources View -->
+                    <section id="resources" class="content-section hidden">
+                        <h2 class="section-title">Tài nguyên học tập</h2>
+                        <div class="card p-6">
+                            <form id="resource-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <input type="text" id="resource-name-input" placeholder="Tên tài nguyên" class="md:col-span-1 app-input" required>
+                                <input type="url" id="resource-url-input" placeholder="https://..." class="md:col-span-2 app-input" required>
+                                <button type="submit" class="md:col-span-3 btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm tài nguyên</button>
+                            </form>
+                            <ul id="resource-list" class="space-y-3"></ul>
+                        </div>
+                    </section>
+                    
+                    <!-- Music View -->
+                    <section id="music" class="content-section hidden">
+                        <h2 class="section-title">Nhạc tập trung</h2>
+                        <p class="text-slate-400 mb-6">Chọn một giai điệu để giúp bạn tập trung vào công việc.</p>
+                        <div class="flex flex-col lg:flex-row gap-8">
+                            <!-- Main Video Player -->
+                            <div class="flex-grow lg:w-2/3">
+                                <div class="aspect-video">
+                                <iframe id="music-player" class="rounded-xl shadow-lg w-full h-full" src="https://www.youtube.com/embed/jfKfPfyJRdk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                            <!-- Music Selection List & Form -->
+                            <div class="lg:w-1/3 flex-shrink-0">
+                                <div id="music-selection" class="flex flex-col gap-3"></div>
+                                <div class="card p-4 mt-4">
+                                    <h4 class="font-semibold text-white mb-3">Thêm nhạc của bạn</h4>
+                                    <form id="add-music-form" class="space-y-3">
+                                        <input type="text" id="music-name-input" placeholder="Tên bài nhạc" class="w-full app-input text-sm" required>
+                                        <input type="url" id="music-url-input" placeholder="Dán link YouTube vào đây" class="w-full app-input text-sm" required>
+                                        <button type="submit" class="w-full btn btn-primary btn-sm">
+                                            <i data-lucide="plus" class="w-4 h-4"></i> Thêm nhạc
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-            </section>
-            
-            <!-- Music View -->
-            <section id="music" class="content-section hidden">
-                 <h2 class="text-3xl font-bold text-white mb-6">Nhạc tập trung</h2>
-                 <p class="text-gray-400 mb-4">Sử dụng những giai điệu này để giúp bạn tập trung vào công việc.</p>
-                 <div class="aspect-w-16 aspect-h-9">
-                    <iframe class="rounded-lg shadow-lg" src="https://www.youtube.com/embed/jfKfPfyJRdk?si=v_XF3hF4y-Xl8B4P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
-            </section>
-        </main>
+            </main>
+        </div>
     </div>
     
     <!-- Modals -->
-    <!-- Schedule Modal -->
     <div id="schedule-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
-        <div class="card p-6 rounded-lg w-full max-w-md mx-auto mt-20 shadow-lg">
+        <div class="card p-6 rounded-xl w-full max-w-md mx-auto mt-20 shadow-lg">
             <h3 class="text-xl font-bold mb-4 text-white" id="modal-title">Thêm/Sửa Lịch học</h3>
             <form id="schedule-form">
                 <input type="hidden" id="modal-cell-id">
                 <div class="mb-4">
-                    <label for="subject-name" class="block text-sm font-medium text-gray-300 mb-1">Tên môn học</label>
-                    <input type="text" id="subject-name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white" required>
+                    <label for="subject-name" class="block text-sm font-medium text-slate-300 mb-1">Tên môn học</label>
+                    <input type="text" id="subject-name" class="w-full app-input" required>
                 </div>
                 <div class="mb-6">
-                    <label for="subject-room" class="block text-sm font-medium text-gray-300 mb-1">Phòng/Địa điểm</label>
-                    <input type="text" id="subject-room" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                    <label for="subject-room" class="block text-sm font-medium text-slate-300 mb-1">Phòng/Địa điểm</label>
+                    <input type="text" id="subject-room" class="w-full app-input">
                 </div>
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="delete-schedule-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
-                    <button type="button" id="close-schedule-modal-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Hủy</button>
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Lưu</button>
+                    <button type="button" id="delete-schedule-btn" class="btn btn-danger">Xóa</button>
+                    <button type="button" id="close-schedule-modal-btn" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Add Time Slot Modal -->
     <div id="add-time-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
-        <div class="card p-6 rounded-lg w-full max-w-sm mx-auto mt-20 shadow-lg">
+        <div class="card p-6 rounded-xl w-full max-w-sm mx-auto mt-20 shadow-lg">
             <h3 class="text-xl font-bold mb-4 text-white">Thêm khung giờ mới</h3>
             <form id="add-time-form">
                 <div class="mb-4">
-                    <label for="new-time-input" class="block text-sm font-medium text-gray-300 mb-1">Thời gian (HH:MM)</label>
-                    <input type="time" id="new-time-input" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white" required>
+                    <label for="new-time-input" class="block text-sm font-medium text-slate-300 mb-1">Thời gian (HH:MM)</label>
+                    <input type="time" id="new-time-input" class="w-full app-input" required>
                 </div>
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="close-add-time-modal-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Hủy</button>
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Thêm</button>
+                    <button type="button" id="close-add-time-modal-btn" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
                 </div>
             </form>
         </div>
     </div>
     
-    <!-- Confirm Delete Modal -->
      <div id="confirm-delete-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
-        <div class="card p-6 rounded-lg w-full max-w-sm mx-auto mt-20 shadow-lg">
+        <div class="card p-6 rounded-xl w-full max-w-sm mx-auto mt-20 shadow-lg">
             <h3 class="text-xl font-bold mb-2 text-white">Xác nhận xóa</h3>
-            <p id="confirm-delete-message" class="text-gray-300 mb-6"></p>
+            <p id="confirm-delete-message" class="text-slate-300 mb-6"></p>
             <div class="flex justify-end gap-3">
-                <button type="button" id="cancel-delete-btn" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Hủy</button>
-                <button type="button" id="confirm-delete-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Xóa</button>
+                <button type="button" id="cancel-delete-btn" class="btn btn-secondary">Hủy</button>
+                <button type="button" id="confirm-delete-btn" class="btn btn-danger">Xóa</button>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjV_5NxKcUr4sI_8hdOapmJNMtpaJqrBU",
+            authDomain: "student-hub-f41cd.firebaseapp.com",
+            projectId: "student-hub-f41cd",
+            storageBucket: "student-hub-f41cd.firebasestorage.app",
+            messagingSenderId: "31755638843",
+            appId: "1:31755638843:web:2b58ced03ed7f49dcde41e",
+            measurementId: "G-ENYF7MZGL0"
+        };
 
-            // --- State Initialization ---
-            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            let goals = JSON.parse(localStorage.getItem('goals')) || [];
-            let habits = JSON.parse(localStorage.getItem('habits')) || [];
-            let resources = JSON.parse(localStorage.getItem('resources')) || [];
-            let projects = JSON.parse(localStorage.getItem('projects')) || [];
-            let events = JSON.parse(localStorage.getItem('events')) || [];
-            let gpaSubjects = JSON.parse(localStorage.getItem('gpaSubjects')) || [];
-            let pomodoroSessions = parseInt(localStorage.getItem('pomodoroSessions')) || 0;
-            let notes = localStorage.getItem('notes') || '';
-            let schedule = JSON.parse(localStorage.getItem('schedule')) || {};
-            let timeSlots = JSON.parse(localStorage.getItem('timeSlots')) || ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
-            let timeToDeleteHolder = null; // Variable to hold time to be deleted
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-            // --- NAVIGATION ---
-            const navLinks = document.querySelectorAll('.nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
+        let state = {};
+        let dataUnsubscribe = null;
+        let currentUserId = null;
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.getAttribute('data-target');
-                    navLinks.forEach(nav => nav.classList.remove('active'));
-                    link.classList.add('active');
-                    contentSections.forEach(section => {
-                        section.id === targetId ? section.classList.remove('hidden') : section.classList.add('hidden');
-                    });
+        const defaultState = {
+            displayName: "Sinh Viên",
+            tasks: [],
+            goals: [],
+            habits: [],
+            resources: [],
+            projects: [],
+            events: [],
+            gpaSubjects: [],
+            userMusic: [],
+            currentMusicId: 'jfKfPfyJRdk',
+            pomodoroSessions: 0,
+            notes: '',
+            schedule: {},
+            timeSlots: ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+        };
+
+        // --- UI Element declarations ---
+        let authScreen, appContainer, logoutBtn, authForm, emailInput, passwordInput, nameInput, authError, userEmailEl, userDisplayNameEl, welcomeHeading;
+        let isLoginMode = true; // Default to login mode
+        let nameFieldContainer, authSubmitBtn, authToggleText, authToggleLink, authTitle;
+        let currentDateEl, taskCountEl, habitCountEl, projectCountEl, goalCountEl, gpaDashboardEl, todayClassesList, upcomingEventDashboard;
+        let navLinks, contentSections;
+        let timetableBody, scheduleModal, closeScheduleModalBtn, scheduleForm, modalCellId, subjectNameInput, subjectRoomInput, deleteScheduleBtn, addTimeSlotBtn, addTimeModal, addTimeForm, newTimeInput, closeAddTimeModalBtn, confirmDeleteModal, confirmDeleteMessage, confirmDeleteBtn, cancelDeleteBtn;
+        let gpaSubjectsList, addGpaSubjectBtn, gpaResultEl, gpaResult4El;
+        let taskForm, taskInput, taskList;
+        let habitForm, habitInput, habitList;
+        let goalForm, goalInput, goalList;
+        let projectForm, projectInput, projectList;
+        let eventForm, eventInput, eventDateInput, eventList;
+        let timerDisplay, startPauseBtn, resetBtn, pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn, pomodoroSessionsEl;
+        let notesTextarea;
+        let resourceForm, resourceList;
+        let musicPlayer, musicSelection, addMusicForm, musicNameInput, musicUrlInput;
+        let timeToDeleteHolder = null;
+        let menuToggle, sidebar, sidebarOverlay;
+
+
+        function updateAuthUI() {
+            if (!authError) return;
+            authError.classList.add('hidden');
+            if (isLoginMode) {
+                authTitle.textContent = 'Đăng nhập vào Student Hub';
+                nameFieldContainer.classList.add('hidden');
+                authSubmitBtn.textContent = 'Đăng nhập';
+                authToggleText.textContent = 'Chưa có tài khoản?';
+                authToggleLink.textContent = 'Đăng ký ngay';
+                nameInput.required = false;
+            } else {
+                authTitle.textContent = 'Tạo tài khoản mới';
+                nameFieldContainer.classList.remove('hidden');
+                authSubmitBtn.textContent = 'Đăng ký';
+                authToggleText.textContent = 'Đã có tài khoản?';
+                authToggleLink.textContent = 'Đăng nhập';
+                nameInput.required = true;
+            }
+        }
+        
+        function showAuthError(message) {
+            if (!authError) return;
+            authError.textContent = message;
+            authError.classList.remove('hidden');
+        }
+
+        onAuthStateChanged(auth, user => {
+             // Ensure elements are assigned before use
+            if(!userDisplayNameEl) {
+                // Assign elements if not already done (might happen on initial load)
+                initializeUIElements(); 
+                 if(!userDisplayNameEl) return; // Still not found, exit
+            }
+
+            if (user) {
+                currentUserId = user.uid;
+                userDisplayNameEl.textContent = user.displayName || 'Sinh Viên';
+                userEmailEl.textContent = user.email;
+                welcomeHeading.textContent = `Chào mừng trở lại, ${user.displayName || 'bạn'}!`;
+
+                authScreen.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+
+                const userDocRef = doc(db, "users", currentUserId);
+                if (dataUnsubscribe) dataUnsubscribe(); 
+                dataUnsubscribe = onSnapshot(userDocRef, (doc) => {
+                    if (doc.exists()) {
+                        state = { ...defaultState, ...doc.data() };
+                    } else {
+                        state = { ...defaultState, displayName: user.displayName || "Sinh Viên" };
+                        setDoc(userDocRef, state);
+                    }
+                    renderAll();
+                }, (error) => {
+                    console.error("Error fetching user data:", error);
+                    // Handle error, maybe show a message to the user
                 });
+                
+            } else {
+                currentUserId = null;
+                if (dataUnsubscribe) {
+                    dataUnsubscribe();
+                    dataUnsubscribe = null;
+                }
+                state = { ...defaultState };
+                authScreen.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+                updateAuthUI(); // Ensure auth UI is reset to login
+            }
+        });
+
+        async function saveData() {
+            if (!currentUserId) return;
+            if(window.saveTimeout) clearTimeout(window.saveTimeout);
+            window.saveTimeout = setTimeout(async () => {
+                const userDocRef = doc(db, "users", currentUserId);
+                try {
+                    // Make sure state is serializable (no undefined values)
+                    const savableState = JSON.parse(JSON.stringify(state, (key, value) => 
+                         (value === undefined ? null : value)
+                    ));
+                    await setDoc(userDocRef, savableState);
+                } catch (error) {
+                    console.error("Error saving data: ", error);
+                    // Optionally: Add user feedback here (e.g., a small toast message)
+                     showTemporaryMessage("Lỗi khi lưu dữ liệu.", "error");
+                }
+            }, 500);
+        }
+        
+        // --- Helper Function for Temporary Messages ---
+        function showTemporaryMessage(message, type = "info") {
+            // (Optional) Implement a simple notification system here
+            console.log(`[${type.toUpperCase()}] ${message}`); 
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
+        }
+
+        function updateDashboard() {
+            if (!taskCountEl) return;
+            taskCountEl.textContent = (state.tasks || []).filter(t => !t.completed).length;
+            goalCountEl.textContent = (state.goals || []).filter(g => !g.completed).length;
+            projectCountEl.textContent = (state.projects || []).length;
+            
+            const todayStr = getTodayDateString();
+            const habits = state.habits || [];
+            const completedHabitsToday = habits.filter(h => (h.completedDates || []).includes(todayStr)).length;
+            habitCountEl.textContent = `${completedHabitsToday}/${habits.length}`;
+
+            updateTodayClasses();
+            updateUpcomingEventOnDashboard();
+            calculateAndDisplayGpa();
+        }
+        
+        function updateTodayClasses() {
+            if (!todayClassesList) return;
+            todayClassesList.innerHTML = '';
+            const dayMap = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const today = dayMap[new Date().getDay()];
+            
+            const todayEntries = Object.entries(state.schedule || {}).filter(([key]) => key.startsWith(today));
+            
+            if (todayEntries.length === 0) {
+                todayClassesList.innerHTML = `<p class="text-slate-500">Không có lớp học nào hôm nay.</p>`;
+                return;
+            }
+            
+            todayEntries.sort(([keyA], [keyB]) => {
+                const timeA = keyA.split('-')[1];
+                const timeB = keyB.split('-')[1];
+                return timeA.localeCompare(timeB);
+            }).forEach(([key, value]) => {
+                const time = key.split('-')[1];
+                const li = document.createElement('li');
+                li.className = 'flex justify-between items-center text-sm';
+                li.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-white">${value.subject}</p>
+                        <p class="text-slate-400">${value.room || ''}</p>
+                    </div>
+                    <span class="font-mono bg-slate-700 text-slate-300 px-2 py-1 rounded-md">${time}</span>
+                `;
+                todayClassesList.appendChild(li);
             });
+        }
+
+        function generateTimetable() {
+            if (!timetableBody) return;
+            timetableBody.innerHTML = '';
+            const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
             
-            // --- GENERAL & DASHBOARD ---
-            const currentDateEl = document.getElementById('current-date');
-            currentDateEl.textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            (state.timeSlots || defaultState.timeSlots).sort().forEach(time => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-slate-700';
+                const timeCell = document.createElement('td');
+                timeCell.className = 'time-slot-cell p-2 border-r border-slate-700 font-semibold text-slate-400';
+                timeCell.innerHTML = `<div class="flex items-center justify-center gap-2"><span>${time}</span><button data-time="${time}" class="delete-time-slot-btn text-slate-600 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                row.appendChild(timeCell);
+                days.forEach(day => {
+                    const cell = document.createElement('td');
+                    cell.className = 'p-1 border-r border-slate-700 align-top';
+                    cell.dataset.id = `${day}-${time}`;
+                    row.appendChild(cell);
+                });
+                timetableBody.appendChild(row);
+            });
+            lucide.createIcons();
+            renderSchedule();
+        }
+        function renderSchedule() {
+            if (!timetableBody) return;
+            document.querySelectorAll('#timetable-body td[data-id]').forEach(cell => {
+                cell.innerHTML = '';
+                const cellId = cell.dataset.id;
+                if (state.schedule && state.schedule[cellId]) {
+                    const entry = document.createElement('div');
+                    entry.className = 'timetable-entry';
+                    entry.innerHTML = `<p class="font-bold">${state.schedule[cellId].subject}</p><p>${state.schedule[cellId].room || ''}</p>`;
+                    cell.appendChild(entry);
+                }
+            });
+            updateDashboard();
+        }
 
-            const taskCountEl = document.getElementById('task-count');
-            const habitCountEl = document.getElementById('habit-count');
-            const projectCountEl = document.getElementById('project-count');
-            const goalCountEl = document.getElementById('goal-count');
-            const gpaDashboardEl = document.getElementById('gpa-dashboard');
-            const todayClassesList = document.getElementById('today-classes-list');
-            const upcomingEventDashboard = document.getElementById('upcoming-event-dashboard');
+        function convertToScale4(score10) {
+            if (score10 >= 8.5) return 4.0; if (score10 >= 8.0) return 3.5; if (score10 >= 7.0) return 3.0;
+            if (score10 >= 6.5) return 2.5; if (score10 >= 5.5) return 2.0; if (score10 >= 5.0) return 1.5;
+            if (score10 >= 4.0) return 1.0; return 0.0;
+        }
 
-            function getTodayDateString() {
-                const today = new Date();
-                return today.toISOString().split('T')[0]; // YYYY-MM-DD
+        function calculateAndDisplayGpa() {
+            if (!gpaResultEl) return;
+            let totalPoints = 0, totalCredits = 0, totalPoints4 = 0;
+            (state.gpaSubjects || []).forEach(subject => {
+                const credits = parseFloat(subject.credits) || 0;
+                const score = parseFloat(subject.score) || 0;
+                if (credits > 0) {
+                    totalCredits += credits;
+                    totalPoints += score * credits;
+                    totalPoints4 += convertToScale4(score) * credits;
+                }
+            });
+            const gpa10 = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+            const gpa4 = totalCredits > 0 ? (totalPoints4 / totalCredits) : 0;
+            gpaResultEl.textContent = gpa10.toFixed(2);
+            gpaResult4El.textContent = `(Hệ 4: ${gpa4.toFixed(2)})`;
+            gpaDashboardEl.textContent = gpa10 > 0 ? gpa10.toFixed(2) : 'N/A';
+        }
+
+        function renderGpaSubjects() {
+            if (!gpaSubjectsList) return;
+            gpaSubjectsList.innerHTML = '';
+            (state.gpaSubjects || []).forEach((subject, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-2"><input type="text" class="gpa-input" data-index="${index}" data-field="name" value="${subject.name || ''}" placeholder="Tên môn học"></td>
+                    <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="credits" value="${subject.credits || ''}" min="0" placeholder="0"></td>
+                    <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="score" value="${subject.score || ''}" min="0" max="10" step="0.1" placeholder="0.0"></td>
+                    <td class="p-2 text-center"><button class="delete-gpa-subject-btn text-slate-500 hover:text-red-500" data-index="${index}"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
+                `;
+                gpaSubjectsList.appendChild(tr);
+            });
+            lucide.createIcons();
+            calculateAndDisplayGpa();
+        }
+
+        function renderTasks() {
+            if (!taskList) return;
+            taskList.innerHTML = '';
+            if (!state.tasks || state.tasks.length === 0) taskList.innerHTML = `<p class="text-slate-500">Chưa có công việc nào.</p>`;
+            else {
+                state.tasks.forEach((task, index) => {
+                    const li = document.createElement('li');
+                    // Use list-item styles for better alignment and wrapping
+                    li.className = `task-item list-item ${task.completed ? 'completed' : ''}`; 
+                    li.innerHTML = `
+                        <div class="list-item-content">
+                             <input type="checkbox" data-index="${index}" class="custom-checkbox" ${task.completed ? 'checked' : ''}>
+                             <span class="list-item-text">${task.text}</span>
+                        </div>
+                        <div class="list-item-actions">
+                             <button data-index="${index}" class="delete-task-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>`;
+                    taskList.appendChild(li);
+                });
             }
+            lucide.createIcons();
+            updateDashboard();
+        }
 
-            function updateDashboard() {
-                taskCountEl.textContent = tasks.filter(t => !t.completed).length;
-                goalCountEl.textContent = goals.filter(g => !g.completed).length;
-                projectCountEl.textContent = projects.length;
-                
+        function renderHabits() {
+            if (!habitList) return;
+            habitList.innerHTML = '';
+            if (!state.habits || state.habits.length === 0) habitList.innerHTML = `<p class="text-slate-500">Hãy bắt đầu xây dựng những thói quen tốt!</p>`;
+            else {
                 const todayStr = getTodayDateString();
-                const completedHabitsToday = habits.filter(h => h.completedDates.includes(todayStr)).length;
-                habitCountEl.textContent = `${completedHabitsToday}/${habits.length}`;
-
-                updateTodayClasses();
-                updateUpcomingEventOnDashboard();
-                calculateAndDisplayGpa(); // Update GPA on dashboard
+                state.habits.forEach((habit, index) => {
+                    const habitEl = document.createElement('div');
+                    habitEl.className = 'flex flex-wrap items-center justify-between p-3 rounded-lg border border-slate-700 gap-y-2'; // Added gap-y-2
+                    let daysHTML = '';
+                    for (let i = 6; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        const dateStr = date.toISOString().split('T')[0];
+                        const isCompleted = (habit.completedDates || []).includes(dateStr);
+                        const isToday = (dateStr === todayStr);
+                        daysHTML += `<div class="habit-day rounded-full flex items-center justify-center ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" data-habit-index="${index}" title="${date.toLocaleDateString('vi-VN')}"></div>`;
+                    }
+                    // Adjusted structure for better wrapping
+                    habitEl.innerHTML = `
+                        <span class="text-white break-words mr-4">${habit.name}</span> 
+                        <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0"> ${daysHTML} 
+                           <button data-index="${index}" class="delete-habit-btn text-slate-500 hover:text-red-500 ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                         </div>`;
+                    habitList.appendChild(habitEl);
+                });
             }
+            lucide.createIcons();
+            updateDashboard();
+        }
+
+        function renderGoals() {
+            if (!goalList) return;
+            goalList.innerHTML = '';
+            if (!state.goals || state.goals.length === 0) goalList.innerHTML = `<p class="text-slate-500">Chưa có mục tiêu nào được đặt ra.</p>`;
+            else {
+                state.goals.forEach((goal, index) => {
+                    const li = document.createElement('li');
+                     // Use list-item styles
+                    li.className = `goal-item list-item ${goal.completed ? 'completed' : ''}`;
+                    li.innerHTML = `
+                        <div class="list-item-content">
+                             <input type="checkbox" data-index="${index}" class="custom-checkbox" ${goal.completed ? 'checked' : ''}>
+                             <span class="list-item-text">${goal.text}</span>
+                        </div>
+                        <div class="list-item-actions">
+                             <button data-index="${index}" class="delete-goal-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>`;
+                    goalList.appendChild(li);
+                });
+            }
+            lucide.createIcons();
+            updateDashboard();
+        }
+
+        function renderProjects() {
+            if (!projectList) return;
+            projectList.innerHTML = '';
+            if(!state.projects || state.projects.length === 0) projectList.innerHTML = `<p class="text-slate-500 col-span-full text-center">Chưa có dự án nào. Hãy bắt đầu một dự án mới!</p>`;
+            else {
+                state.projects.forEach(project => {
+                    const projectCard = document.createElement('div');
+                    projectCard.className = 'card p-4 rounded-xl flex flex-col gap-4';
+                    const completedTasks = (project.tasks || []).filter(t => t.completed).length;
+                    const totalTasks = (project.tasks || []).length;
+                    const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+                    let tasksHTML = '<ul class="space-y-2">';
+                    (project.tasks || []).forEach((task, taskIndex) => {
+                        tasksHTML += `<li class="project-task flex items-center justify-between text-sm ${task.completed ? 'completed' : ''}"><div class="flex items-center gap-2 min-w-0"><input type="checkbox" data-project-id="${project.id}" data-task-index="${taskIndex}" class="custom-checkbox !w-4 !h-4" ${task.completed ? 'checked' : ''}><span class="break-words">${task.text}</span></div><button data-project-id="${project.id}" data-task-index="${taskIndex}" class="delete-project-task-btn text-slate-600 hover:text-red-500 flex-shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button></li>`;
+                    });
+                    tasksHTML += '</ul>';
+                    projectCard.innerHTML = `<div><div class="flex justify-between items-start"><h3 class="font-bold text-white text-lg break-words">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn text-slate-500 hover:text-red-500 flex-shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-slate-400"><div class="progress-bar w-full h-2 rounded-full"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${Math.round(progress)}%</span></div></div><div>${tasksHTML}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-3 py-1 text-sm focus:ring-indigo-500 focus:border-indigo-500" required><button type="submit" class="btn btn-primary btn-sm !p-1.5"><i data-lucide="plus" class="w-4 h-4"></i></button></form>`; // smaller add button
+                    projectList.appendChild(projectCard);
+                });
+            }
+            lucide.createIcons();
+            updateDashboard();
+        }
+
+        function renderEvents() {
+            if (!eventList) return;
+            eventList.innerHTML = '';
+            if(!state.events || state.events.length === 0) eventList.innerHTML = `<p class="text-slate-500 text-center">Chưa có sự kiện nào được thêm.</p>`;
+            else {
+                state.events.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(event => {
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'flex flex-wrap items-center justify-between p-4 rounded-lg border border-slate-700 gap-y-2'; // Added gap-y-2
+                    eventEl.innerHTML = `
+                         <div class="min-w-0 mr-4"> {/* Added mr-4 */}
+                             <p class="font-semibold text-white break-words">${event.name}</p>
+                             <p class="text-sm text-slate-400">${new Date(event.date).toLocaleString('vi-VN')}</p>
+                         </div>
+                         <div class="flex items-center gap-4 flex-shrink-0">
+                             <div id="countdown-${event.id}" class="text-lg font-semibold text-indigo-400"></div>
+                             <button data-event-id="${event.id}" class="delete-event-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                         </div>`;
+                    eventList.appendChild(eventEl);
+                });
+            }
+            lucide.createIcons();
+            updateDashboard();
+        }
+
+        function updateCountdowns() {
+            if (!state.events) return;
+            state.events.forEach(event => {
+                const countdownEl = document.getElementById(`countdown-${event.id}`);
+                if (countdownEl) {
+                    const diff = new Date(event.date) - new Date();
+                    if (diff > 0) {
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        countdownEl.textContent = `${days}d ${hours}h ${minutes}m`;
+                    } else {
+                        countdownEl.textContent = "Đã qua";
+                    }
+                }
+            });
+            updateUpcomingEventOnDashboard();
+        }
+
+        function updateUpcomingEventOnDashboard() {
+            if (!upcomingEventDashboard || !state.events) return;
+            const now = new Date();
+            const upcomingEvents = state.events.filter(e => new Date(e.date) > now).sort((a, b) => new Date(a.date) - new Date(b.date));
+            if (upcomingEvents.length > 0) {
+                const nextEvent = upcomingEvents[0];
+                const diff = new Date(nextEvent.date) - now;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                upcomingEventDashboard.innerHTML = `<p class="text-sm text-center text-indigo-300 mb-2">SỰ KIỆN SẮP TỚI</p><h3 class="text-xl font-bold text-center text-white mb-4">${nextEvent.name}</h3><div class="flex justify-center items-center gap-2 md:gap-4 text-center"><div><span class="countdown-digits">${String(days).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">NGÀY</span></div><div><span class="countdown-digits">${String(hours).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">GIỜ</span></div><div><span class="countdown-digits">${String(minutes).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">PHÚT</span></div><div><span class="countdown-digits">${String(seconds).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">GIÂY</span></div></div>`;
+            } else {
+                upcomingEventDashboard.innerHTML = `<p class="text-center text-slate-400">Không có sự kiện nào sắp tới. Hãy thêm lịch thi hoặc hạn chót mới!</p>`;
+            }
+        }
+
+        function updateTimerDisplay() {
+            if (!timerDisplay) return;
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = timeInSeconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            pomodoroSessionsEl.textContent = state.pomodoroSessions || 0;
+        }
+
+        function renderNotes() {
+            if (notesTextarea) {
+                notesTextarea.value = state.notes || '';
+            }
+        }
+
+        function renderResources() {
+            if (!resourceList) return;
+            resourceList.innerHTML = '';
+            if (!state.resources || state.resources.length === 0) resourceList.innerHTML = `<p class="text-slate-500">Chưa có tài nguyên nào.</p>`;
+            else {
+                state.resources.forEach((resource, index) => {
+                    const li = document.createElement('li');
+                     // Use list-item styles
+                    li.className = 'list-item';
+                    li.innerHTML = `
+                         <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="list-item-content text-indigo-400 hover:underline">
+                             <i data-lucide="link-2" class="w-5 h-5 flex-shrink-0"></i>
+                             <span class="list-item-text !text-indigo-400 truncate">${resource.name}</span>
+                         </a>
+                         <div class="list-item-actions">
+                            <button data-index="${index}" class="delete-resource-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                         </div>`;
+                    resourceList.appendChild(li);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        function renderMusicOptions() {
+            if (!musicSelection) return;
+            const defaultMusicOptions = [
+                { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk', icon: 'music-2', isCustom: false },
+                { name: 'Âm thanh Quán Cà phê', videoId: 'irx_pvg-i-4', icon: 'coffee', isCustom: false },
+                { name: 'Piano Thư giãn', videoId: 'r_i4H8w_2Qc', icon: 'piano', isCustom: false },
+                { name: 'Tiếng Mưa Tự nhiên', videoId: 'q76bMs-mupk', icon: 'cloud-rain', isCustom: false }
+            ];
+            musicSelection.innerHTML = '';
+            const allMusic = [...defaultMusicOptions, ...(state.userMusic || [])];
             
-            function updateTodayClasses() {
-                todayClassesList.innerHTML = '';
-                const dayMap = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-                const today = dayMap[new Date().getDay()];
+            allMusic.forEach(option => {
+                const isActive = option.videoId === state.currentMusicId;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `music-option-btn flex items-center gap-3 w-full text-left p-3 rounded-lg border transition-colors cursor-pointer ${isActive ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300'}`; // Reduced gap
+                itemDiv.dataset.videoId = option.videoId;
                 
-                const todayEntries = Object.entries(schedule).filter(([key]) => key.startsWith(today));
-                
-                if (todayEntries.length === 0) {
-                    todayClassesList.innerHTML = `<p class="text-gray-500">Không có lớp học nào hôm nay.</p>`;
-                    return;
+                let deleteButtonHTML = '';
+                if (option.isCustom) {
+                    deleteButtonHTML = `<div class="delete-music-btn text-slate-400 hover:text-red-500 p-1 rounded-full flex-shrink-0 ml-auto" data-video-id="${option.videoId}"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></div>`;
                 }
                 
-                todayEntries.sort(([keyA], [keyB]) => {
-                    const timeA = keyA.split('-')[1];
-                    const timeB = keyB.split('-')[1];
-                    return timeA.localeCompare(timeB);
-                }).forEach(([key, value]) => {
-                    const time = key.split('-')[1];
-                    const li = document.createElement('li');
-                    li.className = 'flex justify-between items-center text-sm';
-                    li.innerHTML = `
-                        <div>
-                            <p class="font-semibold text-white">${value.subject}</p>
-                            <p class="text-gray-400">${value.room || ''}</p>
-                        </div>
-                        <span class="font-mono bg-gray-700 text-gray-300 px-2 py-1 rounded">${time}</span>
-                    `;
-                    todayClassesList.appendChild(li);
-                });
+                itemDiv.innerHTML = `
+                    <i data-lucide="${option.icon}" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold flex-grow truncate text-sm">${option.name}</span> {/* Smaller text */}
+                    ${deleteButtonHTML}
+                `;
+                musicSelection.appendChild(itemDiv);
+            });
+            
+            const allIds = allMusic.map(m => m.videoId);
+            if (!allIds.includes(state.currentMusicId)) {
+                state.currentMusicId = defaultMusicOptions[0].videoId;
             }
 
-            // --- TIMETABLE ---
-            const timetableBody = document.getElementById('timetable-body');
-            const scheduleModal = document.getElementById('schedule-modal');
-            const closeScheduleModalBtn = document.getElementById('close-schedule-modal-btn');
-            const scheduleForm = document.getElementById('schedule-form');
-            const modalCellId = document.getElementById('modal-cell-id');
-            const subjectNameInput = document.getElementById('subject-name');
-            const subjectRoomInput = document.getElementById('subject-room');
-            const deleteScheduleBtn = document.getElementById('delete-schedule-btn');
-            const addTimeSlotBtn = document.getElementById('add-time-slot-btn');
-            const addTimeModal = document.getElementById('add-time-modal');
-            const addTimeForm = document.getElementById('add-time-form');
-            const newTimeInput = document.getElementById('new-time-input');
-            const closeAddTimeModalBtn = document.getElementById('close-add-time-modal-btn');
-            const confirmDeleteModal = document.getElementById('confirm-delete-modal');
-            const confirmDeleteMessage = document.getElementById('confirm-delete-message');
-            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            musicPlayer.src = `https://www.youtube.com/embed/${state.currentMusicId || 'jfKfPfyJRdk'}`;
+            lucide.createIcons();
+        }
 
-            function generateTimetable() {
-                timetableBody.innerHTML = '';
-                const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
-                
-                timeSlots.sort().forEach(time => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-gray-800';
-                    const timeCell = document.createElement('td');
-                    timeCell.className = 'time-slot-cell p-2 border-r border-gray-800 font-semibold text-gray-400';
-                    timeCell.innerHTML = `<div class="flex items-center justify-center gap-2"><span>${time}</span><button data-time="${time}" class="delete-time-slot-btn text-gray-600 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
-                    row.appendChild(timeCell);
-                    days.forEach(day => {
-                        const cell = document.createElement('td');
-                        cell.className = 'p-1 border-r border-gray-800 align-top';
-                        cell.dataset.id = `${day}-${time}`;
-                        row.appendChild(cell);
-                    });
-                    timetableBody.appendChild(row);
-                });
-                lucide.createIcons();
-                renderSchedule();
-            }
-            function renderSchedule() {
-                document.querySelectorAll('#timetable-body td[data-id]').forEach(cell => {
-                    cell.innerHTML = '';
-                    const cellId = cell.dataset.id;
-                    if (schedule[cellId]) {
-                        const entry = document.createElement('div');
-                        entry.className = 'timetable-entry';
-                        entry.innerHTML = `<p class="font-bold">${schedule[cellId].subject}</p><p>${schedule[cellId].room || ''}</p>`;
-                        cell.appendChild(entry);
+        function renderAll() {
+            renderNotes();
+            renderTasks();
+            renderGoals();
+            renderHabits();
+            renderResources();
+            renderProjects();
+            renderEvents();
+            renderGpaSubjects();
+            generateTimetable();
+            updateTimerDisplay();
+            renderMusicOptions();
+            updateDashboard();
+        }
+
+        let timer;
+        let timeInSeconds = 25 * 60;
+        let isRunning = false;
+        let currentMode = 'pomodoro';
+        
+        // --- Function to initialize UI elements ---
+        function initializeUIElements() {
+            authScreen = document.getElementById('auth-screen');
+            appContainer = document.getElementById('app-container');
+            logoutBtn = document.getElementById('logout-btn');
+            authForm = document.getElementById('auth-form');
+            emailInput = document.getElementById('email-input');
+            passwordInput = document.getElementById('password-input');
+            nameInput = document.getElementById('name-input');
+            authError = document.getElementById('auth-error');
+            userEmailEl = document.getElementById('user-email');
+            userDisplayNameEl = document.getElementById('user-display-name');
+            welcomeHeading = document.getElementById('welcome-heading');
+            nameFieldContainer = document.getElementById('name-field-container');
+            authSubmitBtn = document.getElementById('auth-submit-btn');
+            authToggleText = document.getElementById('auth-toggle-text');
+            authToggleLink = document.getElementById('auth-toggle-link');
+            authTitle = document.getElementById('auth-title');
+            currentDateEl = document.getElementById('current-date');
+            taskCountEl = document.getElementById('task-count');
+            habitCountEl = document.getElementById('habit-count');
+            projectCountEl = document.getElementById('project-count');
+            goalCountEl = document.getElementById('goal-count');
+            gpaDashboardEl = document.getElementById('gpa-dashboard');
+            todayClassesList = document.getElementById('today-classes-list');
+            upcomingEventDashboard = document.getElementById('upcoming-event-dashboard');
+            navLinks = document.querySelectorAll('.nav-link');
+            contentSections = document.querySelectorAll('.content-section');
+            timetableBody = document.getElementById('timetable-body');
+            scheduleModal = document.getElementById('schedule-modal');
+            closeScheduleModalBtn = document.getElementById('close-schedule-modal-btn');
+            scheduleForm = document.getElementById('schedule-form');
+            modalCellId = document.getElementById('modal-cell-id');
+            subjectNameInput = document.getElementById('subject-name');
+            subjectRoomInput = document.getElementById('subject-room');
+            deleteScheduleBtn = document.getElementById('delete-schedule-btn');
+            addTimeSlotBtn = document.getElementById('add-time-slot-btn');
+            addTimeModal = document.getElementById('add-time-modal');
+            addTimeForm = document.getElementById('add-time-form');
+            newTimeInput = document.getElementById('new-time-input');
+            closeAddTimeModalBtn = document.getElementById('close-add-time-modal-btn');
+            confirmDeleteModal = document.getElementById('confirm-delete-modal');
+            confirmDeleteMessage = document.getElementById('confirm-delete-message');
+            confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            gpaSubjectsList = document.getElementById('gpa-subjects-list');
+            addGpaSubjectBtn = document.getElementById('add-gpa-subject-btn');
+            gpaResultEl = document.getElementById('gpa-result');
+            gpaResult4El = document.getElementById('gpa-result-4');
+            taskForm = document.getElementById('task-form');
+            taskInput = document.getElementById('task-input');
+            taskList = document.getElementById('task-list');
+            habitForm = document.getElementById('habit-form');
+            habitInput = document.getElementById('habit-input');
+            habitList = document.getElementById('habit-list');
+            goalForm = document.getElementById('goal-form');
+            goalInput = document.getElementById('goal-input');
+            goalList = document.getElementById('goal-list');
+            projectForm = document.getElementById('project-form');
+            projectInput = document.getElementById('project-input');
+            projectList = document.getElementById('project-list');
+            eventForm = document.getElementById('event-form');
+            eventInput = document.getElementById('event-input');
+            eventDateInput = document.getElementById('event-date-input');
+            eventList = document.getElementById('event-list');
+            timerDisplay = document.getElementById('timer-display');
+            startPauseBtn = document.getElementById('start-pause-btn');
+            resetBtn = document.getElementById('reset-btn');
+            pomodoroBtn = document.getElementById('pomodoro-btn');
+            longFocusBtn = document.getElementById('long-focus-btn');
+            shortBreakBtn = document.getElementById('short-break-btn');
+            longBreakBtn = document.getElementById('long-break-btn');
+            pomodoroSessionsEl = document.getElementById('pomodoro-sessions');
+            notesTextarea = document.getElementById('notes-textarea');
+            resourceForm = document.getElementById('resource-form');
+            resourceList = document.getElementById('resource-list');
+            musicPlayer = document.getElementById('music-player');
+            musicSelection = document.getElementById('music-selection');
+            addMusicForm = document.getElementById('add-music-form');
+            musicNameInput = document.getElementById('music-name-input');
+            musicUrlInput = document.getElementById('music-url-input');
+            menuToggle = document.getElementById('menu-toggle');
+            sidebar = document.getElementById('sidebar');
+            sidebarOverlay = document.getElementById('sidebar-overlay');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeUIElements(); // Assign all UI elements
+            lucide.createIcons(); // Initialize icons
+            
+            // Set initial auth mode AFTER elements are assigned
+            isLoginMode = true; 
+            updateAuthUI();
+
+            // --- EVENT LISTENERS ---
+            authForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                authSubmitBtn.disabled = true;
+                authSubmitBtn.textContent = 'Đang xử lý...';
+
+                if (isLoginMode) {
+                    try {
+                        await signInWithEmailAndPassword(auth, email, password);
+                    } catch (error) {
+                        showAuthError(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential' ? 'Sai email hoặc mật khẩu.' : 'Đã có lỗi xảy ra.');
                     }
-                });
-                updateDashboard();
+                } else {
+                    const name = nameInput.value.trim();
+                    if (!name) {
+                        showAuthError('Vui lòng nhập họ và tên của bạn.');
+                        authSubmitBtn.disabled = false;
+                        updateAuthUI();
+                        return;
+                    }
+                    try {
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const user = userCredential.user;
+                        await updateProfile(user, { displayName: name });
+                        const userDocRef = doc(db, "users", user.uid);
+                        await setDoc(userDocRef, { ...defaultState, displayName: name });
+                    } catch (error) {
+                         console.error("Signup error:", error);
+                        showAuthError(error.code === 'auth/email-already-in-use' ? 'Email này đã được sử dụng.' : 'Mật khẩu phải có ít nhất 6 ký tự hoặc đã có lỗi.');
+                    }
+                }
+                 // Reset button only if error occurred, otherwise onAuthStateChanged handles UI switch
+                 if(!auth.currentUser) { 
+                      authSubmitBtn.disabled = false;
+                      updateAuthUI();
+                 }
+            });
+
+            logoutBtn.addEventListener('click', () => signOut(auth));
+            authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; updateAuthUI(); });
+
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarOverlay.classList.remove('hidden');
+            });
+            function closeSidebar() {
+                 sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
             }
+            sidebarOverlay.addEventListener('click', closeSidebar);
+            navLinks.forEach(link => link.addEventListener('click', () => {
+                if(window.innerWidth < 1024) closeSidebar();
+                const targetId = link.getAttribute('data-target');
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                link.classList.add('active');
+                contentSections.forEach(section => {
+                    section.id === targetId ? section.classList.remove('hidden') : section.classList.add('hidden');
+                });
+            }));
+
+
             timetableBody.addEventListener('click', (e) => {
                 const cell = e.target.closest('td[data-id]');
                 if (cell) {
@@ -642,9 +1292,9 @@
                     modalCellId.value = cellId;
                     const [day, time] = cellId.split('-');
                     document.getElementById('modal-title').textContent = `Lịch học: ${day} lúc ${time}`;
-                    if (schedule[cellId]) {
-                        subjectNameInput.value = schedule[cellId].subject;
-                        subjectRoomInput.value = schedule[cellId].room;
+                    if (state.schedule && state.schedule[cellId]) { // Check if state.schedule exists
+                        subjectNameInput.value = state.schedule[cellId].subject;
+                        subjectRoomInput.value = state.schedule[cellId].room;
                         deleteScheduleBtn.classList.remove('hidden');
                     } else {
                         scheduleForm.reset();
@@ -667,10 +1317,10 @@
                 e.preventDefault();
                 const newTime = newTimeInput.value;
                  if (newTime) {
-                    if (!timeSlots.includes(newTime)) {
-                        timeSlots.push(newTime);
-                        localStorage.setItem('timeSlots', JSON.stringify(timeSlots));
-                        generateTimetable();
+                    if (!state.timeSlots.includes(newTime)) {
+                        if (!state.timeSlots) state.timeSlots = []; // Ensure timeSlots exists
+                        state.timeSlots.push(newTime);
+                        saveData();
                     }
                     addTimeForm.reset();
                     addTimeModal.classList.add('hidden');
@@ -680,11 +1330,9 @@
             cancelDeleteBtn.addEventListener('click', () => { confirmDeleteModal.classList.add('hidden'); confirmDeleteModal.classList.remove('flex'); timeToDeleteHolder = null; });
             confirmDeleteBtn.addEventListener('click', () => {
                 if(timeToDeleteHolder) {
-                    timeSlots = timeSlots.filter(t => t !== timeToDeleteHolder);
-                    Object.keys(schedule).forEach(key => { if (key.endsWith(`-${timeToDeleteHolder}`)) { delete schedule[key]; } });
-                    localStorage.setItem('timeSlots', JSON.stringify(timeSlots));
-                    localStorage.setItem('schedule', JSON.stringify(schedule));
-                    generateTimetable();
+                    state.timeSlots = state.timeSlots.filter(t => t !== timeToDeleteHolder);
+                    Object.keys(state.schedule || {}).forEach(key => { if (key.endsWith(`-${timeToDeleteHolder}`)) { delete state.schedule[key]; } });
+                    saveData();
                     confirmDeleteModal.classList.add('hidden');
                     confirmDeleteModal.classList.remove('flex');
                     timeToDeleteHolder = null;
@@ -697,312 +1345,153 @@
                 const subject = subjectNameInput.value.trim();
                 const room = subjectRoomInput.value.trim();
                 if (cellId && subject) {
-                    schedule[cellId] = { subject, room };
-                    localStorage.setItem('schedule', JSON.stringify(schedule));
-                    renderSchedule();
+                    if (!state.schedule) state.schedule = {}; // Ensure schedule exists
+                    state.schedule[cellId] = { subject, room };
+                    saveData();
                     scheduleModal.classList.add('hidden');
                     scheduleModal.classList.remove('flex');
                 }
             });
             deleteScheduleBtn.addEventListener('click', () => {
                  const cellId = modalCellId.value;
-                 if (cellId && schedule[cellId]) {
-                     delete schedule[cellId];
-                     localStorage.setItem('schedule', JSON.stringify(schedule));
-                     renderSchedule();
+                 if (cellId && state.schedule && state.schedule[cellId]) { // Check if schedule and entry exist
+                     delete state.schedule[cellId];
+                     saveData();
                      scheduleModal.classList.add('hidden');
                      scheduleModal.classList.remove('flex');
                  }
             });
-            
-            // --- GPA CALCULATOR ---
-            const gpaSubjectsList = document.getElementById('gpa-subjects-list');
-            const addGpaSubjectBtn = document.getElementById('add-gpa-subject-btn');
-            const gpaResultEl = document.getElementById('gpa-result');
-            const gpaResult4El = document.getElementById('gpa-result-4');
-
-            function convertToScale4(score10) {
-                if (score10 >= 8.5) return 4.0;
-                if (score10 >= 8.0) return 3.5;
-                if (score10 >= 7.0) return 3.0;
-                if (score10 >= 6.5) return 2.5;
-                if (score10 >= 5.5) return 2.0;
-                if (score10 >= 5.0) return 1.5;
-                if (score10 >= 4.0) return 1.0;
-                return 0.0;
-            }
-
-            function calculateAndDisplayGpa() {
-                let totalPoints = 0;
-                let totalCredits = 0;
-                let totalPoints4 = 0;
-
-                gpaSubjects.forEach(subject => {
-                    const credits = parseFloat(subject.credits) || 0;
-                    const score = parseFloat(subject.score) || 0;
-                    if (credits > 0) {
-                        totalCredits += credits;
-                        totalPoints += score * credits;
-                        totalPoints4 += convertToScale4(score) * credits;
-                    }
-                });
-
-                const gpa10 = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
-                const gpa4 = totalCredits > 0 ? (totalPoints4 / totalCredits) : 0;
-
-                gpaResultEl.textContent = gpa10.toFixed(2);
-                gpaResult4El.textContent = `(Hệ 4: ${gpa4.toFixed(2)})`;
-                gpaDashboardEl.textContent = gpa10 > 0 ? gpa10.toFixed(2) : 'N/A';
-            }
-
-            function renderGpaSubjects() {
-                gpaSubjectsList.innerHTML = '';
-                gpaSubjects.forEach((subject, index) => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="p-2"><input type="text" class="gpa-input" data-index="${index}" data-field="name" value="${subject.name}" placeholder="Tên môn học"></td>
-                        <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="credits" value="${subject.credits}" min="0" placeholder="0"></td>
-                        <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="score" value="${subject.score}" min="0" max="10" step="0.1" placeholder="0.0"></td>
-                        <td class="p-2 text-center">
-                            <button class="delete-gpa-subject-btn text-gray-500 hover:text-red-500" data-index="${index}"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                        </td>
-                    `;
-                    gpaSubjectsList.appendChild(tr);
-                });
-                lucide.createIcons();
-                calculateAndDisplayGpa();
-            }
-
-            addGpaSubjectBtn.addEventListener('click', () => {
-                gpaSubjects.push({ name: '', credits: '', score: '' });
-                renderGpaSubjects();
-            });
-
+            addGpaSubjectBtn.addEventListener('click', () => { if (!state.gpaSubjects) state.gpaSubjects = []; state.gpaSubjects.push({ name: '', credits: '', score: '' }); saveData(); });
             gpaSubjectsList.addEventListener('input', e => {
                 if(e.target.matches('.gpa-input')) {
                     const index = e.target.dataset.index;
                     const field = e.target.dataset.field;
-                    gpaSubjects[index][field] = e.target.value;
-                    localStorage.setItem('gpaSubjects', JSON.stringify(gpaSubjects));
+                    if (!state.gpaSubjects) state.gpaSubjects = [];
+                    state.gpaSubjects[index][field] = e.target.value;
+                    saveData();
                     calculateAndDisplayGpa();
                 }
             });
-
             gpaSubjectsList.addEventListener('click', e => {
                  if(e.target.closest('.delete-gpa-subject-btn')) {
                     const index = e.target.closest('.delete-gpa-subject-btn').dataset.index;
-                    gpaSubjects.splice(index, 1);
-                    localStorage.setItem('gpaSubjects', JSON.stringify(gpaSubjects));
-                    renderGpaSubjects();
+                    if (state.gpaSubjects) state.gpaSubjects.splice(index, 1);
+                    saveData();
                 }
             });
-
-            // --- TASK MANAGER ---
-            const taskForm = document.getElementById('task-form');
-            const taskInput = document.getElementById('task-input');
-            const taskList = document.getElementById('task-list');
-
-            function renderTasks() {
-                taskList.innerHTML = '';
-                if (tasks.length === 0) taskList.innerHTML = `<p class="text-gray-500">Chưa có công việc nào.</p>`;
-                tasks.forEach((task, index) => {
-                    const li = document.createElement('li');
-                    li.className = `task-item flex items-center justify-between p-3 rounded-lg border border-gray-700 hover:bg-gray-800 ${task.completed ? 'completed' : ''}`;
-                    li.innerHTML = `<div class="flex items-center gap-3"><input type="checkbox" data-index="${index}" class="form-checkbox h-5 w-5 rounded bg-gray-700 border-gray-600 text-indigo-600" ${task.completed ? 'checked' : ''}><span class="text-white">${task.text}</span></div><button data-index="${index}" class="delete-task-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`;
-                    taskList.appendChild(li);
-                });
-                lucide.createIcons();
-                updateDashboard();
-            }
             taskForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const text = taskInput.value.trim();
                 if (text) {
-                    tasks.push({ text, completed: false });
-                    localStorage.setItem('tasks', JSON.stringify(tasks));
-                    renderTasks();
+                    if (!state.tasks) state.tasks = [];
+                    state.tasks.push({ text, completed: false });
+                    saveData();
                     taskForm.reset();
                 }
             });
             taskList.addEventListener('click', (e) => {
                 const target = e.target;
-                if (target.matches('input[type="checkbox"]')) {
-                    tasks[target.dataset.index].completed = target.checked;
+                if (target.matches('.custom-checkbox')) {
+                    if(state.tasks) state.tasks[target.dataset.index].completed = target.checked;
+                    saveData();
                 } else if (target.closest('.delete-task-btn')) {
-                    tasks.splice(target.closest('.delete-task-btn').dataset.index, 1);
+                     if(state.tasks) state.tasks.splice(target.closest('.delete-task-btn').dataset.index, 1);
+                    saveData();
                 }
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
             });
-
-            // --- HABIT TRACKER ---
-            const habitForm = document.getElementById('habit-form');
-            const habitInput = document.getElementById('habit-input');
-            const habitList = document.getElementById('habit-list');
-
-            function renderHabits() {
-                habitList.innerHTML = '';
-                if (habits.length === 0) habitList.innerHTML = `<p class="text-gray-500">Hãy bắt đầu xây dựng những thói quen tốt!</p>`;
-                const todayStr = getTodayDateString();
-                habits.forEach((habit, index) => {
-                    const habitEl = document.createElement('div');
-                    habitEl.className = 'flex items-center justify-between p-3 rounded-lg border border-gray-700';
-                    let daysHTML = '';
-                    for (let i = 6; i >= 0; i--) {
-                        const date = new Date();
-                        date.setDate(date.getDate() - i);
-                        const dateStr = date.toISOString().split('T')[0];
-                        const isCompleted = habit.completedDates.includes(dateStr);
-                        const isToday = (dateStr === todayStr);
-                        daysHTML += `<div class="habit-day rounded-full flex items-center justify-center ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" data-habit-index="${index}" title="${date.toLocaleDateString('vi-VN')}"></div>`;
-                    }
-                    habitEl.innerHTML = `<span class="text-white">${habit.name}</span><div class="flex items-center gap-2">${daysHTML}<button data-index="${index}" class="delete-habit-btn text-gray-500 hover:text-red-500 ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
-                    habitList.appendChild(habitEl);
-                });
-                lucide.createIcons();
-                updateDashboard();
-            }
             habitForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = habitInput.value.trim();
                 if (name) {
-                    habits.push({ name: name, completedDates: [] });
-                    localStorage.setItem('habits', JSON.stringify(habits));
-                    renderHabits();
+                    if (!state.habits) state.habits = [];
+                    state.habits.push({ name: name, completedDates: [] });
+                    saveData();
                     habitForm.reset();
                 }
             });
             habitList.addEventListener('click', (e) => {
                 const target = e.target;
                 if (target.closest('.delete-habit-btn')) {
-                    habits.splice(target.closest('.delete-habit-btn').dataset.index, 1);
+                     if(state.habits) state.habits.splice(target.closest('.delete-habit-btn').dataset.index, 1);
+                     saveData();
                 } else if (target.classList.contains('today')) {
                     const dateStr = target.dataset.date;
                     const habitIndex = target.dataset.habitIndex;
-                    const dateIndex = habits[habitIndex].completedDates.indexOf(dateStr);
-                    if (dateIndex > -1) {
-                        habits[habitIndex].completedDates.splice(dateIndex, 1);
-                    } else {
-                        habits[habitIndex].completedDates.push(dateStr);
+                    if(state.habits && state.habits[habitIndex]) {
+                        if (!state.habits[habitIndex].completedDates) state.habits[habitIndex].completedDates = [];
+                        const dateIndex = state.habits[habitIndex].completedDates.indexOf(dateStr);
+                        if (dateIndex > -1) {
+                            state.habits[habitIndex].completedDates.splice(dateIndex, 1);
+                        } else {
+                            state.habits[habitIndex].completedDates.push(dateStr);
+                        }
+                        saveData();
                     }
                 }
-                localStorage.setItem('habits', JSON.stringify(habits));
-                renderHabits();
             });
-            
-            // --- GOAL MANAGER ---
-            const goalForm = document.getElementById('goal-form');
-            const goalInput = document.getElementById('goal-input');
-            const goalList = document.getElementById('goal-list');
-            function renderGoals() {
-                goalList.innerHTML = '';
-                if (goals.length === 0) goalList.innerHTML = `<p class="text-gray-500">Chưa có mục tiêu nào được đặt ra.</p>`;
-                goals.forEach((goal, index) => {
-                    const li = document.createElement('li');
-                    li.className = `goal-item flex items-center justify-between p-3 rounded-lg border border-gray-700 hover:bg-gray-800 ${goal.completed ? 'completed' : ''}`;
-                    li.innerHTML = `<div class="flex items-center gap-3"><input type="checkbox" data-index="${index}" class="form-checkbox h-5 w-5 rounded bg-gray-700 border-gray-600 text-indigo-600" ${goal.completed ? 'checked' : ''}><span class="text-white">${goal.text}</span></div><button data-index="${index}" class="delete-goal-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`;
-                    goalList.appendChild(li);
-                });
-                lucide.createIcons();
-                updateDashboard();
-            }
             goalForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const text = goalInput.value.trim();
                 if (text) {
-                    goals.push({ text, completed: false });
-                    localStorage.setItem('goals', JSON.stringify(goals));
-                    renderGoals();
+                    if (!state.goals) state.goals = [];
+                    state.goals.push({ text, completed: false });
+                    saveData();
                     goalForm.reset();
                 }
             });
             goalList.addEventListener('click', (e) => {
                 const target = e.target;
-                if (target.matches('input[type="checkbox"]')) {
-                    goals[target.dataset.index].completed = target.checked;
+                if (target.matches('.custom-checkbox')) {
+                    if(state.goals) state.goals[target.dataset.index].completed = target.checked;
+                    saveData();
                 } else if (target.closest('.delete-goal-btn')) {
-                    goals.splice(target.closest('.delete-goal-btn').dataset.index, 1);
+                    if(state.goals) state.goals.splice(target.closest('.delete-goal-btn').dataset.index, 1);
+                    saveData();
                 }
-                localStorage.setItem('goals', JSON.stringify(goals));
-                renderGoals();
             });
-
-            // --- PROJECT MANAGER ---
-            const projectForm = document.getElementById('project-form');
-            const projectInput = document.getElementById('project-input');
-            const projectList = document.getElementById('project-list');
-
-            function renderProjects() {
-                projectList.innerHTML = '';
-                if(projects.length === 0) projectList.innerHTML = `<p class="text-gray-500 col-span-full text-center">Chưa có dự án nào. Hãy bắt đầu một dự án mới!</p>`;
-                projects.forEach(project => {
-                    const projectCard = document.createElement('div');
-                    projectCard.className = 'card p-4 rounded-lg flex flex-col gap-4';
-                    const completedTasks = project.tasks.filter(t => t.completed).length;
-                    const progress = project.tasks.length > 0 ? (completedTasks / project.tasks.length) * 100 : 0;
-                    let tasksHTML = '<ul class="space-y-2">';
-                    project.tasks.forEach((task, taskIndex) => {
-                         tasksHTML += `<li class="project-task flex items-center justify-between text-sm ${task.completed ? 'completed' : ''}"><div class="flex items-center gap-2"><input type="checkbox" data-project-id="${project.id}" data-task-index="${taskIndex}" class="form-checkbox h-4 w-4 rounded bg-gray-700 border-gray-600 text-indigo-600" ${task.completed ? 'checked' : ''}><span>${task.text}</span></div><button data-project-id="${project.id}" data-task-index="${taskIndex}" class="delete-project-task-btn text-gray-600 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></li>`;
-                    });
-                    tasksHTML += '</ul>';
-                    projectCard.innerHTML = `<div><div class="flex justify-between items-start"><h3 class="font-bold text-white text-lg">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-gray-400"><div class="progress-bar w-full h-2 rounded-full"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${completedTasks}/${project.tasks.length}</span></div></div><div>${tasksHTML}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 text-sm" required><button type="submit" class="bg-indigo-600/50 text-white text-xs font-semibold px-3 py-1 rounded-lg hover:bg-indigo-600/80">+</button></form>`;
-                    projectList.appendChild(projectCard);
-                });
-                lucide.createIcons();
-                updateDashboard();
-            }
-
             projectForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = projectInput.value.trim();
                 if (name) {
-                    projects.push({ id: Date.now(), name: name, tasks: [] });
-                    localStorage.setItem('projects', JSON.stringify(projects));
-                    renderProjects();
+                    if (!state.projects) state.projects = [];
+                    state.projects.push({ id: Date.now(), name: name, tasks: [] });
+                    saveData();
                     projectForm.reset();
                 }
             });
-
             projectList.addEventListener('click', (e) => {
                 const target = e.target;
                 let dataChanged = false;
-
                 const deleteBtn = target.closest('.delete-project-btn');
                 if (deleteBtn) {
                     const projectId = parseInt(deleteBtn.dataset.projectId, 10);
-                    projects = projects.filter(p => p.id !== projectId);
+                    state.projects = (state.projects || []).filter(p => p.id !== projectId);
                     dataChanged = true;
                 }
-
-                const checkbox = target.closest('.project-task input[type="checkbox"]');
+                const checkbox = target.closest('.project-task .custom-checkbox');
                 if (checkbox) {
                     const projectId = parseInt(checkbox.dataset.projectId, 10);
                     const taskIndex = parseInt(checkbox.dataset.taskIndex, 10);
-                    const project = projects.find(p => p.id === projectId);
+                    const project = (state.projects || []).find(p => p.id === projectId);
                     if (project) {
+                        if (!project.tasks) project.tasks = [];
                         project.tasks[taskIndex].completed = checkbox.checked;
                         dataChanged = true;
                     }
                 }
-                
                 const deleteTaskBtn = target.closest('.delete-project-task-btn');
                 if (deleteTaskBtn) {
                     const projectId = parseInt(deleteTaskBtn.dataset.projectId, 10);
                     const taskIndex = parseInt(deleteTaskBtn.dataset.taskIndex, 10);
-                    const project = projects.find(p => p.id === projectId);
-                    if (project) {
+                    const project = (state.projects || []).find(p => p.id === projectId);
+                    if (project && project.tasks) {
                         project.tasks.splice(taskIndex, 1);
                         dataChanged = true;
                     }
                 }
-                
-                if (dataChanged) {
-                    localStorage.setItem('projects', JSON.stringify(projects));
-                    renderProjects();
-                }
+                if (dataChanged) { saveData(); }
             });
-            
-             projectList.addEventListener('submit', (e) => {
+            projectList.addEventListener('submit', (e) => {
                 e.preventDefault();
                 if(e.target.classList.contains('add-project-task-form')) {
                     const form = e.target;
@@ -1010,106 +1499,34 @@
                     const text = input.value.trim();
                     if(text) {
                         const projectId = parseInt(input.dataset.projectId, 10);
-                        const project = projects.find(p => p.id === projectId);
+                        const project = (state.projects || []).find(p => p.id === projectId);
                         if (project) {
+                            if (!project.tasks) project.tasks = [];
                             project.tasks.push({ text: text, completed: false });
-                            localStorage.setItem('projects', JSON.stringify(projects));
-                            renderProjects();
+                            saveData();
                             form.reset();
                         }
                     }
                 }
             });
-
-             // --- EVENT COUNTDOWN ---
-            const eventForm = document.getElementById('event-form');
-            const eventInput = document.getElementById('event-input');
-            const eventDateInput = document.getElementById('event-date-input');
-            const eventList = document.getElementById('event-list');
-
-            function renderEvents() {
-                eventList.innerHTML = '';
-                if(events.length === 0) eventList.innerHTML = `<p class="text-gray-500 text-center">Chưa có sự kiện nào được thêm.</p>`;
-                events.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(event => {
-                    const eventEl = document.createElement('div');
-                    eventEl.className = 'flex items-center justify-between p-4 rounded-lg border border-gray-700';
-                    eventEl.innerHTML = `<div><p class="font-semibold text-white">${event.name}</p><p class="text-sm text-gray-400">${new Date(event.date).toLocaleString('vi-VN')}</p></div><div class="flex items-center gap-4"><div id="countdown-${event.id}" class="text-lg font-semibold text-indigo-400"></div><button data-event-id="${event.id}" class="delete-event-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
-                    eventList.appendChild(eventEl);
-                });
-                lucide.createIcons();
-                updateDashboard();
-            }
             eventForm.addEventListener('submit', e => {
                 e.preventDefault();
                 const name = eventInput.value.trim();
                 const date = eventDateInput.value;
                 if(name && date) {
-                    events.push({ id: Date.now(), name, date });
-                    localStorage.setItem('events', JSON.stringify(events));
-                    renderEvents();
+                     if (!state.events) state.events = [];
+                    state.events.push({ id: Date.now(), name, date });
+                    saveData();
                     eventForm.reset();
                 }
             });
             eventList.addEventListener('click', e => {
                 if(e.target.closest('.delete-event-btn')) {
                     const eventId = parseInt(e.target.closest('.delete-event-btn').dataset.eventId);
-                    events = events.filter(ev => ev.id !== eventId);
-                    localStorage.setItem('events', JSON.stringify(events));
-                    renderEvents();
+                    if(state.events) state.events = state.events.filter(ev => ev.id !== eventId);
+                    saveData();
                 }
             });
-            function updateCountdowns() {
-                events.forEach(event => {
-                    const countdownEl = document.getElementById(`countdown-${event.id}`);
-                    if (countdownEl) {
-                        const diff = new Date(event.date) - new Date();
-                        if (diff > 0) {
-                            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                            countdownEl.textContent = `${days}d ${hours}h ${minutes}m`;
-                        } else {
-                            countdownEl.textContent = "Đã qua";
-                        }
-                    }
-                });
-                updateUpcomingEventOnDashboard();
-            }
-            function updateUpcomingEventOnDashboard() {
-                const now = new Date();
-                const upcomingEvents = events.filter(e => new Date(e.date) > now).sort((a, b) => new Date(a.date) - new Date(b.date));
-                if (upcomingEvents.length > 0) {
-                    const nextEvent = upcomingEvents[0];
-                    const diff = new Date(nextEvent.date) - now;
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                    upcomingEventDashboard.innerHTML = `<p class="text-sm text-center text-indigo-300 mb-2">SỰ KIỆN SẮP TỚI</p><h3 class="text-xl font-bold text-center text-white mb-4">${nextEvent.name}</h3><div class="flex justify-center items-center gap-2 md:gap-4 text-center"><div><span class="countdown-digits">${String(days).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">NGÀY</span></div><div><span class="countdown-digits">${String(hours).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">GIỜ</span></div><div><span class="countdown-digits">${String(minutes).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">PHÚT</span></div><div><span class="countdown-digits">${String(seconds).padStart(2, '0')}</span><span class="text-xs text-gray-400 mt-1 block">GIÂY</span></div></div>`;
-                } else {
-                    upcomingEventDashboard.innerHTML = `<p class="text-center text-gray-400">Không có sự kiện nào sắp tới. Hãy thêm lịch thi hoặc hạn chót mới!</p>`;
-                }
-            }
-
-            // --- POMODORO TIMER ---
-            const timerDisplay = document.getElementById('timer-display');
-            const startPauseBtn = document.getElementById('start-pause-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const pomodoroBtn = document.getElementById('pomodoro-btn');
-            const longFocusBtn = document.getElementById('long-focus-btn');
-            const shortBreakBtn = document.getElementById('short-break-btn');
-            const longBreakBtn = document.getElementById('long-break-btn');
-            const pomodoroSessionsEl = document.getElementById('pomodoro-sessions');
-            let timer;
-            let timeInSeconds = 25 * 60;
-            let isRunning = false;
-            let currentMode = 'pomodoro';
-            function updateTimerDisplay() {
-                const minutes = Math.floor(timeInSeconds / 60);
-                const seconds = timeInSeconds % 60;
-                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                pomodoroSessionsEl.textContent = pomodoroSessions;
-            }
             function startTimer() {
                 isRunning = true;
                 startPauseBtn.textContent = 'Tạm dừng';
@@ -1120,9 +1537,10 @@
                         clearInterval(timer);
                         isRunning = false;
                         if (currentMode === 'pomodoro' || currentMode === 'long-focus') {
-                            pomodoroSessions++;
-                            localStorage.setItem('pomodoroSessions', pomodoroSessions);
+                            state.pomodoroSessions = (state.pomodoroSessions || 0) + 1;
+                            saveData();
                         }
+                        // Add notification or sound here if desired
                     }
                 }, 1000);
             }
@@ -1136,71 +1554,94 @@
             }
             startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
             resetBtn.addEventListener('click', resetTimer);
-            pomodoroBtn.addEventListener('click', () => switchMode('pomodoro', 25));
-            longFocusBtn.addEventListener('click', () => switchMode('long-focus', 50));
-            shortBreakBtn.addEventListener('click', () => switchMode('short', 5));
-            longBreakBtn.addEventListener('click', () => switchMode('long', 15));
             function switchMode(mode, minutes) {
                 currentMode = mode;
                 pauseTimer();
                 timeInSeconds = minutes * 60;
                 updateTimerDisplay();
-                [pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn].forEach(btn => btn.classList.replace('bg-red-600', 'bg-gray-600'));
+                [pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn].forEach(btn => btn.classList.replace('bg-indigo-600', 'bg-slate-600'));
                 const btnMap = {pomodoro: pomodoroBtn, 'long-focus': longFocusBtn, short: shortBreakBtn, long: longBreakBtn};
-                if(btnMap[mode]) btnMap[mode].classList.replace('bg-gray-600', 'bg-red-600');
+                if(btnMap[mode]) btnMap[mode].classList.replace('bg-slate-600', 'bg-indigo-600');
             }
-
-            // --- NOTES ---
-            const notesTextarea = document.getElementById('notes-textarea');
-            notesTextarea.value = notes;
-            notesTextarea.addEventListener('input', () => { localStorage.setItem('notes', notesTextarea.value); });
-            
-            // --- RESOURCES ---
-            const resourceForm = document.getElementById('resource-form');
-            const resourceList = document.getElementById('resource-list');
-            function renderResources() {
-                resourceList.innerHTML = '';
-                if (resources.length === 0) resourceList.innerHTML = `<p class="text-gray-500">Chưa có tài nguyên nào.</p>`;
-                resources.forEach((resource, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'flex items-center justify-between p-3 rounded-lg border border-gray-700';
-                    li.innerHTML = `<a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-indigo-400 hover:underline"><i data-lucide="link-2" class="w-5 h-5"></i><span>${resource.name}</span></a><button data-index="${index}" class="delete-resource-btn text-gray-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`;
-                    resourceList.appendChild(li);
-                });
-                lucide.createIcons();
-            }
+            pomodoroBtn.addEventListener('click', () => switchMode('pomodoro', 25));
+            longFocusBtn.addEventListener('click', () => switchMode('long-focus', 50));
+            shortBreakBtn.addEventListener('click', () => switchMode('short', 5));
+            longBreakBtn.addEventListener('click', () => switchMode('long', 15));
+            notesTextarea.addEventListener('input', () => { 
+                state.notes = notesTextarea.value;
+                saveData(); 
+            });
             resourceForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = document.getElementById('resource-name-input').value.trim();
                 const url = document.getElementById('resource-url-input').value.trim();
                 if (name && url) {
-                    resources.push({name, url});
-                    localStorage.setItem('resources', JSON.stringify(resources));
-                    renderResources();
+                    if (!state.resources) state.resources = [];
+                    state.resources.push({name, url});
+                    saveData();
                     e.target.reset();
                 }
             });
-             resourceList.addEventListener('click', (e) => {
+            resourceList.addEventListener('click', (e) => {
                 if (e.target.closest('.delete-resource-btn')) {
                     const index = e.target.closest('.delete-resource-btn').dataset.index;
-                    resources.splice(index, 1);
-                    localStorage.setItem('resources', JSON.stringify(resources));
-                    renderResources();
+                    if (state.resources) state.resources.splice(index, 1);
+                    saveData();
                 }
             });
+            musicSelection.addEventListener('click', e => {
+                const deleteBtn = e.target.closest('.delete-music-btn');
+                if (deleteBtn) {
+                    e.stopPropagation();
+                    const videoIdToDelete = deleteBtn.dataset.videoId;
+                    if(state.userMusic) state.userMusic = state.userMusic.filter(music => music.videoId !== videoIdToDelete);
+                    if (state.currentMusicId === videoIdToDelete) {
+                        state.currentMusicId = 'jfKfPfyJRdk';
+                    }
+                    saveData();
+                    return;
+                }
+                const optionBtn = e.target.closest('.music-option-btn');
+                if (optionBtn) {
+                    state.currentMusicId = optionBtn.dataset.videoId;
+                    musicPlayer.src = `https://www.youtube.com/embed/${state.currentMusicId}?autoplay=1`;
+                    saveData();
+                }
+            });
+            addMusicForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const name = musicNameInput.value.trim();
+                const url = musicUrlInput.value.trim();
+                const videoId = getYoutubeVideoId(url);
+                const defaultMusicOptions = [ { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk'} ];
 
-            // --- Initial Render ---
-            renderTasks();
-            renderGoals();
-            renderHabits();
-            renderResources();
-            renderProjects();
-            renderEvents();
-            renderGpaSubjects();
-            generateTimetable();
-            updateTimerDisplay();
-            updateDashboard();
+
+                if (name && videoId) {
+                    const allMusic = [...defaultMusicOptions, ...(state.userMusic || [])];
+                    if (allMusic.some(option => option.videoId === videoId)) {
+                        musicUrlInput.value = "Link này đã tồn tại!";
+                        setTimeout(() => { addMusicForm.reset(); }, 2000);
+                        return;
+                    }
+                    if (!state.userMusic) state.userMusic = [];
+                    state.userMusic.push({ name, videoId, icon: 'list-music', isCustom: true });
+                    saveData();
+                    addMusicForm.reset();
+                } else {
+                    musicUrlInput.classList.add('border-red-500', 'placeholder-red-400');
+                    musicUrlInput.placeholder = "Link YouTube không hợp lệ!";
+                    setTimeout(() => {
+                        musicUrlInput.classList.remove('border-red-500', 'placeholder-red-400');
+                        musicUrlInput.placeholder = "Dán link YouTube vào đây";
+                    }, 2500);
+                }
+            });
+            
+            // --- INITIAL SETUP ---
             setInterval(updateCountdowns, 1000);
+            
+            // Initial Auth UI setup needs to happen here as well
+            updateAuthUI(); 
         });
     </script>
 </body>
