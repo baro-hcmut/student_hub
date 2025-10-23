@@ -16,6 +16,7 @@
             color: #cbd5e1; /* slate-300 */
             background: linear-gradient(to bottom right, #1e293b, #0f172a); /* Nền gradient nhẹ */
             overflow-x: hidden; /* Ngăn cuộn ngang không mong muốn */
+            min-height: 100vh; /* Đảm bảo gradient full height */
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1e293b; border-radius: 3px;} /* slate-800 */
@@ -35,7 +36,7 @@
             border-color: #6366f1; /* indigo-500 */
             box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); /* Shadow sáng hơn khi hover */
         }
-        .nav-link { border-radius: 0.5rem; /* Rounded corners for nav links */ }
+        .nav-link { border-radius: 0.5rem; /* Rounded corners for nav links */ transition: background-color 0.15s, color 0.15s; }
         .nav-link.active {
             background-color: #4338ca; /* indigo-700 */
             color: #fff;
@@ -52,7 +53,7 @@
             background-color: #334155; border: 1px solid #475569;
             width: 1.25rem; height: 1.25rem; border-radius: 0.375rem;
             cursor: pointer; display: inline-block; position: relative;
-            transition: all 0.2s; flex-shrink: 0;
+            transition: all 0.15s ease-in-out; flex-shrink: 0;
         }
         .custom-checkbox:checked { background-color: #6366f1; border-color: #6366f1; }
         .custom-checkbox:checked::after {
@@ -68,7 +69,7 @@
         }
 
         /* --- Các thành phần khác --- */
-        .timetable-table td { height: 70px; min-width: 90px; cursor: pointer; transition: background-color: 0.2s; border-color: #334155;}
+        .timetable-table td { height: 70px; min-width: 90px; cursor: pointer; transition: background-color: 0.15s ease-in-out; border-color: #334155;}
         .timetable-table th { border-color: #475569;}
         .timetable-table .time-slot-cell { cursor: default; }
         .timetable-table td:not(.time-slot-cell):hover { background-color: #334155; }
@@ -77,12 +78,12 @@
         .habit-day { width: 30px; height: 30px; border: 2px solid #475569; }
         .habit-day.completed { background-color: #22c55e; border-color: #16a34a; }
         .habit-day.today { border-color: #3b82f6; cursor: pointer; }
-        .progress-bar { background-color: #334155; }
+        .progress-bar { background-color: #334155; height: 0.6rem; } /* Tăng chiều cao nhẹ */
         .progress-bar-inner { background-color: #6366f1; }
         .countdown-digits { background-color: #0f172a; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 2rem; line-height: 2.25rem; font-weight: 700; color: white; }
         .gpa-input, .auth-input, .app-input {
             background-color: #334155; border: 1px solid #475569; color: #cbd5e1; border-radius: 0.5rem; padding: 0.75rem 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
         .auth-input:focus, .app-input:focus {
             outline: none; border-color: #6366f1;
@@ -90,9 +91,10 @@
         }
         .btn {
             padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-semibold;
-            transition: all 0.15s ease-in-out; /* Nhanh hơn */
+            transition: all 0.1s ease-in-out; /* Nhanh nhất */
             transform: scale(1);
             display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            cursor: pointer;
         }
         .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
         .btn-primary {
@@ -100,13 +102,13 @@
             box-shadow: 0 4px 10px -4px rgba(99, 102, 241, 0.5);
         }
         .btn-primary:hover { background-color: #4f46e5; transform: translateY(-1px); }
-        .btn-primary:active { transform: scale(0.98); } /* Hiệu ứng nhấn nút */
+        .btn-primary:active { transform: scale(0.97); box-shadow: 0 1px 3px -2px rgba(99, 102, 241, 0.7); } /* Hiệu ứng nhấn nút tinh tế hơn */
         .btn-secondary { background-color: #334155; color: #cbd5e1; }
         .btn-secondary:hover { background-color: #475569; }
-        .btn-secondary:active { transform: scale(0.98); }
+        .btn-secondary:active { transform: scale(0.97); }
         .btn-danger { background-color: #ef4444; color: white; } /* red-500 */
         .btn-danger:hover { background-color: #dc2626; } /* red-600 */
-        .btn-danger:active { transform: scale(0.98); }
+        .btn-danger:active { transform: scale(0.97); }
         .icon-btn { padding: 0.5rem; } /* Nút chỉ chứa icon */
         .icon-btn i { width: 1.125rem; height: 1.125rem; }
         
@@ -125,10 +127,11 @@
              padding: 0.75rem; /* p-3 */
              border-radius: 0.5rem; /* rounded-lg */
              border: 1px solid #334155; /* border-slate-700 */
-             transition: background-color 0.2s;
+             transition: background-color 0.15s ease-in-out; /* Nhanh hơn */
+             min-height: 54px; /* Đảm bảo chiều cao tối thiểu */
         }
          .list-item:hover {
-              background-color: rgba(51, 65, 85, 0.5); /* bg-slate-800/50 */
+              background-color: rgba(51, 65, 85, 0.4); /* bg-slate-800/40 */
          }
          .list-item-content {
              display: flex;
@@ -139,10 +142,52 @@
          .list-item-text {
              color: #f1f5f9; /* text-white */
              word-break: break-word; /* Wrap text */
+             line-height: 1.5; /* Cải thiện đọc */
          }
          .list-item-actions {
              flex-shrink: 0;
-             margin-left: 0.5rem; /* ml-2 */
+             margin-left: 0.75rem; /* ml-3 */
+         }
+         .delete-btn { /* Style chung cho nút xóa */
+            color: #64748b; /* slate-500 */
+            transition: color 0.15s ease-in-out;
+            background: none; /* Ensure no background interference */
+            border: none;
+            padding: 0.25rem; /* Add some padding for easier clicking */
+         }
+         .delete-btn:hover {
+            color: #ef4444; /* red-500 */
+         }
+         
+         /* Cải thiện dashboard cards */
+         .summary-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px; /* Chiều cao cố định */
+         }
+         .summary-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align icon top */
+         }
+         .summary-card-title {
+            color: #94a3b8; /* slate-400 */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500;
+            line-height: 1.25; /* leading-tight */
+         }
+         .summary-card-value {
+             font-size: 1.875rem; /* text-3xl */
+             font-weight: 700;
+             color: #f1f5f9; /* slate-100 */
+             margin-top: 0.5rem; /* mt-2 */
+             line-height: 1; /* Ensure tight line height for numbers */
+         }
+         .summary-card-icon {
+            padding: 0.5rem; /* p-2 */
+            border-radius: 0.5rem; /* rounded-lg */
+            flex-shrink: 0;
          }
     </style>
 </head>
@@ -179,7 +224,7 @@
     <!-- Main Application -->
     <div id="app-container" class="hidden">
         <!-- Overlay for mobile sidebar -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden"></div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden transition-opacity duration-200 opacity-0"></div>
         
         <div class="relative min-h-screen lg:flex">
             <!-- Mobile Menu Button -->
@@ -188,14 +233,14 @@
             </button>
             
             <!-- Sidebar -->
-            <aside id="sidebar" class="sidebar w-64 flex-shrink-0 flex flex-col p-4 border-r fixed inset-y-0 left-0 z-40 transform -translate-x-full transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0"> <!-- Nhanh hơn -->
+            <aside id="sidebar" class="sidebar w-64 flex-shrink-0 flex flex-col p-4 border-r fixed inset-y-0 left-0 z-40 transform -translate-x-full transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0"> 
                 <div class="flex items-center gap-3 mb-8">
                     <div class="bg-indigo-600 p-2 rounded-lg">
                         <i data-lucide="brain-circuit" class="text-white"></i>
                     </div>
                     <h1 class="text-xl font-bold text-white">Student Hub</h1>
                 </div>
-                <nav class="flex flex-col gap-1 flex-grow"> <!-- Giảm gap giữa các link nav -->
+                <nav class="flex flex-col gap-1 flex-grow"> 
                     <a href="#" data-target="dashboard" class="nav-link active flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
                         <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Bảng điều khiển
                     </a>
@@ -250,8 +295,8 @@
             </aside>
 
             <!-- Main Content -->
-            <main class="main-content flex-1 p-6 sm:p-8 lg:p-10 overflow-y-auto lg:ml-64"> <!-- Adjusted padding -->
-                <div class="pt-16 lg:pt-0"> <!-- Container chung cho nội dung -->
+            <main id="main-content" class="main-content flex-1 p-6 sm:p-8 lg:p-10 overflow-y-auto lg:ml-64"> 
+                <div class="pt-16 lg:pt-0 max-w-none"> 
                     <!-- Dashboard View -->
                     <section id="dashboard" class="content-section">
                         <div class="mb-8">
@@ -260,56 +305,49 @@
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            <!-- Upcoming Event Countdown -->
                             <div class="card p-6 md:col-span-2 lg:col-span-4 xl:col-span-5 bg-gradient-to-br from-indigo-700/60 to-indigo-900/40 border-indigo-700/80">
-                                <div id="upcoming-event-dashboard">
-                                <!-- JS will populate this -->
-                                </div>
+                                <div id="upcoming-event-dashboard"></div>
                             </div>
                             
-                            <!-- Summary Cards -->
-                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
-                                <div class="flex justify-between items-start">
-                                    <p class="text-slate-400 text-sm font-medium leading-tight">GPA học kỳ</p>
-                                    <div class="bg-teal-600/20 text-teal-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="graduation-cap" class="w-5 h-5"></i></div>
+                            <div class="card p-4 summary-card">
+                                <div class="summary-card-header">
+                                    <p class="summary-card-title">GPA học kỳ</p>
+                                    <div class="summary-card-icon bg-teal-600/20 text-teal-400"><i data-lucide="graduation-cap" class="w-5 h-5"></i></div>
                                 </div>
-                                <p class="text-3xl font-bold text-white mt-2" id="gpa-dashboard">N/A</p>
+                                <p class="summary-card-value" id="gpa-dashboard">N/A</p>
                             </div>
-                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
-                                 <div class="flex justify-between items-start">
-                                    <p class="text-slate-400 text-sm font-medium leading-tight">Công việc cần làm</p>
-                                    <div class="bg-blue-600/20 text-blue-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="list-checks" class="w-5 h-5"></i></div>
+                             <div class="card p-4 summary-card">
+                                 <div class="summary-card-header">
+                                    <p class="summary-card-title">Công việc cần làm</p>
+                                    <div class="summary-card-icon bg-blue-600/20 text-blue-400"><i data-lucide="list-checks" class="w-5 h-5"></i></div>
                                 </div>
-                                <p class="text-3xl font-bold text-white mt-2" id="task-count">0</p>
+                                <p class="summary-card-value" id="task-count">0</p>
                             </div>
-                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
-                                 <div class="flex justify-between items-start">
-                                    <p class="text-slate-400 text-sm font-medium leading-tight">Thói quen hôm nay</p>
-                                    <div class="bg-green-600/20 text-green-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="repeat" class="w-5 h-5"></i></div>
+                             <div class="card p-4 summary-card">
+                                 <div class="summary-card-header">
+                                    <p class="summary-card-title">Thói quen hôm nay</p>
+                                    <div class="summary-card-icon bg-green-600/20 text-green-400"><i data-lucide="repeat" class="w-5 h-5"></i></div>
                                 </div>
-                                <p class="text-3xl font-bold text-white mt-2" id="habit-count">0/0</p>
+                                <p class="summary-card-value" id="habit-count">0/0</p>
                             </div>
-                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
-                                 <div class="flex justify-between items-start">
-                                    <p class="text-slate-400 text-sm font-medium leading-tight">Dự án đang làm</p>
-                                    <div class="bg-orange-600/20 text-orange-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="kanban-square" class="w-5 h-5"></i></div>
+                             <div class="card p-4 summary-card">
+                                 <div class="summary-card-header">
+                                    <p class="summary-card-title">Dự án đang làm</p>
+                                    <div class="summary-card-icon bg-orange-600/20 text-orange-400"><i data-lucide="kanban-square" class="w-5 h-5"></i></div>
                                 </div>
-                                <p class="text-3xl font-bold text-white mt-2" id="project-count">0</p>
+                                <p class="summary-card-value" id="project-count">0</p>
                             </div>
-                            <div class="card p-4 flex flex-col justify-between min-h-[110px]">
-                                 <div class="flex justify-between items-start">
-                                    <p class="text-slate-400 text-sm font-medium leading-tight">Mục tiêu đang theo</p>
-                                    <div class="bg-purple-600/20 text-purple-400 p-2 rounded-lg flex-shrink-0"><i data-lucide="target" class="w-5 h-5"></i></div>
+                             <div class="card p-4 summary-card">
+                                 <div class="summary-card-header">
+                                    <p class="summary-card-title">Mục tiêu đang theo</p>
+                                    <div class="summary-card-icon bg-purple-600/20 text-purple-400"><i data-lucide="target" class="w-5 h-5"></i></div>
                                 </div>
-                                <p class="text-3xl font-bold text-white mt-2" id="goal-count">0</p>
+                                <p class="summary-card-value" id="goal-count">0</p>
                             </div>
                             
-                            <!-- Bố cục cân đối hơn cho phần dưới -->
                             <div class="card p-6 md:col-span-2 lg:col-span-2 xl:col-span-3">
                                 <h3 class="font-semibold text-white mb-4 text-lg">Lớp học hôm nay</h3>
-                                <ul id="today-classes-list" class="space-y-3">
-                                <!-- JS will populate this -->
-                                </ul>
+                                <ul id="today-classes-list" class="space-y-3"></ul>
                             </div>
                             
                             <div class="card p-6 flex flex-col justify-center items-center text-center lg:col-span-1 xl:col-span-1">
@@ -326,7 +364,6 @@
                         </div>
                     </section>
                     
-                    <!-- Timetable View -->
                     <section id="timetable" class="content-section hidden">
                         <h2 class="section-title">Thời khóa biểu</h2>
                         <div class="card p-4 overflow-x-auto">
@@ -357,7 +394,6 @@
                         </div>
                     </section>
                     
-                    <!-- GPA Calculator View -->
                     <section id="gpa-calculator" class="content-section hidden">
                         <h2 class="section-title">Máy tính GPA</h2>
                         <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
@@ -379,7 +415,7 @@
                                     <i data-lucide="plus" class="w-5 h-5"></i> Thêm môn học
                                 </button>
                             </div>
-                            <div class="card p-6 lg:w-1/3 flex-shrink-0 flex flex-col justify-center items-center text-center lg:sticky lg:top-10"> <!-- Adjusted top -->
+                            <div class="card p-6 lg:w-1/3 flex-shrink-0 flex flex-col justify-center items-center text-center lg:sticky lg:top-10"> 
                                 <div class="bg-teal-600/20 text-teal-400 p-3 rounded-lg mb-3"><i data-lucide="graduation-cap"></i></div>
                                 <p class="text-slate-400 text-sm mb-1">Điểm trung bình học kỳ</p>
                                 <p id="gpa-result" class="text-5xl font-bold text-white">0.00</p>
@@ -388,7 +424,6 @@
                         </div>
                     </section>
 
-                    <!-- Events/Countdown View -->
                     <section id="events" class="content-section hidden">
                         <h2 class="section-title">Lịch thi & Hạn chót</h2>
                         <div class="card p-6">
@@ -407,7 +442,6 @@
                         </div>
                     </section>
 
-                    <!-- Projects View -->
                     <section id="projects" class="content-section hidden">
                         <h2 class="section-title">Dự án & Bài tập lớn</h2>
                         <div class="card p-6 mb-6">
@@ -419,7 +453,6 @@
                         <div id="project-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                     </section>
 
-                    <!-- Task Manager View -->
                     <section id="tasks" class="content-section hidden">
                         <h2 class="section-title">Công việc hàng ngày</h2>
                         <div class="card p-6">
@@ -431,7 +464,6 @@
                         </div>
                     </section>
 
-                    <!-- Habit Tracker View -->
                     <section id="habits" class="content-section hidden">
                         <h2 class="section-title">Theo dõi Thói quen</h2>
                         <div class="card p-6">
@@ -443,7 +475,6 @@
                         </div>
                     </section>
                     
-                    <!-- Goal Manager View -->
                     <section id="goals" class="content-section hidden">
                         <h2 class="section-title">Mục tiêu học tập</h2>
                         <div class="card p-6">
@@ -455,7 +486,6 @@
                         </div>
                     </section>
 
-                    <!-- Pomodoro Timer View -->
                     <section id="pomodoro" class="content-section hidden">
                         <h2 class="section-title">Hẹn giờ Pomodoro</h2>
                         <div class="card p-8 flex flex-col items-center max-w-md mx-auto">
@@ -475,7 +505,6 @@
                         </div>
                     </section>
 
-                    <!-- Quick Notes View -->
                     <section id="notes" class="content-section hidden">
                         <h2 class="section-title">Ghi chú nhanh</h2>
                         <div class="card p-2 h-[60vh] md:h-[70vh]">
@@ -483,7 +512,6 @@
                         </div>
                     </section>
 
-                    <!-- Resources View -->
                     <section id="resources" class="content-section hidden">
                         <h2 class="section-title">Tài nguyên học tập</h2>
                         <div class="card p-6">
@@ -496,18 +524,15 @@
                         </div>
                     </section>
                     
-                    <!-- Music View -->
                     <section id="music" class="content-section hidden">
                         <h2 class="section-title">Nhạc tập trung</h2>
                         <p class="text-slate-400 mb-6">Chọn một giai điệu để giúp bạn tập trung vào công việc.</p>
                         <div class="flex flex-col lg:flex-row gap-8">
-                            <!-- Main Video Player -->
                             <div class="flex-grow lg:w-2/3">
                                 <div class="aspect-video">
                                 <iframe id="music-player" class="rounded-xl shadow-lg w-full h-full" src="https://www.youtube.com/embed/jfKfPfyJRdk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                                 </div>
                             </div>
-                            <!-- Music Selection List & Form -->
                             <div class="lg:w-1/3 flex-shrink-0">
                                 <div id="music-selection" class="flex flex-col gap-3"></div>
                                 <div class="card p-4 mt-4">
@@ -584,6 +609,7 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
+        // IMPORTANT: Replace with your actual Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyAjV_5NxKcUr4sI_8hdOapmJNMtpaJqrBU",
             authDomain: "student-hub-f41cd.firebaseapp.com",
@@ -594,1055 +620,1262 @@
             measurementId: "G-ENYF7MZGL0"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Initialize Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+             console.log("Firebase Initialized Successfully");
 
-        let state = {};
-        let dataUnsubscribe = null;
-        let currentUserId = null;
+             // Global state and variables (moved outside DOMContentLoaded)
+            let state = {};
+            let dataUnsubscribe = null;
+            let currentUserId = null;
 
-        const defaultState = {
-            displayName: "Sinh Viên",
-            tasks: [],
-            goals: [],
-            habits: [],
-            resources: [],
-            projects: [],
-            events: [],
-            gpaSubjects: [],
-            userMusic: [],
-            currentMusicId: 'jfKfPfyJRdk',
-            pomodoroSessions: 0,
-            notes: '',
-            schedule: {},
-            timeSlots: ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
-        };
-
-        // --- UI Element declarations ---
-        let authScreen, appContainer, logoutBtn, authForm, emailInput, passwordInput, nameInput, authError, userEmailEl, userDisplayNameEl, welcomeHeading;
-        let isLoginMode = true; // Default to login mode
-        let nameFieldContainer, authSubmitBtn, authToggleText, authToggleLink, authTitle;
-        let currentDateEl, taskCountEl, habitCountEl, projectCountEl, goalCountEl, gpaDashboardEl, todayClassesList, upcomingEventDashboard;
-        let navLinks, contentSections;
-        let timetableBody, scheduleModal, closeScheduleModalBtn, scheduleForm, modalCellId, subjectNameInput, subjectRoomInput, deleteScheduleBtn, addTimeSlotBtn, addTimeModal, addTimeForm, newTimeInput, closeAddTimeModalBtn, confirmDeleteModal, confirmDeleteMessage, confirmDeleteBtn, cancelDeleteBtn;
-        let gpaSubjectsList, addGpaSubjectBtn, gpaResultEl, gpaResult4El;
-        let taskForm, taskInput, taskList;
-        let habitForm, habitInput, habitList;
-        let goalForm, goalInput, goalList;
-        let projectForm, projectInput, projectList;
-        let eventForm, eventInput, eventDateInput, eventList;
-        let timerDisplay, startPauseBtn, resetBtn, pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn, pomodoroSessionsEl;
-        let notesTextarea;
-        let resourceForm, resourceList;
-        let musicPlayer, musicSelection, addMusicForm, musicNameInput, musicUrlInput;
-        let timeToDeleteHolder = null;
-        let menuToggle, sidebar, sidebarOverlay;
-
-
-        function updateAuthUI() {
-            if (!authError) return;
-            authError.classList.add('hidden');
-            if (isLoginMode) {
-                authTitle.textContent = 'Đăng nhập vào Student Hub';
-                nameFieldContainer.classList.add('hidden');
-                authSubmitBtn.textContent = 'Đăng nhập';
-                authToggleText.textContent = 'Chưa có tài khoản?';
-                authToggleLink.textContent = 'Đăng ký ngay';
-                nameInput.required = false;
-            } else {
-                authTitle.textContent = 'Tạo tài khoản mới';
-                nameFieldContainer.classList.remove('hidden');
-                authSubmitBtn.textContent = 'Đăng ký';
-                authToggleText.textContent = 'Đã có tài khoản?';
-                authToggleLink.textContent = 'Đăng nhập';
-                nameInput.required = true;
-            }
-        }
-        
-        function showAuthError(message) {
-            if (!authError) return;
-            authError.textContent = message;
-            authError.classList.remove('hidden');
-        }
-
-        onAuthStateChanged(auth, user => {
-             // Ensure elements are assigned before use
-            if(!userDisplayNameEl) {
-                // Assign elements if not already done (might happen on initial load)
-                initializeUIElements(); 
-                 if(!userDisplayNameEl) return; // Still not found, exit
-            }
-
-            if (user) {
-                currentUserId = user.uid;
-                userDisplayNameEl.textContent = user.displayName || 'Sinh Viên';
-                userEmailEl.textContent = user.email;
-                welcomeHeading.textContent = `Chào mừng trở lại, ${user.displayName || 'bạn'}!`;
-
-                authScreen.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-
-                const userDocRef = doc(db, "users", currentUserId);
-                if (dataUnsubscribe) dataUnsubscribe(); 
-                dataUnsubscribe = onSnapshot(userDocRef, (doc) => {
-                    if (doc.exists()) {
-                        state = { ...defaultState, ...doc.data() };
-                    } else {
-                        state = { ...defaultState, displayName: user.displayName || "Sinh Viên" };
-                        setDoc(userDocRef, state);
-                    }
-                    renderAll();
-                }, (error) => {
-                    console.error("Error fetching user data:", error);
-                    // Handle error, maybe show a message to the user
-                });
-                
-            } else {
-                currentUserId = null;
-                if (dataUnsubscribe) {
-                    dataUnsubscribe();
-                    dataUnsubscribe = null;
-                }
-                state = { ...defaultState };
-                authScreen.classList.remove('hidden');
-                appContainer.classList.add('hidden');
-                updateAuthUI(); // Ensure auth UI is reset to login
-            }
-        });
-
-        async function saveData() {
-            if (!currentUserId) return;
-            if(window.saveTimeout) clearTimeout(window.saveTimeout);
-            window.saveTimeout = setTimeout(async () => {
-                const userDocRef = doc(db, "users", currentUserId);
-                try {
-                    // Make sure state is serializable (no undefined values)
-                    const savableState = JSON.parse(JSON.stringify(state, (key, value) => 
-                         (value === undefined ? null : value)
-                    ));
-                    await setDoc(userDocRef, savableState);
-                } catch (error) {
-                    console.error("Error saving data: ", error);
-                    // Optionally: Add user feedback here (e.g., a small toast message)
-                     showTemporaryMessage("Lỗi khi lưu dữ liệu.", "error");
-                }
-            }, 500);
-        }
-        
-        // --- Helper Function for Temporary Messages ---
-        function showTemporaryMessage(message, type = "info") {
-            // (Optional) Implement a simple notification system here
-            console.log(`[${type.toUpperCase()}] ${message}`); 
-        }
-
-        function getTodayDateString() {
-            const today = new Date();
-            return today.toISOString().split('T')[0];
-        }
-
-        function updateDashboard() {
-            if (!taskCountEl) return;
-            taskCountEl.textContent = (state.tasks || []).filter(t => !t.completed).length;
-            goalCountEl.textContent = (state.goals || []).filter(g => !g.completed).length;
-            projectCountEl.textContent = (state.projects || []).length;
+            const defaultState = {
+                displayName: "Sinh Viên",
+                tasks: [],
+                goals: [],
+                habits: [],
+                resources: [],
+                projects: [],
+                events: [],
+                gpaSubjects: [],
+                userMusic: [],
+                currentMusicId: 'jfKfPfyJRdk', // Default Lofi video ID
+                pomodoroSessions: 0,
+                notes: '',
+                schedule: {},
+                timeSlots: ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+            };
             
-            const todayStr = getTodayDateString();
-            const habits = state.habits || [];
-            const completedHabitsToday = habits.filter(h => (h.completedDates || []).includes(todayStr)).length;
-            habitCountEl.textContent = `${completedHabitsToday}/${habits.length}`;
+            // Define default music options globally
+            const defaultMusicOptionsGlobal = [
+                    { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk', icon: 'music-2', isCustom: false },
+                    { name: 'Âm thanh Quán Cà phê', videoId: 'irx_pvg-i-4', icon: 'coffee', isCustom: false },
+                    { name: 'Piano Thư giãn', videoId: 'r_i4H8w_2Qc', icon: 'piano', isCustom: false },
+                    { name: 'Tiếng Mưa Tự nhiên', videoId: 'q76bMs-mupk', icon: 'cloud-rain', isCustom: false }
+                ];
 
-            updateTodayClasses();
-            updateUpcomingEventOnDashboard();
-            calculateAndDisplayGpa();
-        }
-        
-        function updateTodayClasses() {
-            if (!todayClassesList) return;
-            todayClassesList.innerHTML = '';
-            const dayMap = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-            const today = dayMap[new Date().getDay()];
-            
-            const todayEntries = Object.entries(state.schedule || {}).filter(([key]) => key.startsWith(today));
-            
-            if (todayEntries.length === 0) {
-                todayClassesList.innerHTML = `<p class="text-slate-500">Không có lớp học nào hôm nay.</p>`;
-                return;
-            }
-            
-            todayEntries.sort(([keyA], [keyB]) => {
-                const timeA = keyA.split('-')[1];
-                const timeB = keyB.split('-')[1];
-                return timeA.localeCompare(timeB);
-            }).forEach(([key, value]) => {
-                const time = key.split('-')[1];
-                const li = document.createElement('li');
-                li.className = 'flex justify-between items-center text-sm';
-                li.innerHTML = `
-                    <div>
-                        <p class="font-semibold text-white">${value.subject}</p>
-                        <p class="text-slate-400">${value.room || ''}</p>
-                    </div>
-                    <span class="font-mono bg-slate-700 text-slate-300 px-2 py-1 rounded-md">${time}</span>
-                `;
-                todayClassesList.appendChild(li);
-            });
-        }
+            // --- UI Element declarations ---
+            let authScreen, appContainer, logoutBtn, authForm, emailInput, passwordInput, nameInput, authError, userEmailEl, userDisplayNameEl, welcomeHeading;
+            let isLoginMode = true; // Default to login mode
+            let nameFieldContainer, authSubmitBtn, authToggleText, authToggleLink, authTitle;
+            let currentDateEl, taskCountEl, habitCountEl, projectCountEl, goalCountEl, gpaDashboardEl, todayClassesList, upcomingEventDashboard;
+            let navLinks, contentSections;
+            let timetableBody, scheduleModal, closeScheduleModalBtn, scheduleForm, modalCellId, subjectNameInput, subjectRoomInput, deleteScheduleBtn, addTimeSlotBtn, addTimeModal, addTimeForm, newTimeInput, closeAddTimeModalBtn, confirmDeleteModal, confirmDeleteMessage, confirmDeleteBtn, cancelDeleteBtn;
+            let gpaSubjectsList, addGpaSubjectBtn, gpaResultEl, gpaResult4El;
+            let taskForm, taskInput, taskList;
+            let habitForm, habitInput, habitList;
+            let goalForm, goalInput, goalList;
+            let projectForm, projectInput, projectList;
+            let eventForm, eventInput, eventDateInput, eventList;
+            let timerDisplay, startPauseBtn, resetBtn, pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn, pomodoroSessionsEl;
+            let notesTextarea;
+            let resourceForm, resourceList;
+            let musicPlayer, musicSelection, addMusicForm, musicNameInput, musicUrlInput;
+            let timeToDeleteHolder = null;
+            let menuToggle, sidebar, sidebarOverlay, mainContent; // Added mainContent
 
-        function generateTimetable() {
-            if (!timetableBody) return;
-            timetableBody.innerHTML = '';
-            const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
-            
-            (state.timeSlots || defaultState.timeSlots).sort().forEach(time => {
-                const row = document.createElement('tr');
-                row.className = 'border-b border-slate-700';
-                const timeCell = document.createElement('td');
-                timeCell.className = 'time-slot-cell p-2 border-r border-slate-700 font-semibold text-slate-400';
-                timeCell.innerHTML = `<div class="flex items-center justify-center gap-2"><span>${time}</span><button data-time="${time}" class="delete-time-slot-btn text-slate-600 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
-                row.appendChild(timeCell);
-                days.forEach(day => {
-                    const cell = document.createElement('td');
-                    cell.className = 'p-1 border-r border-slate-700 align-top';
-                    cell.dataset.id = `${day}-${time}`;
-                    row.appendChild(cell);
-                });
-                timetableBody.appendChild(row);
-            });
-            lucide.createIcons();
-            renderSchedule();
-        }
-        function renderSchedule() {
-            if (!timetableBody) return;
-            document.querySelectorAll('#timetable-body td[data-id]').forEach(cell => {
-                cell.innerHTML = '';
-                const cellId = cell.dataset.id;
-                if (state.schedule && state.schedule[cellId]) {
-                    const entry = document.createElement('div');
-                    entry.className = 'timetable-entry';
-                    entry.innerHTML = `<p class="font-bold">${state.schedule[cellId].subject}</p><p>${state.schedule[cellId].room || ''}</p>`;
-                    cell.appendChild(entry);
-                }
-            });
-            updateDashboard();
-        }
+            // --- Pomodoro Globals ---
+            let timer; // Interval ID
+            let timeInSeconds = 25 * 60; // Default time
+            let isRunning = false; // Timer state
+            let currentMode = 'pomodoro'; // Current mode ('pomodoro', 'short', 'long', 'long-focus')
 
-        function convertToScale4(score10) {
-            if (score10 >= 8.5) return 4.0; if (score10 >= 8.0) return 3.5; if (score10 >= 7.0) return 3.0;
-            if (score10 >= 6.5) return 2.5; if (score10 >= 5.5) return 2.0; if (score10 >= 5.0) return 1.5;
-            if (score10 >= 4.0) return 1.0; return 0.0;
-        }
-
-        function calculateAndDisplayGpa() {
-            if (!gpaResultEl) return;
-            let totalPoints = 0, totalCredits = 0, totalPoints4 = 0;
-            (state.gpaSubjects || []).forEach(subject => {
-                const credits = parseFloat(subject.credits) || 0;
-                const score = parseFloat(subject.score) || 0;
-                if (credits > 0) {
-                    totalCredits += credits;
-                    totalPoints += score * credits;
-                    totalPoints4 += convertToScale4(score) * credits;
-                }
-            });
-            const gpa10 = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
-            const gpa4 = totalCredits > 0 ? (totalPoints4 / totalCredits) : 0;
-            gpaResultEl.textContent = gpa10.toFixed(2);
-            gpaResult4El.textContent = `(Hệ 4: ${gpa4.toFixed(2)})`;
-            gpaDashboardEl.textContent = gpa10 > 0 ? gpa10.toFixed(2) : 'N/A';
-        }
-
-        function renderGpaSubjects() {
-            if (!gpaSubjectsList) return;
-            gpaSubjectsList.innerHTML = '';
-            (state.gpaSubjects || []).forEach((subject, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-2"><input type="text" class="gpa-input" data-index="${index}" data-field="name" value="${subject.name || ''}" placeholder="Tên môn học"></td>
-                    <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="credits" value="${subject.credits || ''}" min="0" placeholder="0"></td>
-                    <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="score" value="${subject.score || ''}" min="0" max="10" step="0.1" placeholder="0.0"></td>
-                    <td class="p-2 text-center"><button class="delete-gpa-subject-btn text-slate-500 hover:text-red-500" data-index="${index}"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
-                `;
-                gpaSubjectsList.appendChild(tr);
-            });
-            lucide.createIcons();
-            calculateAndDisplayGpa();
-        }
-
-        function renderTasks() {
-            if (!taskList) return;
-            taskList.innerHTML = '';
-            if (!state.tasks || state.tasks.length === 0) taskList.innerHTML = `<p class="text-slate-500">Chưa có công việc nào.</p>`;
-            else {
-                state.tasks.forEach((task, index) => {
-                    const li = document.createElement('li');
-                    // Use list-item styles for better alignment and wrapping
-                    li.className = `task-item list-item ${task.completed ? 'completed' : ''}`; 
-                    li.innerHTML = `
-                        <div class="list-item-content">
-                             <input type="checkbox" data-index="${index}" class="custom-checkbox" ${task.completed ? 'checked' : ''}>
-                             <span class="list-item-text">${task.text}</span>
-                        </div>
-                        <div class="list-item-actions">
-                             <button data-index="${index}" class="delete-task-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                        </div>`;
-                    taskList.appendChild(li);
-                });
-            }
-            lucide.createIcons();
-            updateDashboard();
-        }
-
-        function renderHabits() {
-            if (!habitList) return;
-            habitList.innerHTML = '';
-            if (!state.habits || state.habits.length === 0) habitList.innerHTML = `<p class="text-slate-500">Hãy bắt đầu xây dựng những thói quen tốt!</p>`;
-            else {
-                const todayStr = getTodayDateString();
-                state.habits.forEach((habit, index) => {
-                    const habitEl = document.createElement('div');
-                    habitEl.className = 'flex flex-wrap items-center justify-between p-3 rounded-lg border border-slate-700 gap-y-2'; // Added gap-y-2
-                    let daysHTML = '';
-                    for (let i = 6; i >= 0; i--) {
-                        const date = new Date();
-                        date.setDate(date.getDate() - i);
-                        const dateStr = date.toISOString().split('T')[0];
-                        const isCompleted = (habit.completedDates || []).includes(dateStr);
-                        const isToday = (dateStr === todayStr);
-                        daysHTML += `<div class="habit-day rounded-full flex items-center justify-center ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" data-habit-index="${index}" title="${date.toLocaleDateString('vi-VN')}"></div>`;
-                    }
-                    // Adjusted structure for better wrapping
-                    habitEl.innerHTML = `
-                        <span class="text-white break-words mr-4">${habit.name}</span> 
-                        <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0"> ${daysHTML} 
-                           <button data-index="${index}" class="delete-habit-btn text-slate-500 hover:text-red-500 ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                         </div>`;
-                    habitList.appendChild(habitEl);
-                });
-            }
-            lucide.createIcons();
-            updateDashboard();
-        }
-
-        function renderGoals() {
-            if (!goalList) return;
-            goalList.innerHTML = '';
-            if (!state.goals || state.goals.length === 0) goalList.innerHTML = `<p class="text-slate-500">Chưa có mục tiêu nào được đặt ra.</p>`;
-            else {
-                state.goals.forEach((goal, index) => {
-                    const li = document.createElement('li');
-                     // Use list-item styles
-                    li.className = `goal-item list-item ${goal.completed ? 'completed' : ''}`;
-                    li.innerHTML = `
-                        <div class="list-item-content">
-                             <input type="checkbox" data-index="${index}" class="custom-checkbox" ${goal.completed ? 'checked' : ''}>
-                             <span class="list-item-text">${goal.text}</span>
-                        </div>
-                        <div class="list-item-actions">
-                             <button data-index="${index}" class="delete-goal-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                        </div>`;
-                    goalList.appendChild(li);
-                });
-            }
-            lucide.createIcons();
-            updateDashboard();
-        }
-
-        function renderProjects() {
-            if (!projectList) return;
-            projectList.innerHTML = '';
-            if(!state.projects || state.projects.length === 0) projectList.innerHTML = `<p class="text-slate-500 col-span-full text-center">Chưa có dự án nào. Hãy bắt đầu một dự án mới!</p>`;
-            else {
-                state.projects.forEach(project => {
-                    const projectCard = document.createElement('div');
-                    projectCard.className = 'card p-4 rounded-xl flex flex-col gap-4';
-                    const completedTasks = (project.tasks || []).filter(t => t.completed).length;
-                    const totalTasks = (project.tasks || []).length;
-                    const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-                    let tasksHTML = '<ul class="space-y-2">';
-                    (project.tasks || []).forEach((task, taskIndex) => {
-                        tasksHTML += `<li class="project-task flex items-center justify-between text-sm ${task.completed ? 'completed' : ''}"><div class="flex items-center gap-2 min-w-0"><input type="checkbox" data-project-id="${project.id}" data-task-index="${taskIndex}" class="custom-checkbox !w-4 !h-4" ${task.completed ? 'checked' : ''}><span class="break-words">${task.text}</span></div><button data-project-id="${project.id}" data-task-index="${taskIndex}" class="delete-project-task-btn text-slate-600 hover:text-red-500 flex-shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button></li>`;
-                    });
-                    tasksHTML += '</ul>';
-                    projectCard.innerHTML = `<div><div class="flex justify-between items-start"><h3 class="font-bold text-white text-lg break-words">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn text-slate-500 hover:text-red-500 flex-shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-slate-400"><div class="progress-bar w-full h-2 rounded-full"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${Math.round(progress)}%</span></div></div><div>${tasksHTML}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-slate-800 border border-slate-700 rounded-lg px-3 py-1 text-sm focus:ring-indigo-500 focus:border-indigo-500" required><button type="submit" class="btn btn-primary btn-sm !p-1.5"><i data-lucide="plus" class="w-4 h-4"></i></button></form>`; // smaller add button
-                    projectList.appendChild(projectCard);
-                });
-            }
-            lucide.createIcons();
-            updateDashboard();
-        }
-
-        function renderEvents() {
-            if (!eventList) return;
-            eventList.innerHTML = '';
-            if(!state.events || state.events.length === 0) eventList.innerHTML = `<p class="text-slate-500 text-center">Chưa có sự kiện nào được thêm.</p>`;
-            else {
-                state.events.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(event => {
-                    const eventEl = document.createElement('div');
-                    eventEl.className = 'flex flex-wrap items-center justify-between p-4 rounded-lg border border-slate-700 gap-y-2'; // Added gap-y-2
-                    eventEl.innerHTML = `
-                         <div class="min-w-0 mr-4"> {/* Added mr-4 */}
-                             <p class="font-semibold text-white break-words">${event.name}</p>
-                             <p class="text-sm text-slate-400">${new Date(event.date).toLocaleString('vi-VN')}</p>
-                         </div>
-                         <div class="flex items-center gap-4 flex-shrink-0">
-                             <div id="countdown-${event.id}" class="text-lg font-semibold text-indigo-400"></div>
-                             <button data-event-id="${event.id}" class="delete-event-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                         </div>`;
-                    eventList.appendChild(eventEl);
-                });
-            }
-            lucide.createIcons();
-            updateDashboard();
-        }
-
-        function updateCountdowns() {
-            if (!state.events) return;
-            state.events.forEach(event => {
-                const countdownEl = document.getElementById(`countdown-${event.id}`);
-                if (countdownEl) {
-                    const diff = new Date(event.date) - new Date();
-                    if (diff > 0) {
-                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                        countdownEl.textContent = `${days}d ${hours}h ${minutes}m`;
-                    } else {
-                        countdownEl.textContent = "Đã qua";
-                    }
-                }
-            });
-            updateUpcomingEventOnDashboard();
-        }
-
-        function updateUpcomingEventOnDashboard() {
-            if (!upcomingEventDashboard || !state.events) return;
-            const now = new Date();
-            const upcomingEvents = state.events.filter(e => new Date(e.date) > now).sort((a, b) => new Date(a.date) - new Date(b.date));
-            if (upcomingEvents.length > 0) {
-                const nextEvent = upcomingEvents[0];
-                const diff = new Date(nextEvent.date) - now;
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                upcomingEventDashboard.innerHTML = `<p class="text-sm text-center text-indigo-300 mb-2">SỰ KIỆN SẮP TỚI</p><h3 class="text-xl font-bold text-center text-white mb-4">${nextEvent.name}</h3><div class="flex justify-center items-center gap-2 md:gap-4 text-center"><div><span class="countdown-digits">${String(days).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">NGÀY</span></div><div><span class="countdown-digits">${String(hours).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">GIỜ</span></div><div><span class="countdown-digits">${String(minutes).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">PHÚT</span></div><div><span class="countdown-digits">${String(seconds).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">GIÂY</span></div></div>`;
-            } else {
-                upcomingEventDashboard.innerHTML = `<p class="text-center text-slate-400">Không có sự kiện nào sắp tới. Hãy thêm lịch thi hoặc hạn chót mới!</p>`;
-            }
-        }
-
-        function updateTimerDisplay() {
-            if (!timerDisplay) return;
-            const minutes = Math.floor(timeInSeconds / 60);
-            const seconds = timeInSeconds % 60;
-            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            pomodoroSessionsEl.textContent = state.pomodoroSessions || 0;
-        }
-
-        function renderNotes() {
-            if (notesTextarea) {
-                notesTextarea.value = state.notes || '';
-            }
-        }
-
-        function renderResources() {
-            if (!resourceList) return;
-            resourceList.innerHTML = '';
-            if (!state.resources || state.resources.length === 0) resourceList.innerHTML = `<p class="text-slate-500">Chưa có tài nguyên nào.</p>`;
-            else {
-                state.resources.forEach((resource, index) => {
-                    const li = document.createElement('li');
-                     // Use list-item styles
-                    li.className = 'list-item';
-                    li.innerHTML = `
-                         <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="list-item-content text-indigo-400 hover:underline">
-                             <i data-lucide="link-2" class="w-5 h-5 flex-shrink-0"></i>
-                             <span class="list-item-text !text-indigo-400 truncate">${resource.name}</span>
-                         </a>
-                         <div class="list-item-actions">
-                            <button data-index="${index}" class="delete-resource-btn text-slate-500 hover:text-red-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                         </div>`;
-                    resourceList.appendChild(li);
-                });
-            }
-            lucide.createIcons();
-        }
-
-        function renderMusicOptions() {
-            if (!musicSelection) return;
-            const defaultMusicOptions = [
-                { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk', icon: 'music-2', isCustom: false },
-                { name: 'Âm thanh Quán Cà phê', videoId: 'irx_pvg-i-4', icon: 'coffee', isCustom: false },
-                { name: 'Piano Thư giãn', videoId: 'r_i4H8w_2Qc', icon: 'piano', isCustom: false },
-                { name: 'Tiếng Mưa Tự nhiên', videoId: 'q76bMs-mupk', icon: 'cloud-rain', isCustom: false }
-            ];
-            musicSelection.innerHTML = '';
-            const allMusic = [...defaultMusicOptions, ...(state.userMusic || [])];
-            
-            allMusic.forEach(option => {
-                const isActive = option.videoId === state.currentMusicId;
-                const itemDiv = document.createElement('div');
-                itemDiv.className = `music-option-btn flex items-center gap-3 w-full text-left p-3 rounded-lg border transition-colors cursor-pointer ${isActive ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300'}`; // Reduced gap
-                itemDiv.dataset.videoId = option.videoId;
-                
-                let deleteButtonHTML = '';
-                if (option.isCustom) {
-                    deleteButtonHTML = `<div class="delete-music-btn text-slate-400 hover:text-red-500 p-1 rounded-full flex-shrink-0 ml-auto" data-video-id="${option.videoId}"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></div>`;
-                }
-                
-                itemDiv.innerHTML = `
-                    <i data-lucide="${option.icon}" class="w-5 h-5 flex-shrink-0"></i>
-                    <span class="font-semibold flex-grow truncate text-sm">${option.name}</span> {/* Smaller text */}
-                    ${deleteButtonHTML}
-                `;
-                musicSelection.appendChild(itemDiv);
-            });
-            
-            const allIds = allMusic.map(m => m.videoId);
-            if (!allIds.includes(state.currentMusicId)) {
-                state.currentMusicId = defaultMusicOptions[0].videoId;
+            // --- Function to initialize UI elements (defined globally within module) ---
+             function initializeUIElements() {
+                authScreen = document.getElementById('auth-screen');
+                appContainer = document.getElementById('app-container');
+                logoutBtn = document.getElementById('logout-btn');
+                authForm = document.getElementById('auth-form');
+                emailInput = document.getElementById('email-input');
+                passwordInput = document.getElementById('password-input');
+                nameInput = document.getElementById('name-input');
+                authError = document.getElementById('auth-error');
+                userEmailEl = document.getElementById('user-email');
+                userDisplayNameEl = document.getElementById('user-display-name');
+                welcomeHeading = document.getElementById('welcome-heading');
+                nameFieldContainer = document.getElementById('name-field-container');
+                authSubmitBtn = document.getElementById('auth-submit-btn');
+                authToggleText = document.getElementById('auth-toggle-text');
+                authToggleLink = document.getElementById('auth-toggle-link');
+                authTitle = document.getElementById('auth-title');
+                currentDateEl = document.getElementById('current-date');
+                taskCountEl = document.getElementById('task-count');
+                habitCountEl = document.getElementById('habit-count');
+                projectCountEl = document.getElementById('project-count');
+                goalCountEl = document.getElementById('goal-count');
+                gpaDashboardEl = document.getElementById('gpa-dashboard');
+                todayClassesList = document.getElementById('today-classes-list');
+                upcomingEventDashboard = document.getElementById('upcoming-event-dashboard');
+                navLinks = document.querySelectorAll('.nav-link');
+                contentSections = document.querySelectorAll('.content-section');
+                timetableBody = document.getElementById('timetable-body');
+                scheduleModal = document.getElementById('schedule-modal');
+                closeScheduleModalBtn = document.getElementById('close-schedule-modal-btn');
+                scheduleForm = document.getElementById('schedule-form');
+                modalCellId = document.getElementById('modal-cell-id');
+                subjectNameInput = document.getElementById('subject-name');
+                subjectRoomInput = document.getElementById('subject-room');
+                deleteScheduleBtn = document.getElementById('delete-schedule-btn');
+                addTimeSlotBtn = document.getElementById('add-time-slot-btn');
+                addTimeModal = document.getElementById('add-time-modal');
+                addTimeForm = document.getElementById('add-time-form');
+                newTimeInput = document.getElementById('new-time-input');
+                closeAddTimeModalBtn = document.getElementById('close-add-time-modal-btn');
+                confirmDeleteModal = document.getElementById('confirm-delete-modal');
+                confirmDeleteMessage = document.getElementById('confirm-delete-message');
+                confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+                cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+                gpaSubjectsList = document.getElementById('gpa-subjects-list');
+                addGpaSubjectBtn = document.getElementById('add-gpa-subject-btn');
+                gpaResultEl = document.getElementById('gpa-result');
+                gpaResult4El = document.getElementById('gpa-result-4');
+                taskForm = document.getElementById('task-form');
+                taskInput = document.getElementById('task-input');
+                taskList = document.getElementById('task-list');
+                habitForm = document.getElementById('habit-form');
+                habitInput = document.getElementById('habit-input');
+                habitList = document.getElementById('habit-list');
+                goalForm = document.getElementById('goal-form');
+                goalInput = document.getElementById('goal-input');
+                goalList = document.getElementById('goal-list');
+                projectForm = document.getElementById('project-form');
+                projectInput = document.getElementById('project-input');
+                projectList = document.getElementById('project-list');
+                eventForm = document.getElementById('event-form');
+                eventInput = document.getElementById('event-input');
+                eventDateInput = document.getElementById('event-date-input');
+                eventList = document.getElementById('event-list');
+                timerDisplay = document.getElementById('timer-display');
+                startPauseBtn = document.getElementById('start-pause-btn');
+                resetBtn = document.getElementById('reset-btn');
+                pomodoroBtn = document.getElementById('pomodoro-btn');
+                longFocusBtn = document.getElementById('long-focus-btn');
+                shortBreakBtn = document.getElementById('short-break-btn');
+                longBreakBtn = document.getElementById('long-break-btn');
+                pomodoroSessionsEl = document.getElementById('pomodoro-sessions');
+                notesTextarea = document.getElementById('notes-textarea');
+                resourceForm = document.getElementById('resource-form');
+                resourceList = document.getElementById('resource-list');
+                musicPlayer = document.getElementById('music-player');
+                musicSelection = document.getElementById('music-selection');
+                addMusicForm = document.getElementById('add-music-form');
+                musicNameInput = document.getElementById('music-name-input');
+                musicUrlInput = document.getElementById('music-url-input');
+                menuToggle = document.getElementById('menu-toggle');
+                sidebar = document.getElementById('sidebar');
+                sidebarOverlay = document.getElementById('sidebar-overlay');
+                 mainContent = document.getElementById('main-content'); // Assign main content
             }
 
-            musicPlayer.src = `https://www.youtube.com/embed/${state.currentMusicId || 'jfKfPfyJRdk'}`;
-            lucide.createIcons();
-        }
-
-        function renderAll() {
-            renderNotes();
-            renderTasks();
-            renderGoals();
-            renderHabits();
-            renderResources();
-            renderProjects();
-            renderEvents();
-            renderGpaSubjects();
-            generateTimetable();
-            updateTimerDisplay();
-            renderMusicOptions();
-            updateDashboard();
-        }
-
-        let timer;
-        let timeInSeconds = 25 * 60;
-        let isRunning = false;
-        let currentMode = 'pomodoro';
-        
-        // --- Function to initialize UI elements ---
-        function initializeUIElements() {
-            authScreen = document.getElementById('auth-screen');
-            appContainer = document.getElementById('app-container');
-            logoutBtn = document.getElementById('logout-btn');
-            authForm = document.getElementById('auth-form');
-            emailInput = document.getElementById('email-input');
-            passwordInput = document.getElementById('password-input');
-            nameInput = document.getElementById('name-input');
-            authError = document.getElementById('auth-error');
-            userEmailEl = document.getElementById('user-email');
-            userDisplayNameEl = document.getElementById('user-display-name');
-            welcomeHeading = document.getElementById('welcome-heading');
-            nameFieldContainer = document.getElementById('name-field-container');
-            authSubmitBtn = document.getElementById('auth-submit-btn');
-            authToggleText = document.getElementById('auth-toggle-text');
-            authToggleLink = document.getElementById('auth-toggle-link');
-            authTitle = document.getElementById('auth-title');
-            currentDateEl = document.getElementById('current-date');
-            taskCountEl = document.getElementById('task-count');
-            habitCountEl = document.getElementById('habit-count');
-            projectCountEl = document.getElementById('project-count');
-            goalCountEl = document.getElementById('goal-count');
-            gpaDashboardEl = document.getElementById('gpa-dashboard');
-            todayClassesList = document.getElementById('today-classes-list');
-            upcomingEventDashboard = document.getElementById('upcoming-event-dashboard');
-            navLinks = document.querySelectorAll('.nav-link');
-            contentSections = document.querySelectorAll('.content-section');
-            timetableBody = document.getElementById('timetable-body');
-            scheduleModal = document.getElementById('schedule-modal');
-            closeScheduleModalBtn = document.getElementById('close-schedule-modal-btn');
-            scheduleForm = document.getElementById('schedule-form');
-            modalCellId = document.getElementById('modal-cell-id');
-            subjectNameInput = document.getElementById('subject-name');
-            subjectRoomInput = document.getElementById('subject-room');
-            deleteScheduleBtn = document.getElementById('delete-schedule-btn');
-            addTimeSlotBtn = document.getElementById('add-time-slot-btn');
-            addTimeModal = document.getElementById('add-time-modal');
-            addTimeForm = document.getElementById('add-time-form');
-            newTimeInput = document.getElementById('new-time-input');
-            closeAddTimeModalBtn = document.getElementById('close-add-time-modal-btn');
-            confirmDeleteModal = document.getElementById('confirm-delete-modal');
-            confirmDeleteMessage = document.getElementById('confirm-delete-message');
-            confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-            cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-            gpaSubjectsList = document.getElementById('gpa-subjects-list');
-            addGpaSubjectBtn = document.getElementById('add-gpa-subject-btn');
-            gpaResultEl = document.getElementById('gpa-result');
-            gpaResult4El = document.getElementById('gpa-result-4');
-            taskForm = document.getElementById('task-form');
-            taskInput = document.getElementById('task-input');
-            taskList = document.getElementById('task-list');
-            habitForm = document.getElementById('habit-form');
-            habitInput = document.getElementById('habit-input');
-            habitList = document.getElementById('habit-list');
-            goalForm = document.getElementById('goal-form');
-            goalInput = document.getElementById('goal-input');
-            goalList = document.getElementById('goal-list');
-            projectForm = document.getElementById('project-form');
-            projectInput = document.getElementById('project-input');
-            projectList = document.getElementById('project-list');
-            eventForm = document.getElementById('event-form');
-            eventInput = document.getElementById('event-input');
-            eventDateInput = document.getElementById('event-date-input');
-            eventList = document.getElementById('event-list');
-            timerDisplay = document.getElementById('timer-display');
-            startPauseBtn = document.getElementById('start-pause-btn');
-            resetBtn = document.getElementById('reset-btn');
-            pomodoroBtn = document.getElementById('pomodoro-btn');
-            longFocusBtn = document.getElementById('long-focus-btn');
-            shortBreakBtn = document.getElementById('short-break-btn');
-            longBreakBtn = document.getElementById('long-break-btn');
-            pomodoroSessionsEl = document.getElementById('pomodoro-sessions');
-            notesTextarea = document.getElementById('notes-textarea');
-            resourceForm = document.getElementById('resource-form');
-            resourceList = document.getElementById('resource-list');
-            musicPlayer = document.getElementById('music-player');
-            musicSelection = document.getElementById('music-selection');
-            addMusicForm = document.getElementById('add-music-form');
-            musicNameInput = document.getElementById('music-name-input');
-            musicUrlInput = document.getElementById('music-url-input');
-            menuToggle = document.getElementById('menu-toggle');
-            sidebar = document.getElementById('sidebar');
-            sidebarOverlay = document.getElementById('sidebar-overlay');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeUIElements(); // Assign all UI elements
-            lucide.createIcons(); // Initialize icons
-            
-            // Set initial auth mode AFTER elements are assigned
-            isLoginMode = true; 
-            updateAuthUI();
-
-            // --- EVENT LISTENERS ---
-            authForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                authSubmitBtn.disabled = true;
-                authSubmitBtn.textContent = 'Đang xử lý...';
-
-                if (isLoginMode) {
-                    try {
-                        await signInWithEmailAndPassword(auth, email, password);
-                    } catch (error) {
-                        showAuthError(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential' ? 'Sai email hoặc mật khẩu.' : 'Đã có lỗi xảy ra.');
-                    }
-                } else {
-                    const name = nameInput.value.trim();
-                    if (!name) {
-                        showAuthError('Vui lòng nhập họ và tên của bạn.');
-                        authSubmitBtn.disabled = false;
-                        updateAuthUI();
-                        return;
-                    }
-                    try {
-                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                        const user = userCredential.user;
-                        await updateProfile(user, { displayName: name });
-                        const userDocRef = doc(db, "users", user.uid);
-                        await setDoc(userDocRef, { ...defaultState, displayName: name });
-                    } catch (error) {
-                         console.error("Signup error:", error);
-                        showAuthError(error.code === 'auth/email-already-in-use' ? 'Email này đã được sử dụng.' : 'Mật khẩu phải có ít nhất 6 ký tự hoặc đã có lỗi.');
-                    }
-                }
-                 // Reset button only if error occurred, otherwise onAuthStateChanged handles UI switch
-                 if(!auth.currentUser) { 
-                      authSubmitBtn.disabled = false;
-                      updateAuthUI();
-                 }
-            });
-
-            logoutBtn.addEventListener('click', () => signOut(auth));
-            authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; updateAuthUI(); });
-
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarOverlay.classList.remove('hidden');
-            });
+            // Function to close sidebar (defined globally within module scope)
             function closeSidebar() {
-                 sidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
+                if(sidebar && sidebarOverlay) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.remove('opacity-100'); // Fade out overlay
+                     // Use timeout to hide after transition
+                     setTimeout(() => sidebarOverlay.classList.add('hidden'), 200); 
+                }
             }
-            sidebarOverlay.addEventListener('click', closeSidebar);
-            navLinks.forEach(link => link.addEventListener('click', () => {
-                if(window.innerWidth < 1024) closeSidebar();
-                const targetId = link.getAttribute('data-target');
-                navLinks.forEach(nav => nav.classList.remove('active'));
-                link.classList.add('active');
-                contentSections.forEach(section => {
-                    section.id === targetId ? section.classList.remove('hidden') : section.classList.add('hidden');
-                });
-            }));
+
+            // --- AUTH UI LOGIC ---
+             function updateAuthUI() {
+                 if (!authError || !authTitle || !nameFieldContainer || !authSubmitBtn || !authToggleText || !authToggleLink || !nameInput) return; 
+                authError.classList.add('hidden');
+                if (isLoginMode) {
+                    authTitle.textContent = 'Đăng nhập vào Student Hub';
+                    nameFieldContainer.classList.add('hidden');
+                    authSubmitBtn.textContent = 'Đăng nhập';
+                    authToggleText.textContent = 'Chưa có tài khoản?';
+                    authToggleLink.textContent = 'Đăng ký ngay';
+                    nameInput.required = false;
+                } else {
+                    authTitle.textContent = 'Tạo tài khoản mới';
+                    nameFieldContainer.classList.remove('hidden');
+                    authSubmitBtn.textContent = 'Đăng ký';
+                    authToggleText.textContent = 'Đã có tài khoản?';
+                    authToggleLink.textContent = 'Đăng nhập';
+                    nameInput.required = true;
+                }
+            }
+            
+            function showAuthError(message) {
+                if (!authError) return; 
+                authError.textContent = message;
+                authError.classList.remove('hidden');
+            }
 
 
-            timetableBody.addEventListener('click', (e) => {
-                const cell = e.target.closest('td[data-id]');
-                if (cell) {
-                    const cellId = cell.dataset.id;
-                    modalCellId.value = cellId;
-                    const [day, time] = cellId.split('-');
-                    document.getElementById('modal-title').textContent = `Lịch học: ${day} lúc ${time}`;
-                    if (state.schedule && state.schedule[cellId]) { // Check if state.schedule exists
-                        subjectNameInput.value = state.schedule[cellId].subject;
-                        subjectRoomInput.value = state.schedule[cellId].room;
-                        deleteScheduleBtn.classList.remove('hidden');
-                    } else {
-                        scheduleForm.reset();
-                        deleteScheduleBtn.classList.add('hidden');
+            // --- AUTH STATE CHANGE LISTENER ---
+             onAuthStateChanged(auth, user => {
+                // Ensure elements are assigned, run initialization if needed
+                if(!userDisplayNameEl) {
+                    initializeUIElements(); 
+                    if(!userDisplayNameEl) {
+                         console.error("UI Elements could not be initialized."); // Log error if still fails
+                         return; 
                     }
-                    scheduleModal.classList.remove('hidden');
-                    scheduleModal.classList.add('flex');
                 }
-                const deleteBtn = e.target.closest('.delete-time-slot-btn');
-                if (deleteBtn) {
-                    timeToDeleteHolder = deleteBtn.dataset.time;
-                    confirmDeleteMessage.textContent = `Bạn có chắc muốn xóa khung giờ ${timeToDeleteHolder} và tất cả các lớp học trong đó không?`;
-                    confirmDeleteModal.classList.remove('hidden');
-                    confirmDeleteModal.classList.add('flex');
-                }
-            });
-            addTimeSlotBtn.addEventListener('click', () => { addTimeModal.classList.remove('hidden'); addTimeModal.classList.add('flex'); });
-            closeAddTimeModalBtn.addEventListener('click', () => { addTimeModal.classList.add('hidden'); addTimeModal.classList.remove('flex'); });
-            addTimeForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const newTime = newTimeInput.value;
-                 if (newTime) {
-                    if (!state.timeSlots.includes(newTime)) {
-                        if (!state.timeSlots) state.timeSlots = []; // Ensure timeSlots exists
-                        state.timeSlots.push(newTime);
-                        saveData();
-                    }
-                    addTimeForm.reset();
-                    addTimeModal.classList.add('hidden');
-                    addTimeModal.classList.remove('flex');
-                }
-            });
-            cancelDeleteBtn.addEventListener('click', () => { confirmDeleteModal.classList.add('hidden'); confirmDeleteModal.classList.remove('flex'); timeToDeleteHolder = null; });
-            confirmDeleteBtn.addEventListener('click', () => {
-                if(timeToDeleteHolder) {
-                    state.timeSlots = state.timeSlots.filter(t => t !== timeToDeleteHolder);
-                    Object.keys(state.schedule || {}).forEach(key => { if (key.endsWith(`-${timeToDeleteHolder}`)) { delete state.schedule[key]; } });
-                    saveData();
-                    confirmDeleteModal.classList.add('hidden');
-                    confirmDeleteModal.classList.remove('flex');
-                    timeToDeleteHolder = null;
-                }
-            });
-            closeScheduleModalBtn.addEventListener('click', () => { scheduleModal.classList.add('hidden'); scheduleModal.classList.remove('flex'); });
-            scheduleForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const cellId = modalCellId.value;
-                const subject = subjectNameInput.value.trim();
-                const room = subjectRoomInput.value.trim();
-                if (cellId && subject) {
-                    if (!state.schedule) state.schedule = {}; // Ensure schedule exists
-                    state.schedule[cellId] = { subject, room };
-                    saveData();
-                    scheduleModal.classList.add('hidden');
-                    scheduleModal.classList.remove('flex');
-                }
-            });
-            deleteScheduleBtn.addEventListener('click', () => {
-                 const cellId = modalCellId.value;
-                 if (cellId && state.schedule && state.schedule[cellId]) { // Check if schedule and entry exist
-                     delete state.schedule[cellId];
-                     saveData();
-                     scheduleModal.classList.add('hidden');
-                     scheduleModal.classList.remove('flex');
-                 }
-            });
-            addGpaSubjectBtn.addEventListener('click', () => { if (!state.gpaSubjects) state.gpaSubjects = []; state.gpaSubjects.push({ name: '', credits: '', score: '' }); saveData(); });
-            gpaSubjectsList.addEventListener('input', e => {
-                if(e.target.matches('.gpa-input')) {
-                    const index = e.target.dataset.index;
-                    const field = e.target.dataset.field;
-                    if (!state.gpaSubjects) state.gpaSubjects = [];
-                    state.gpaSubjects[index][field] = e.target.value;
-                    saveData();
-                    calculateAndDisplayGpa();
-                }
-            });
-            gpaSubjectsList.addEventListener('click', e => {
-                 if(e.target.closest('.delete-gpa-subject-btn')) {
-                    const index = e.target.closest('.delete-gpa-subject-btn').dataset.index;
-                    if (state.gpaSubjects) state.gpaSubjects.splice(index, 1);
-                    saveData();
-                }
-            });
-            taskForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const text = taskInput.value.trim();
-                if (text) {
-                    if (!state.tasks) state.tasks = [];
-                    state.tasks.push({ text, completed: false });
-                    saveData();
-                    taskForm.reset();
-                }
-            });
-            taskList.addEventListener('click', (e) => {
-                const target = e.target;
-                if (target.matches('.custom-checkbox')) {
-                    if(state.tasks) state.tasks[target.dataset.index].completed = target.checked;
-                    saveData();
-                } else if (target.closest('.delete-task-btn')) {
-                     if(state.tasks) state.tasks.splice(target.closest('.delete-task-btn').dataset.index, 1);
-                    saveData();
-                }
-            });
-            habitForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = habitInput.value.trim();
-                if (name) {
-                    if (!state.habits) state.habits = [];
-                    state.habits.push({ name: name, completedDates: [] });
-                    saveData();
-                    habitForm.reset();
-                }
-            });
-            habitList.addEventListener('click', (e) => {
-                const target = e.target;
-                if (target.closest('.delete-habit-btn')) {
-                     if(state.habits) state.habits.splice(target.closest('.delete-habit-btn').dataset.index, 1);
-                     saveData();
-                } else if (target.classList.contains('today')) {
-                    const dateStr = target.dataset.date;
-                    const habitIndex = target.dataset.habitIndex;
-                    if(state.habits && state.habits[habitIndex]) {
-                        if (!state.habits[habitIndex].completedDates) state.habits[habitIndex].completedDates = [];
-                        const dateIndex = state.habits[habitIndex].completedDates.indexOf(dateStr);
-                        if (dateIndex > -1) {
-                            state.habits[habitIndex].completedDates.splice(dateIndex, 1);
+
+                if (user) {
+                    currentUserId = user.uid;
+                    userDisplayNameEl.textContent = user.displayName || 'Sinh Viên';
+                    userEmailEl.textContent = user.email;
+                    if(welcomeHeading) welcomeHeading.textContent = `Chào mừng trở lại, ${user.displayName || 'bạn'}!`;
+
+                    authScreen.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+
+                    const userDocRef = doc(db, "users", currentUserId);
+                    if (dataUnsubscribe) dataUnsubscribe(); // Unsubscribe from previous listener
+                    
+                    dataUnsubscribe = onSnapshot(userDocRef, (doc) => {
+                        if (doc.exists()) {
+                            // Merge fetched data with default state to handle potentially missing fields
+                            state = { ...defaultState, ...doc.data() }; 
                         } else {
-                            state.habits[habitIndex].completedDates.push(dateStr);
+                            console.log("Creating initial document for user:", currentUserId);
+                            // Initialize state with defaults and user's display name
+                            state = { ...defaultState, displayName: user.displayName || "Sinh Viên" };
+                            // Create the document in Firestore
+                            setDoc(userDocRef, state).catch(error => console.error("Error creating initial user doc:", error)); 
                         }
-                        saveData();
+                        renderAll(); // Render UI with the latest state
+                    }, (error) => {
+                        console.error("Error fetching user data:", error);
+                        showTemporaryMessage("Không thể tải dữ liệu người dùng. Vui lòng thử lại.", "error");
+                        // Fallback: Render with default state or show an error message in the UI
+                        state = { ...defaultState }; 
+                        renderAll(); 
+                    });
+                    
+                } else { // User is signed out
+                    currentUserId = null;
+                    if (dataUnsubscribe) {
+                        dataUnsubscribe();
+                        dataUnsubscribe = null;
                     }
+                    state = { ...defaultState }; // Reset state completely
+                    authScreen.classList.remove('hidden'); 
+                    appContainer.classList.add('hidden'); 
+                    isLoginMode = true; // Reset to login mode
+                    updateAuthUI(); // Update auth form UI
                 }
             });
-            goalForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const text = goalInput.value.trim();
-                if (text) {
-                    if (!state.goals) state.goals = [];
-                    state.goals.push({ text, completed: false });
-                    saveData();
-                    goalForm.reset();
-                }
-            });
-            goalList.addEventListener('click', (e) => {
-                const target = e.target;
-                if (target.matches('.custom-checkbox')) {
-                    if(state.goals) state.goals[target.dataset.index].completed = target.checked;
-                    saveData();
-                } else if (target.closest('.delete-goal-btn')) {
-                    if(state.goals) state.goals.splice(target.closest('.delete-goal-btn').dataset.index, 1);
-                    saveData();
-                }
-            });
-            projectForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = projectInput.value.trim();
-                if (name) {
-                    if (!state.projects) state.projects = [];
-                    state.projects.push({ id: Date.now(), name: name, tasks: [] });
-                    saveData();
-                    projectForm.reset();
-                }
-            });
-            projectList.addEventListener('click', (e) => {
-                const target = e.target;
-                let dataChanged = false;
-                const deleteBtn = target.closest('.delete-project-btn');
-                if (deleteBtn) {
-                    const projectId = parseInt(deleteBtn.dataset.projectId, 10);
-                    state.projects = (state.projects || []).filter(p => p.id !== projectId);
-                    dataChanged = true;
-                }
-                const checkbox = target.closest('.project-task .custom-checkbox');
-                if (checkbox) {
-                    const projectId = parseInt(checkbox.dataset.projectId, 10);
-                    const taskIndex = parseInt(checkbox.dataset.taskIndex, 10);
-                    const project = (state.projects || []).find(p => p.id === projectId);
-                    if (project) {
-                        if (!project.tasks) project.tasks = [];
-                        project.tasks[taskIndex].completed = checkbox.checked;
-                        dataChanged = true;
+
+             // --- ASYNC DATA SAVE ---
+              async function saveData() {
+                if (!currentUserId) return;
+                // Debounce save function to avoid too many writes quickly
+                if(window.saveTimeout) clearTimeout(window.saveTimeout);
+                window.saveTimeout = setTimeout(async () => {
+                    const userDocRef = doc(db, "users", currentUserId);
+                    try {
+                        // Create a deep copy and handle undefined (Firestore doesn't like undefined)
+                        const savableState = JSON.parse(JSON.stringify(state, (key, value) => 
+                             (value === undefined ? null : value) // Replace undefined with null
+                        ));
+                        await setDoc(userDocRef, savableState);
+                        // console.log("Data saved."); // Optional: Keep for debugging if needed
+                    } catch (error) {
+                        console.error("Error saving data: ", error);
+                         showTemporaryMessage("Lỗi khi lưu dữ liệu.", "error");
                     }
+                }, 300); // Save after 300ms of inactivity
+            }
+            
+            // --- Helper Functions ---
+             function showTemporaryMessage(message, type = "info") {
+                console.log(`[${type.toUpperCase()}] ${message}`); 
+                 const toast = document.createElement('div');
+                 toast.textContent = message;
+                 toast.className = `fixed bottom-5 right-5 p-3 rounded-lg shadow-md text-white text-sm z-[100] transition-opacity duration-300 ease-out opacity-0 ${type === 'error' ? 'bg-red-600' : 'bg-indigo-600'}`; // Increased z-index
+                 document.body.appendChild(toast);
+                 // Force reflow to enable transition
+                 requestAnimationFrame(() => {
+                    toast.classList.remove('opacity-0');
+                 });
+                 setTimeout(() => {
+                      toast.classList.add('opacity-0');
+                      toast.addEventListener('transitionend', () => toast.remove()); // Remove after fade out
+                 }, 3000);
+            }
+
+            function getTodayDateString() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+             function convertToScale4(score10) {
+                 score10 = parseFloat(score10); 
+                 if (isNaN(score10)) return 0.0;
+                if (score10 >= 8.5) return 4.0; if (score10 >= 8.0) return 3.5; if (score10 >= 7.0) return 3.0;
+                if (score10 >= 6.5) return 2.5; if (score10 >= 5.5) return 2.0; if (score10 >= 5.0) return 1.5;
+                if (score10 >= 4.0) return 1.0; return 0.0;
+            }
+             function getYoutubeVideoId(url) { 
+                 if (!url) return null;
+                let videoId = null;
+                const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+                const match = url.match(regex);
+                if (match) { videoId = match[1]; }
+                return videoId;
+             }
+
+            // --- RENDER FUNCTIONS ---
+            function updateDashboard() { 
+                if (!taskCountEl || !goalCountEl || !projectCountEl || !habitCountEl || !gpaDashboardEl) return;
+                taskCountEl.textContent = (state.tasks || []).filter(t => !t.completed).length;
+                goalCountEl.textContent = (state.goals || []).filter(g => !g.completed).length;
+                projectCountEl.textContent = (state.projects || []).length;
+                
+                const todayStr = getTodayDateString();
+                const habits = state.habits || [];
+                const completedHabitsToday = habits.filter(h => (h.completedDates || []).includes(todayStr)).length;
+                habitCountEl.textContent = `${completedHabitsToday}/${habits.length}`;
+
+                updateTodayClasses();
+                updateUpcomingEventOnDashboard();
+                calculateAndDisplayGpa();
+             }
+            function updateTodayClasses() { 
+                 if (!todayClassesList) return;
+                todayClassesList.innerHTML = '';
+                const dayMap = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                const today = dayMap[new Date().getDay()];
+                
+                const todayEntries = Object.entries(state.schedule || {}).filter(([key]) => key.startsWith(today));
+                
+                if (todayEntries.length === 0) {
+                    todayClassesList.innerHTML = `<p class="text-slate-500 text-sm">Không có lớp học nào hôm nay.</p>`;
+                    return;
                 }
-                const deleteTaskBtn = target.closest('.delete-project-task-btn');
-                if (deleteTaskBtn) {
-                    const projectId = parseInt(deleteTaskBtn.dataset.projectId, 10);
-                    const taskIndex = parseInt(deleteTaskBtn.dataset.taskIndex, 10);
-                    const project = (state.projects || []).find(p => p.id === projectId);
-                    if (project && project.tasks) {
-                        project.tasks.splice(taskIndex, 1);
-                        dataChanged = true;
+                
+                todayEntries.sort(([keyA], [keyB]) => {
+                    const timeA = keyA.split('-')[1];
+                    const timeB = keyB.split('-')[1];
+                    return timeA.localeCompare(timeB);
+                }).forEach(([key, value]) => {
+                    const time = key.split('-')[1];
+                    const li = document.createElement('li');
+                    li.className = 'flex justify-between items-center text-sm';
+                    li.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-white">${value.subject}</p>
+                            <p class="text-slate-400">${value.room || ''}</p>
+                        </div>
+                        <span class="font-mono bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md text-xs">${time}</span>`; 
+                    todayClassesList.appendChild(li);
+                });
+             }
+            function generateTimetable() { 
+                if (!timetableBody) return;
+                timetableBody.innerHTML = '';
+                const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+                
+                (state.timeSlots || defaultState.timeSlots).sort().forEach(time => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-slate-700'; 
+                    const timeCell = document.createElement('td');
+                    timeCell.className = 'time-slot-cell p-2 border-r border-slate-700 font-semibold text-slate-400';
+                    timeCell.innerHTML = `<div class="flex items-center justify-center gap-2"><span>${time}</span><button data-time="${time}" class="delete-time-slot-btn text-slate-600 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                    row.appendChild(timeCell);
+                    days.forEach(day => {
+                        const cell = document.createElement('td');
+                        cell.className = 'p-1 border-r border-slate-700 align-top';
+                        cell.dataset.id = `${day}-${time}`;
+                        row.appendChild(cell);
+                    });
+                    timetableBody.appendChild(row);
+                });
+                lucide.createIcons();
+                renderSchedule();
+             }
+            function renderSchedule() { 
+                 if (!timetableBody) return;
+                document.querySelectorAll('#timetable-body td[data-id]').forEach(cell => {
+                    cell.innerHTML = '';
+                    const cellId = cell.dataset.id;
+                    if (state.schedule && state.schedule[cellId]) {
+                        const entry = document.createElement('div');
+                        entry.className = 'timetable-entry';
+                        entry.innerHTML = `<p class="font-bold">${state.schedule[cellId].subject}</p><p>${state.schedule[cellId].room || ''}</p>`;
+                        cell.appendChild(entry);
                     }
+                });
+             }
+             function calculateAndDisplayGpa() { 
+                 if (!gpaResultEl || !gpaDashboardEl) return;
+                let totalPoints = 0, totalCredits = 0, totalPoints4 = 0;
+                (state.gpaSubjects || []).forEach(subject => {
+                    const credits = parseFloat(subject.credits) || 0;
+                    const score = parseFloat(subject.score) || 0;
+                    if (credits > 0 && score >= 0 && score <= 10) { 
+                        totalCredits += credits;
+                        totalPoints += score * credits;
+                        totalPoints4 += convertToScale4(score) * credits;
+                    }
+                });
+                const gpa10 = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+                const gpa4 = totalCredits > 0 ? (totalPoints4 / totalCredits) : 0;
+                gpaResultEl.textContent = gpa10.toFixed(2);
+                gpaResult4El.textContent = `(Hệ 4: ${gpa4.toFixed(2)})`;
+                gpaDashboardEl.textContent = gpa10 > 0 ? gpa10.toFixed(2) : 'N/A';
+             }
+            function renderGpaSubjects() { 
+                 if (!gpaSubjectsList) return;
+                gpaSubjectsList.innerHTML = '';
+                (state.gpaSubjects || []).forEach((subject, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b border-slate-800 last:border-b-0'; 
+                    tr.innerHTML = `
+                        <td class="p-2"><input type="text" class="gpa-input" data-index="${index}" data-field="name" value="${subject.name || ''}" placeholder="Tên môn học"></td>
+                        <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="credits" value="${subject.credits || ''}" min="0" placeholder="0"></td>
+                        <td class="p-2"><input type="number" class="gpa-input text-center" data-index="${index}" data-field="score" value="${subject.score || ''}" min="0" max="10" step="0.1" placeholder="0.0"></td>
+                        <td class="p-2 text-center"><button class="delete-gpa-subject-btn delete-btn" data-index="${index}"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>`;
+                    gpaSubjectsList.appendChild(tr);
+                });
+                lucide.createIcons();
+                calculateAndDisplayGpa(); 
+             }
+            function renderTasks() { 
+                if (!taskList) return;
+                taskList.innerHTML = '';
+                if (!state.tasks || state.tasks.length === 0) taskList.innerHTML = `<p class="text-slate-500 text-center py-4">Chưa có công việc nào.</p>`; 
+                else {
+                    state.tasks.forEach((task, index) => {
+                        const li = document.createElement('li');
+                        li.className = `task-item list-item ${task.completed ? 'completed opacity-60' : ''}`; 
+                        li.innerHTML = `
+                            <div class="list-item-content">
+                                 <input type="checkbox" data-index="${index}" class="custom-checkbox" ${task.completed ? 'checked' : ''}>
+                                 <span class="list-item-text">${task.text}</span>
+                            </div>
+                            <div class="list-item-actions">
+                                 <button data-index="${index}" class="delete-task-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                            </div>`;
+                        taskList.appendChild(li);
+                    });
                 }
-                if (dataChanged) { saveData(); }
-            });
-            projectList.addEventListener('submit', (e) => {
-                e.preventDefault();
-                if(e.target.classList.contains('add-project-task-form')) {
-                    const form = e.target;
-                    const input = form.querySelector('input');
-                    const text = input.value.trim();
-                    if(text) {
-                        const projectId = parseInt(input.dataset.projectId, 10);
-                        const project = (state.projects || []).find(p => p.id === projectId);
-                        if (project) {
-                            if (!project.tasks) project.tasks = [];
-                            project.tasks.push({ text: text, completed: false });
-                            saveData();
-                            form.reset();
+                lucide.createIcons();
+             }
+            function renderHabits() { 
+                if (!habitList) return;
+                habitList.innerHTML = '';
+                if (!state.habits || state.habits.length === 0) habitList.innerHTML = `<p class="text-slate-500 text-center py-4">Hãy bắt đầu xây dựng những thói quen tốt!</p>`;
+                else {
+                    const todayStr = getTodayDateString();
+                    state.habits.forEach((habit, index) => {
+                        const habitEl = document.createElement('div');
+                        habitEl.className = 'flex flex-wrap items-center justify-between p-3 rounded-lg border border-slate-700 gap-y-2 gap-x-4'; 
+                        let daysHTML = '';
+                        for (let i = 6; i >= 0; i--) {
+                            const date = new Date();
+                            date.setDate(date.getDate() - i);
+                            const dateStr = date.toISOString().split('T')[0];
+                            const isCompleted = (habit.completedDates || []).includes(dateStr);
+                            const isToday = (dateStr === todayStr);
+                            daysHTML += `<div class="habit-day rounded-full flex items-center justify-center ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}" data-date="${dateStr}" data-habit-index="${index}" title="${date.toLocaleDateString('vi-VN', {weekday: 'short', day:'numeric'})}"></div>`; 
+                        }
+                        habitEl.innerHTML = `
+                            <span class="text-white break-words mr-auto">${habit.name}</span> 
+                            <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0"> ${daysHTML} 
+                               <button data-index="${index}" class="delete-habit-btn delete-btn ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                             </div>`;
+                        habitList.appendChild(habitEl);
+                    });
+                }
+                lucide.createIcons();
+             }
+            function renderGoals() { 
+                if (!goalList) return;
+                goalList.innerHTML = '';
+                if (!state.goals || state.goals.length === 0) goalList.innerHTML = `<p class="text-slate-500 text-center py-4">Chưa có mục tiêu nào được đặt ra.</p>`;
+                else {
+                    state.goals.forEach((goal, index) => {
+                        const li = document.createElement('li');
+                         li.className = `goal-item list-item ${goal.completed ? 'completed opacity-60' : ''}`; 
+                        li.innerHTML = `
+                            <div class="list-item-content">
+                                 <input type="checkbox" data-index="${index}" class="custom-checkbox" ${goal.completed ? 'checked' : ''}>
+                                 <span class="list-item-text">${goal.text}</span>
+                            </div>
+                            <div class="list-item-actions">
+                                 <button data-index="${index}" class="delete-goal-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                            </div>`;
+                        goalList.appendChild(li);
+                    });
+                }
+                lucide.createIcons();
+             }
+            function renderProjects() { 
+                if (!projectList) return;
+                projectList.innerHTML = '';
+                if(!state.projects || state.projects.length === 0) projectList.innerHTML = `<p class="text-slate-500 col-span-full text-center py-4">Chưa có dự án nào. Hãy bắt đầu một dự án mới!</p>`;
+                else {
+                    state.projects.forEach(project => {
+                        const projectCard = document.createElement('div');
+                        projectCard.className = 'card p-4 rounded-xl flex flex-col gap-4';
+                        const projectTasks = project.tasks || []; 
+                        const completedTasks = projectTasks.filter(t => t.completed).length;
+                        const totalTasks = projectTasks.length;
+                        const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+                        let tasksHTML = '<ul class="space-y-2">';
+                        projectTasks.forEach((task, taskIndex) => {
+                            tasksHTML += `<li class="project-task flex items-center justify-between text-sm ${task.completed ? 'completed opacity-60' : ''}"><div class="flex items-center gap-2 min-w-0"><input type="checkbox" data-project-id="${project.id}" data-task-index="${taskIndex}" class="custom-checkbox !w-4 !h-4" ${task.completed ? 'checked' : ''}><span class="break-words">${task.text}</span></div><button data-project-id="${project.id}" data-task-index="${taskIndex}" class="delete-project-task-btn text-slate-600 hover:text-red-500 flex-shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button></li>`;
+                        });
+                        tasksHTML += '</ul>';
+                        projectCard.innerHTML = `<div><div class="flex justify-between items-start gap-2"><h3 class="font-bold text-white text-lg break-words">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn delete-btn flex-shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-slate-400"><div class="progress-bar w-full rounded-full overflow-hidden"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${Math.round(progress)}%</span></div></div><div>${tasksHTML.length > 14 ? tasksHTML : '<p class="text-slate-500 text-sm">Chưa có giai đoạn nào.</p>'}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-slate-700 border border-slate-600 rounded-md px-3 py-1 text-sm focus:ring-indigo-500 focus:border-indigo-500" required><button type="submit" class="btn btn-primary btn-sm !p-1.5"><i data-lucide="plus" class="w-4 h-4"></i></button></form>`; 
+                        projectList.appendChild(projectCard);
+                    });
+                }
+                lucide.createIcons();
+             }
+            function renderEvents() { 
+                if (!eventList) return;
+                eventList.innerHTML = '';
+                if(!state.events || state.events.length === 0) eventList.innerHTML = `<p class="text-slate-500 text-center py-4">Chưa có sự kiện nào được thêm.</p>`;
+                else {
+                    state.events.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(event => {
+                        const eventEl = document.createElement('div');
+                        eventEl.className = 'flex flex-wrap items-center justify-between p-4 rounded-lg border border-slate-700 gap-y-2 gap-x-4'; // Added gap-x
+                        eventEl.innerHTML = `
+                             <div class="min-w-0 mr-4"> 
+                                 <p class="font-semibold text-white break-words">${event.name}</p>
+                                 <p class="text-sm text-slate-400">${new Date(event.date).toLocaleString('vi-VN', { dateStyle: 'short', timeStyle: 'short' })}</p> <!-- Shorter date format -->
+                             </div>
+                             <div class="flex items-center gap-4 flex-shrink-0">
+                                 <div id="countdown-${event.id}" class="text-base font-semibold text-indigo-400"></div> <!-- Smaller countdown text -->
+                                 <button data-event-id="${event.id}" class="delete-event-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                             </div>`;
+                        eventList.appendChild(eventEl);
+                    });
+                }
+                lucide.createIcons();
+             }
+            function updateCountdowns() { 
+                if (!state.events) return;
+                const now = Date.now(); // Get current time once
+                state.events.forEach(event => {
+                    const countdownEl = document.getElementById(`countdown-${event.id}`);
+                    if (countdownEl) {
+                        const eventTime = new Date(event.date).getTime();
+                         if (isNaN(eventTime)) { // Check for invalid date
+                            countdownEl.textContent = "Lỗi ngày";
+                            return;
+                        }
+                        const diff = eventTime - now;
+                        if (diff > 0) {
+                            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            if (days > 1) { countdownEl.textContent = `${days} ngày`; } 
+                            else if (days === 1) { countdownEl.textContent = `1d ${hours}h`; } 
+                            else if (hours > 0) { countdownEl.textContent = `${hours}h ${minutes}m`; } 
+                            else if (minutes > 0) { countdownEl.textContent = `${minutes} phút`; }
+                            else { countdownEl.textContent = `< 1 phút`; } // Handle < 1 min case
+                        } else {
+                            countdownEl.textContent = "Đã qua";
                         }
                     }
+                });
+                updateUpcomingEventOnDashboard();
+             }
+            function updateUpcomingEventOnDashboard() { 
+                 if (!upcomingEventDashboard || !state.events) return;
+                const now = new Date();
+                const upcomingEvents = state.events.filter(e => new Date(e.date) > now).sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (upcomingEvents.length > 0) {
+                    const nextEvent = upcomingEvents[0];
+                    const diff = new Date(nextEvent.date) - now;
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    upcomingEventDashboard.innerHTML = `<p class="text-sm text-center text-indigo-300 mb-2">SỰ KIỆN SẮP TỚI</p><h3 class="text-xl font-bold text-center text-white mb-4">${nextEvent.name}</h3><div class="flex justify-center items-center gap-2 md:gap-4 text-center"><div><span class="countdown-digits">${String(days).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">NGÀY</span></div><div><span class="countdown-digits">${String(hours).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">GIỜ</span></div><div><span class="countdown-digits">${String(minutes).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">PHÚT</span></div><div><span class="countdown-digits">${String(seconds).padStart(2, '0')}</span><span class="text-xs text-slate-400 mt-1 block">GIÂY</span></div></div>`;
+                } else {
+                    upcomingEventDashboard.innerHTML = `<p class="text-center text-slate-400">Không có sự kiện nào sắp tới. Hãy thêm lịch thi hoặc hạn chót mới!</p>`;
                 }
-            });
-            eventForm.addEventListener('submit', e => {
-                e.preventDefault();
-                const name = eventInput.value.trim();
-                const date = eventDateInput.value;
-                if(name && date) {
-                     if (!state.events) state.events = [];
-                    state.events.push({ id: Date.now(), name, date });
-                    saveData();
-                    eventForm.reset();
+             }
+            function updateTimerDisplay() { 
+                if (!timerDisplay) return;
+                const minutes = Math.floor(timeInSeconds / 60);
+                const seconds = timeInSeconds % 60;
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                if (isRunning) { document.title = `${timerDisplay.textContent} - Student Hub`; } 
+                else { document.title = 'Góc Học Tập của Sinh Viên'; }
+                if(pomodoroSessionsEl) pomodoroSessionsEl.textContent = state.pomodoroSessions || 0;
+             }
+            function renderNotes() { 
+                if (notesTextarea) { notesTextarea.value = state.notes || ''; }
+             }
+            function renderResources() { 
+                if (!resourceList) return;
+                resourceList.innerHTML = '';
+                if (!state.resources || state.resources.length === 0) resourceList.innerHTML = `<p class="text-slate-500 text-center py-4">Chưa có tài nguyên nào.</p>`;
+                else {
+                    state.resources.forEach((resource, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-item';
+                        li.innerHTML = `
+                             <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="list-item-content text-indigo-400 hover:underline">
+                                 <i data-lucide="link-2" class="w-5 h-5 flex-shrink-0"></i>
+                                 <span class="list-item-text !text-indigo-400 truncate">${resource.name}</span>
+                             </a>
+                             <div class="list-item-actions">
+                                <button data-index="${index}" class="delete-resource-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                             </div>`;
+                        resourceList.appendChild(li);
+                    });
                 }
-            });
-            eventList.addEventListener('click', e => {
-                if(e.target.closest('.delete-event-btn')) {
-                    const eventId = parseInt(e.target.closest('.delete-event-btn').dataset.eventId);
-                    if(state.events) state.events = state.events.filter(ev => ev.id !== eventId);
-                    saveData();
+                lucide.createIcons();
+             }
+            function renderMusicOptions() { 
+                if (!musicSelection || !musicPlayer) return;
+                musicSelection.innerHTML = '';
+                const allMusic = [...defaultMusicOptionsGlobal, ...(state.userMusic || [])];
+                
+                allMusic.forEach(option => {
+                    const isActive = option.videoId === state.currentMusicId;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `music-option-btn flex items-center gap-3 w-full text-left p-3 rounded-lg border transition-colors cursor-pointer ${isActive ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-300'}`; 
+                    itemDiv.dataset.videoId = option.videoId;
+                    
+                    let deleteButtonHTML = '';
+                    if (option.isCustom) {
+                        deleteButtonHTML = `<button type="button" class="delete-music-btn delete-btn ml-auto p-1 rounded-full flex-shrink-0" data-video-id="${option.videoId}"><i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i></button>`; 
+                    }
+                    
+                    itemDiv.innerHTML = `
+                        <i data-lucide="${option.icon}" class="w-5 h-5 flex-shrink-0"></i>
+                        <span class="font-semibold flex-grow truncate text-sm">${option.name}</span> 
+                        ${deleteButtonHTML}
+                    `;
+                    musicSelection.appendChild(itemDiv);
+                });
+                
+                const allIds = allMusic.map(m => m.videoId);
+                if (!state.currentMusicId || !allIds.includes(state.currentMusicId)) {
+                    state.currentMusicId = defaultMusicOptionsGlobal[0].videoId;
                 }
-            });
+
+                // Update iframe source only if necessary
+                const currentSrc = musicPlayer.src;
+                 const newSrc = `https://www.youtube.com/embed/${state.currentMusicId}`;
+                 if (!currentSrc.includes(state.currentMusicId)) { 
+                    musicPlayer.src = newSrc;
+                 }
+                lucide.createIcons();
+             }
+
+            // --- FULL RENDER ALL FUNCTION ---
+             function renderAll() {
+                 try {
+                     // Ensure state properties exist before rendering, assign defaults if needed
+                     state.tasks = state.tasks || [];
+                     state.goals = state.goals || [];
+                     state.habits = state.habits || [];
+                     state.resources = state.resources || [];
+                     state.projects = state.projects || [];
+                     state.events = state.events || [];
+                     state.gpaSubjects = state.gpaSubjects || [];
+                     state.userMusic = state.userMusic || [];
+                     state.schedule = state.schedule || {};
+                     state.timeSlots = Array.isArray(state.timeSlots) && state.timeSlots.length > 0 ? state.timeSlots : [...defaultState.timeSlots]; // More robust check
+                     state.currentMusicId = state.currentMusicId || defaultState.currentMusicId;
+                     state.pomodoroSessions = state.pomodoroSessions === undefined ? defaultState.pomodoroSessions : state.pomodoroSessions; // Handle 0 correctly
+                     state.notes = state.notes === undefined ? defaultState.notes : state.notes; // Handle empty string correctly
+                     state.displayName = state.displayName || defaultState.displayName; 
+
+                    // Call render functions only if corresponding elements exist
+                    if (notesTextarea) renderNotes();
+                    if (taskList) renderTasks();
+                    if (goalList) renderGoals();
+                    if (habitList) renderHabits();
+                    if (resourceList) renderResources();
+                    if (projectList) renderProjects();
+                    if (eventList) renderEvents();
+                    if (gpaSubjectsList) renderGpaSubjects();
+                    if (timetableBody) generateTimetable(); // Calls renderSchedule
+                    if (timerDisplay) updateTimerDisplay();
+                    if (musicSelection) renderMusicOptions();
+                    if (taskCountEl) updateDashboard(); // Calls other dashboard updates
+                } catch (error) {
+                    console.error("Error during renderAll:", error);
+                    showTemporaryMessage("Đã xảy ra lỗi khi hiển thị dữ liệu.", "error");
+                }
+            }
+             // --- POMODORO TIMER FUNCTIONS ---
             function startTimer() {
+                if (isRunning) return; 
                 isRunning = true;
-                startPauseBtn.textContent = 'Tạm dừng';
+                if(startPauseBtn) startPauseBtn.textContent = 'Tạm dừng';
                 timer = setInterval(() => {
                     timeInSeconds--;
                     updateTimerDisplay();
                     if (timeInSeconds <= 0) {
                         clearInterval(timer);
                         isRunning = false;
+                        if(startPauseBtn) startPauseBtn.textContent = 'Bắt đầu'; 
+                        
                         if (currentMode === 'pomodoro' || currentMode === 'long-focus') {
                             state.pomodoroSessions = (state.pomodoroSessions || 0) + 1;
                             saveData();
+                             showTemporaryMessage("Hoàn thành phiên tập trung!", "success");
+                        } else {
+                            showTemporaryMessage("Đã hết giờ nghỉ!", "info");
                         }
-                        // Add notification or sound here if desired
+                         
+                         // Play sound (consider user setting later)
+                         try {
+                             const alarm = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.wav'); // Example sound
+                            alarm.play().catch(e => console.warn("Audio play failed:", e)); // Catch potential play errors
+                         } catch(e) { console.error("Could not create or play sound:", e); }
+
+                         resetTimer(); // Reset to the current mode's default time
                     }
                 }, 1000);
             }
-            function pauseTimer() { isRunning = false; startPauseBtn.textContent = 'Bắt đầu'; clearInterval(timer); }
-            function resetTimer() {
-                pauseTimer();
-                let minutes;
-                if(currentMode === 'pomodoro') minutes = 25; else if (currentMode === 'long-focus') minutes = 50; else if (currentMode === 'short') minutes = 5; else if (currentMode === 'long') minutes = 15;
-                timeInSeconds = minutes * 60;
-                updateTimerDisplay();
+            function pauseTimer() { 
+                if (!isRunning) return;
+                isRunning = false; 
+                if(startPauseBtn) startPauseBtn.textContent = 'Bắt đầu'; 
+                clearInterval(timer); 
             }
-            startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
-            resetBtn.addEventListener('click', resetTimer);
-            function switchMode(mode, minutes) {
-                currentMode = mode;
-                pauseTimer();
+            function resetTimer() {
+                pauseTimer(); // Stop the timer first
+                let minutes;
+                if(currentMode === 'pomodoro') minutes = 25; 
+                else if (currentMode === 'long-focus') minutes = 50; 
+                else if (currentMode === 'short') minutes = 5; 
+                else if (currentMode === 'long') minutes = 15;
+                else minutes = 25; // Default fallback
+                
                 timeInSeconds = minutes * 60;
-                updateTimerDisplay();
-                [pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn].forEach(btn => btn.classList.replace('bg-indigo-600', 'bg-slate-600'));
+                updateTimerDisplay(); // Update display immediately
+            }
+             function switchMode(mode, minutes) {
+                 if (!pomodoroBtn) return; // Check if elements exist
+                currentMode = mode;
+                resetTimer(); // Reset timer when switching mode
+                [pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn].forEach(btn => {
+                     if(btn) btn.classList.replace('bg-indigo-600', 'bg-slate-600')
+                });
                 const btnMap = {pomodoro: pomodoroBtn, 'long-focus': longFocusBtn, short: shortBreakBtn, long: longBreakBtn};
                 if(btnMap[mode]) btnMap[mode].classList.replace('bg-slate-600', 'bg-indigo-600');
             }
-            pomodoroBtn.addEventListener('click', () => switchMode('pomodoro', 25));
-            longFocusBtn.addEventListener('click', () => switchMode('long-focus', 50));
-            shortBreakBtn.addEventListener('click', () => switchMode('short', 5));
-            longBreakBtn.addEventListener('click', () => switchMode('long', 15));
-            notesTextarea.addEventListener('input', () => { 
-                state.notes = notesTextarea.value;
-                saveData(); 
-            });
-            resourceForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('resource-name-input').value.trim();
-                const url = document.getElementById('resource-url-input').value.trim();
-                if (name && url) {
-                    if (!state.resources) state.resources = [];
-                    state.resources.push({name, url});
-                    saveData();
-                    e.target.reset();
-                }
-            });
-            resourceList.addEventListener('click', (e) => {
-                if (e.target.closest('.delete-resource-btn')) {
-                    const index = e.target.closest('.delete-resource-btn').dataset.index;
-                    if (state.resources) state.resources.splice(index, 1);
-                    saveData();
-                }
-            });
-            musicSelection.addEventListener('click', e => {
-                const deleteBtn = e.target.closest('.delete-music-btn');
-                if (deleteBtn) {
-                    e.stopPropagation();
-                    const videoIdToDelete = deleteBtn.dataset.videoId;
-                    if(state.userMusic) state.userMusic = state.userMusic.filter(music => music.videoId !== videoIdToDelete);
-                    if (state.currentMusicId === videoIdToDelete) {
-                        state.currentMusicId = 'jfKfPfyJRdk';
-                    }
-                    saveData();
-                    return;
-                }
-                const optionBtn = e.target.closest('.music-option-btn');
-                if (optionBtn) {
-                    state.currentMusicId = optionBtn.dataset.videoId;
-                    musicPlayer.src = `https://www.youtube.com/embed/${state.currentMusicId}?autoplay=1`;
-                    saveData();
-                }
-            });
-            addMusicForm.addEventListener('submit', e => {
-                e.preventDefault();
-                const name = musicNameInput.value.trim();
-                const url = musicUrlInput.value.trim();
-                const videoId = getYoutubeVideoId(url);
-                const defaultMusicOptions = [ { name: 'Lofi Hip Hop Radio', videoId: 'jfKfPfyJRdk'} ];
 
 
-                if (name && videoId) {
-                    const allMusic = [...defaultMusicOptions, ...(state.userMusic || [])];
-                    if (allMusic.some(option => option.videoId === videoId)) {
-                        musicUrlInput.value = "Link này đã tồn tại!";
-                        setTimeout(() => { addMusicForm.reset(); }, 2000);
-                        return;
-                    }
-                    if (!state.userMusic) state.userMusic = [];
-                    state.userMusic.push({ name, videoId, icon: 'list-music', isCustom: true });
-                    saveData();
-                    addMusicForm.reset();
-                } else {
-                    musicUrlInput.classList.add('border-red-500', 'placeholder-red-400');
-                    musicUrlInput.placeholder = "Link YouTube không hợp lệ!";
-                    setTimeout(() => {
-                        musicUrlInput.classList.remove('border-red-500', 'placeholder-red-400');
-                        musicUrlInput.placeholder = "Dán link YouTube vào đây";
-                    }, 2500);
+            // --- DOMContentLoaded ---
+            document.addEventListener('DOMContentLoaded', () => {
+                initializeUIElements(); // Assign all UI elements first
+                lucide.createIcons(); // Initialize icons
+                
+                // --- EVENT LISTENERS ---
+                if (authForm) {
+                    authForm.addEventListener('submit', async (e) => {
+                         e.preventDefault();
+                        const email = emailInput.value;
+                        const password = passwordInput.value;
+                        authSubmitBtn.disabled = true;
+                        authSubmitBtn.textContent = 'Đang xử lý...';
+                        authError.classList.add('hidden'); 
+
+                        if (isLoginMode) {
+                            try {
+                                await signInWithEmailAndPassword(auth, email, password);
+                            } catch (error) {
+                                 console.error("Login error:", error.code, error.message); 
+                                showAuthError(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential' ? 'Sai email hoặc mật khẩu.' : 'Đã có lỗi xảy ra khi đăng nhập.');
+                                 authSubmitBtn.disabled = false; 
+                                 updateAuthUI();
+                            }
+                        } else { 
+                            const name = nameInput.value.trim();
+                            if (!name) {
+                                showAuthError('Vui lòng nhập họ và tên của bạn.');
+                                authSubmitBtn.disabled = false;
+                                updateAuthUI();
+                                return;
+                            }
+                            try {
+                                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                                const user = userCredential.user;
+                                await updateProfile(user, { displayName: name });
+                                const userDocRef = doc(db, "users", user.uid);
+                                await setDoc(userDocRef, { ...defaultState, displayName: name }); 
+                            } catch (error) {
+                                 console.error("Signup error:", error.code, error.message); 
+                                showAuthError(error.code === 'auth/email-already-in-use' ? 'Email này đã được sử dụng.' : 'Mật khẩu phải yếu hoặc email không hợp lệ.');
+                                authSubmitBtn.disabled = false; 
+                                updateAuthUI();
+                            }
+                        }
+                        // Re-enable button ONLY if error occurred
+                        setTimeout(() => { 
+                             if (!auth.currentUser && authSubmitBtn) {
+                                 authSubmitBtn.disabled = false;
+                                 updateAuthUI(); 
+                            }
+                        }, 100); 
+                    });
+                } else { console.error("Auth form not found"); }
+
+                if (logoutBtn) logoutBtn.addEventListener('click', () => signOut(auth));
+                if (authToggleLink) authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; updateAuthUI(); });
+
+                // Mobile Sidebar Logic
+                if (menuToggle) {
+                    menuToggle.addEventListener('click', () => {
+                         if(sidebar && sidebarOverlay){
+                            sidebar.classList.remove('-translate-x-full');
+                            sidebarOverlay.classList.remove('hidden');
+                             requestAnimationFrame(() => { 
+                                sidebarOverlay.classList.remove('opacity-0');
+                             });
+                        }
+                    });
                 }
-            });
-            
-            // --- INITIAL SETUP ---
-            setInterval(updateCountdowns, 1000);
-            
-            // Initial Auth UI setup needs to happen here as well
-            updateAuthUI(); 
-        });
+                if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+                if (navLinks) {
+                    navLinks.forEach(link => link.addEventListener('click', (e) => {
+                         e.preventDefault(); 
+                        const targetId = link.getAttribute('data-target');
+                        if (window.innerWidth < 1024) closeSidebar(); 
+
+                        navLinks.forEach(nav => nav.classList.remove('active'));
+                        link.classList.add('active');
+                        contentSections.forEach(section => {
+                            if(section) section.classList.toggle('hidden', section.id !== targetId);
+                        });
+                        if (mainContent) mainContent.scrollTo(0, 0); 
+                    }));
+                }
+
+                // Timetable listeners
+                 if (timetableBody) {
+                    timetableBody.addEventListener('click', (e) => {
+                        const cell = e.target.closest('td[data-id]');
+                        if (cell && scheduleModal) { 
+                            const cellId = cell.dataset.id;
+                            modalCellId.value = cellId;
+                            const [day, time] = cellId.split('-');
+                            document.getElementById('modal-title').textContent = `Lịch học: ${day} lúc ${time}`;
+                            if (state.schedule && state.schedule[cellId]) { 
+                                subjectNameInput.value = state.schedule[cellId].subject;
+                                subjectRoomInput.value = state.schedule[cellId].room || ''; 
+                                deleteScheduleBtn.classList.remove('hidden');
+                            } else {
+                                scheduleForm.reset();
+                                deleteScheduleBtn.classList.add('hidden');
+                            }
+                            scheduleModal.classList.remove('hidden');
+                            scheduleModal.classList.add('flex');
+                        }
+                        const deleteBtn = e.target.closest('.delete-time-slot-btn');
+                        if (deleteBtn && confirmDeleteModal) { 
+                            timeToDeleteHolder = deleteBtn.dataset.time;
+                            confirmDeleteMessage.textContent = `Bạn có chắc muốn xóa khung giờ ${timeToDeleteHolder} và tất cả các lớp học trong đó không?`;
+                            confirmDeleteModal.classList.remove('hidden');
+                            confirmDeleteModal.classList.add('flex');
+                        }
+                    });
+                }
+                if(addTimeSlotBtn && addTimeModal) addTimeSlotBtn.addEventListener('click', () => { addTimeModal.classList.remove('hidden'); addTimeModal.classList.add('flex'); });
+                if(closeAddTimeModalBtn && addTimeModal) closeAddTimeModalBtn.addEventListener('click', () => { addTimeModal.classList.add('hidden'); addTimeModal.classList.remove('flex'); });
+                if(addTimeForm && addTimeModal) { 
+                    addTimeForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const newTime = newTimeInput.value;
+                         if (newTime) {
+                             if (!state.timeSlots) state.timeSlots = []; 
+                            if (!state.timeSlots.includes(newTime)) {
+                                state.timeSlots.push(newTime);
+                                saveData(); 
+                            } else { showTemporaryMessage("Khung giờ này đã tồn tại.", "warning"); }
+                            addTimeForm.reset();
+                            addTimeModal.classList.add('hidden');
+                            addTimeModal.classList.remove('flex');
+                        }
+                    });
+                }
+                if(cancelDeleteBtn && confirmDeleteModal) cancelDeleteBtn.addEventListener('click', () => { confirmDeleteModal.classList.add('hidden'); confirmDeleteModal.classList.remove('flex'); timeToDeleteHolder = null; });
+                if(confirmDeleteBtn && confirmDeleteModal) { 
+                    confirmDeleteBtn.addEventListener('click', () => {
+                        if(timeToDeleteHolder) {
+                            state.timeSlots = (state.timeSlots || []).filter(t => t !== timeToDeleteHolder);
+                            Object.keys(state.schedule || {}).forEach(key => { if (key.endsWith(`-${timeToDeleteHolder}`)) { delete state.schedule[key]; } });
+                            saveData(); 
+                            confirmDeleteModal.classList.add('hidden');
+                            confirmDeleteModal.classList.remove('flex');
+                            timeToDeleteHolder = null;
+                        }
+                    });
+                }
+                if(closeScheduleModalBtn && scheduleModal) closeScheduleModalBtn.addEventListener('click', () => { scheduleModal.classList.add('hidden'); scheduleModal.classList.remove('flex'); });
+                if(scheduleForm && scheduleModal) { 
+                     scheduleForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const cellId = modalCellId.value;
+                        const subject = subjectNameInput.value.trim();
+                        const room = subjectRoomInput.value.trim();
+                        if (cellId && subject) {
+                            if (!state.schedule) state.schedule = {}; 
+                            state.schedule[cellId] = { subject, room };
+                            saveData(); 
+                            scheduleModal.classList.add('hidden');
+                            scheduleModal.classList.remove('flex');
+                        }
+                    });
+                }
+                  if(deleteScheduleBtn && scheduleModal) { 
+                      deleteScheduleBtn.addEventListener('click', () => {
+                         const cellId = modalCellId.value;
+                         if (cellId && state.schedule && state.schedule[cellId]) { 
+                             delete state.schedule[cellId];
+                             saveData(); 
+                             scheduleModal.classList.add('hidden');
+                             scheduleModal.classList.remove('flex');
+                         }
+                    });
+                  }
+                  
+                 if (addGpaSubjectBtn) addGpaSubjectBtn.addEventListener('click', () => { if (!state.gpaSubjects) state.gpaSubjects = []; state.gpaSubjects.push({ name: '', credits: '', score: '' }); saveData(); });
+                  if(gpaSubjectsList){ 
+                        gpaSubjectsList.addEventListener('input', e => {
+                            if(e.target.matches('.gpa-input')) {
+                                const index = e.target.dataset.index;
+                                const field = e.target.dataset.field;
+                                if (!state.gpaSubjects) state.gpaSubjects = [];
+                                if(!state.gpaSubjects[index]) return; 
+                                state.gpaSubjects[index][field] = e.target.value;
+                                calculateAndDisplayGpa(); 
+                                saveData(); 
+                            }
+                        });
+                        gpaSubjectsList.addEventListener('click', e => {
+                            if(e.target.closest('.delete-gpa-subject-btn')) {
+                                const index = e.target.closest('.delete-gpa-subject-btn').dataset.index;
+                                if (state.gpaSubjects) state.gpaSubjects.splice(index, 1);
+                                saveData(); 
+                            }
+                        });
+                  }
+                   if(taskForm) { 
+                        taskForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            const text = taskInput.value.trim();
+                            if (text) {
+                                if (!state.tasks) state.tasks = [];
+                                state.tasks.push({ text, completed: false });
+                                saveData(); 
+                                taskForm.reset();
+                            }
+                        });
+                   }
+                    if(taskList) { 
+                        taskList.addEventListener('click', (e) => {
+                            const target = e.target;
+                            const index = target.dataset.index ?? target.closest('[data-index]')?.dataset.index; 
+                            if (index === undefined) return; 
+
+                            if (target.matches('.custom-checkbox')) {
+                                if(state.tasks && state.tasks[index]) {
+                                     state.tasks[index].completed = target.checked;
+                                     saveData(); 
+                                }
+                            } else if (target.closest('.delete-task-btn')) {
+                                 if(state.tasks) {
+                                     state.tasks.splice(index, 1);
+                                     saveData(); 
+                                 }
+                            }
+                        });
+                    }
+                     if(habitForm) { 
+                         habitForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            const name = habitInput.value.trim();
+                            if (name) {
+                                if (!state.habits) state.habits = [];
+                                state.habits.push({ name: name, completedDates: [] });
+                                saveData(); 
+                                habitForm.reset();
+                            }
+                        });
+                     }
+                      if(habitList) { 
+                          habitList.addEventListener('click', (e) => {
+                            const target = e.target;
+                             const deleteBtn = target.closest('.delete-habit-btn');
+                             const habitDay = target.closest('.habit-day.today');
+
+                            if (deleteBtn) {
+                                 const index = deleteBtn.dataset.index;
+                                 if(state.habits && state.habits[index]) {
+                                     state.habits.splice(index, 1);
+                                     saveData(); 
+                                 }
+                            } else if (habitDay) {
+                                const dateStr = habitDay.dataset.date;
+                                const habitIndex = habitDay.dataset.habitIndex;
+                                if(state.habits && state.habits[habitIndex]) {
+                                    if (!state.habits[habitIndex].completedDates) state.habits[habitIndex].completedDates = [];
+                                    const dateIndex = state.habits[habitIndex].completedDates.indexOf(dateStr);
+                                    if (dateIndex > -1) {
+                                        state.habits[habitIndex].completedDates.splice(dateIndex, 1);
+                                    } else {
+                                        state.habits[habitIndex].completedDates.push(dateStr);
+                                    }
+                                    saveData(); 
+                                }
+                            }
+                        });
+                      }
+                      if(goalForm) { 
+                          goalForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            const text = goalInput.value.trim();
+                            if (text) {
+                                if (!state.goals) state.goals = [];
+                                state.goals.push({ text, completed: false });
+                                saveData(); 
+                                goalForm.reset();
+                            }
+                        });
+                      }
+                      if(goalList) { 
+                          goalList.addEventListener('click', (e) => {
+                            const target = e.target;
+                             const index = target.dataset.index ?? target.closest('[data-index]')?.dataset.index; 
+                             if (index === undefined) return;
+
+                            if (target.matches('.custom-checkbox')) {
+                                if(state.goals && state.goals[index]) {
+                                     state.goals[index].completed = target.checked;
+                                      saveData(); 
+                                }
+                            } else if (target.closest('.delete-goal-btn')) {
+                                if(state.goals) {
+                                     state.goals.splice(index, 1);
+                                      saveData(); 
+                                }
+                            }
+                        });
+                      }
+                      if(projectForm) { 
+                          projectForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            const name = projectInput.value.trim();
+                            if (name) {
+                                if (!state.projects) state.projects = [];
+                                state.projects.push({ id: Date.now(), name: name, tasks: [] });
+                                saveData(); 
+                                projectForm.reset();
+                            }
+                        });
+                      }
+                      if(projectList){ 
+                            projectList.addEventListener('click', (e) => { 
+                                const target = e.target;
+                                let dataChanged = false;
+                                const deleteBtn = target.closest('.delete-project-btn');
+                                const checkbox = target.closest('.project-task .custom-checkbox');
+                                const deleteTaskBtn = target.closest('.delete-project-task-btn');
+
+                                if (deleteBtn) {
+                                    const projectId = parseInt(deleteBtn.dataset.projectId, 10);
+                                    state.projects = (state.projects || []).filter(p => p.id !== projectId);
+                                    dataChanged = true;
+                                } else if (checkbox) {
+                                    const projectId = parseInt(checkbox.dataset.projectId, 10);
+                                    const taskIndex = parseInt(checkbox.dataset.taskIndex, 10);
+                                    const project = (state.projects || []).find(p => p.id === projectId);
+                                    if (project && project.tasks && project.tasks[taskIndex]) {
+                                        project.tasks[taskIndex].completed = checkbox.checked;
+                                        dataChanged = true;
+                                    }
+                                } else if (deleteTaskBtn) {
+                                    const projectId = parseInt(deleteTaskBtn.dataset.projectId, 10);
+                                    const taskIndex = parseInt(deleteTaskBtn.dataset.taskIndex, 10);
+                                    const project = (state.projects || []).find(p => p.id === projectId);
+                                    if (project && project.tasks) {
+                                        project.tasks.splice(taskIndex, 1);
+                                        dataChanged = true;
+                                    }
+                                }
+                                if (dataChanged) { saveData(); } 
+                             });
+                            projectList.addEventListener('submit', (e) => { 
+                                e.preventDefault();
+                                if(e.target.classList.contains('add-project-task-form')) {
+                                    const form = e.target;
+                                    const input = form.querySelector('input');
+                                    const text = input.value.trim();
+                                    if(text) {
+                                        const projectId = parseInt(input.dataset.projectId, 10);
+                                        const project = (state.projects || []).find(p => p.id === projectId);
+                                        if (project) {
+                                            if (!project.tasks) project.tasks = [];
+                                            project.tasks.push({ text: text, completed: false });
+                                            saveData(); 
+                                            form.reset();
+                                        }
+                                    }
+                                }
+                             });
+                        }
+                         if(eventForm) { 
+                             eventForm.addEventListener('submit', e => {
+                                e.preventDefault();
+                                const name = eventInput.value.trim();
+                                const date = eventDateInput.value;
+                                if(name && date) {
+                                     if (!state.events) state.events = [];
+                                    state.events.push({ id: Date.now(), name, date });
+                                    saveData(); 
+                                    eventForm.reset();
+                                }
+                            });
+                         }
+                          if(eventList) { 
+                               eventList.addEventListener('click', e => {
+                                if(e.target.closest('.delete-event-btn')) {
+                                    const eventId = parseInt(e.target.closest('.delete-event-btn').dataset.eventId);
+                                    if(state.events) state.events = state.events.filter(ev => ev.id !== eventId);
+                                    saveData(); 
+                                }
+                            });
+                          }
+                         if (startPauseBtn) startPauseBtn.addEventListener('click', () => isRunning ? pauseTimer() : startTimer());
+                         if (resetBtn) resetBtn.addEventListener('click', resetTimer);
+                         if (pomodoroBtn) pomodoroBtn.addEventListener('click', () => switchMode('pomodoro', 25));
+                         if (longFocusBtn) longFocusBtn.addEventListener('click', () => switchMode('long-focus', 50));
+                         if (shortBreakBtn) shortBreakBtn.addEventListener('click', () => switchMode('short', 5));
+                         if (longBreakBtn) longBreakBtn.addEventListener('click', () => switchMode('long', 15));
+                         if (notesTextarea) notesTextarea.addEventListener('input', () => { state.notes = notesTextarea.value; saveData(); });
+                         if (resourceForm) { 
+                            resourceForm.addEventListener('submit', (e) => {
+                                e.preventDefault();
+                                const nameInputEl = document.getElementById('resource-name-input');
+                                const urlInputEl = document.getElementById('resource-url-input');
+                                const name = nameInputEl.value.trim();
+                                const url = urlInputEl.value.trim();
+                                 let isValidUrl = false;
+                                 try { new URL(url); isValidUrl = url.startsWith('http://') || url.startsWith('https://'); } catch (_) { isValidUrl = false; }
+                                 urlInputEl.classList.remove('border-red-500'); 
+                                if (name && isValidUrl) {
+                                    if (!state.resources) state.resources = [];
+                                    state.resources.push({name, url});
+                                    saveData(); 
+                                    e.target.reset();
+                                } else if (!isValidUrl) { urlInputEl.classList.add('border-red-500'); showTemporaryMessage("URL không hợp lệ.", "error"); } 
+                                  else if (!name) { showTemporaryMessage("Vui lòng nhập tên tài nguyên.", "error"); }
+                            });
+                          }
+                           if (resourceList) { 
+                            resourceList.addEventListener('click', (e) => {
+                                if (e.target.closest('.delete-resource-btn')) {
+                                    const index = e.target.closest('.delete-resource-btn').dataset.index;
+                                    if (state.resources && state.resources[index] !== undefined) {
+                                         state.resources.splice(index, 1);
+                                         saveData(); 
+                                    }
+                                }
+                            });
+                          }
+                           if (musicSelection) { 
+                                musicSelection.addEventListener('click', e => {
+                                    const deleteBtn = e.target.closest('.delete-music-btn');
+                                    if (deleteBtn) {
+                                        e.stopPropagation(); 
+                                        const videoIdToDelete = deleteBtn.dataset.videoId;
+                                        if(state.userMusic) state.userMusic = state.userMusic.filter(music => music.videoId !== videoIdToDelete);
+                                        if (state.currentMusicId === videoIdToDelete) {
+                                            state.currentMusicId = defaultMusicOptionsGlobal[0].videoId; 
+                                        }
+                                        saveData(); 
+                                        return; 
+                                    }
+                                    const optionBtn = e.target.closest('.music-option-btn');
+                                    if (optionBtn) {
+                                        state.currentMusicId = optionBtn.dataset.videoId;
+                                        if(musicPlayer) musicPlayer.src = `https://www.youtube.com/embed/${state.currentMusicId}?autoplay=1`;
+                                        saveData(); 
+                                        renderMusicOptions(); 
+                                    }
+                                });
+                            }
+                           if (addMusicForm) { 
+                              addMusicForm.addEventListener('submit', e => {
+                                    e.preventDefault();
+                                    const name = musicNameInput.value.trim();
+                                    const url = musicUrlInput.value.trim();
+                                    const videoId = getYoutubeVideoId(url);
+                                    
+                                    musicUrlInput.classList.remove('border-red-500', 'placeholder-red-400');
+                                     musicNameInput.classList.remove('border-red-500'); 
+                                    musicUrlInput.placeholder = "Dán link YouTube vào đây";
+
+                                    if (name && videoId) {
+                                        const allMusic = [...defaultMusicOptionsGlobal, ...(state.userMusic || [])];
+                                        if (allMusic.some(option => option.videoId === videoId)) {
+                                            musicUrlInput.value = ""; 
+                                            musicUrlInput.placeholder = "Link này đã tồn tại!";
+                                            musicUrlInput.classList.add('border-red-500','placeholder-red-400');
+                                            setTimeout(() => { 
+                                                 musicUrlInput.classList.remove('border-red-500','placeholder-red-400');
+                                                 musicUrlInput.placeholder = "Dán link YouTube vào đây";
+                                            }, 2500);
+                                            return;
+                                        }
+                                        if (!state.userMusic) state.userMusic = [];
+                                        state.userMusic.push({ name, videoId, icon: 'list-music', isCustom: true });
+                                        saveData(); 
+                                        addMusicForm.reset();
+                                    } else {
+                                        if (!name) musicNameInput.classList.add('border-red-500');
+                                        if (!videoId) {
+                                            musicUrlInput.classList.add('border-red-500', 'placeholder-red-400');
+                                            musicUrlInput.placeholder = "Link YouTube không hợp lệ!";
+                                        }
+                                         setTimeout(() => {
+                                            musicUrlInput.classList.remove('border-red-500', 'placeholder-red-400');
+                                             musicNameInput.classList.remove('border-red-500');
+                                            musicUrlInput.placeholder = "Dán link YouTube vào đây";
+                                        }, 2500);
+                                    }
+                                });
+                            }
+
+
+                // --- INITIAL SETUP ---
+                setInterval(updateCountdowns, 1000); // Keep countdowns running
+                
+                // Set initial auth mode AFTER elements are assigned
+                isLoginMode = true; 
+                updateAuthUI(); 
+
+                updateTimerDisplay(); // Initialize Pomodoro timer display
+                 
+                 // Initial render might be triggered by onAuthStateChanged, 
+                 // but ensure dashboard date is set initially
+                 if (currentDateEl) {
+                     currentDateEl.textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                 }
+          }); // End DOMContentLoaded listener
+
+
+        } catch (error) {
+             console.error("Firebase initialization failed:", error);
+             // Show a user-friendly message on the screen
+             document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: #cbd5e1; font-family: Inter, sans-serif;"><h1>Lỗi Kết Nối</h1><p>Không thể khởi tạo ứng dụng. Vui lòng kiểm tra lại thông tin <strong>firebaseConfig</strong> của bạn.</p><p style="font-size: 0.8rem; color: #64748b;">Chi tiết lỗi: ${error.message}</p></div>`;
+        }
+
     </script>
 </body>
 </html>
