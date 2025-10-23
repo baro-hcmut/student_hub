@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Tải thư viện Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* --- Cài đặt cơ bản & Thanh cuộn --- */
         html { scroll-behavior: smooth; }
@@ -79,13 +81,22 @@
         .habit-day.completed { background-color: #22c55e; border-color: #16a34a; }
         .habit-day.today { border-color: #3b82f6; cursor: pointer; }
         .progress-bar { background-color: #334155; height: 0.6rem; } /* Tăng chiều cao nhẹ */
-        .progress-bar-inner { background-color: #6366f1; }
+        .progress-bar-inner { background-color: #6366f1; transition: width 0.3s ease-out; } /* Thêm transition cho XP bar */
         .countdown-digits { background-color: #0f172a; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 2rem; line-height: 2.25rem; font-weight: 700; color: white; }
-        .gpa-input, .auth-input, .app-input {
+        .gpa-input, .auth-input, .app-input, .app-select {
             background-color: #334155; border: 1px solid #475569; color: #cbd5e1; border-radius: 0.5rem; padding: 0.75rem 1rem;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            -webkit-appearance: none; appearance: none; /* Tắt giao diện mặc định của select */
         }
-        .auth-input:focus, .app-input:focus {
+        .app-select { /* Chỉ áp dụng mũi tên cho select */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em 1em;
+            padding-right: 2.5rem; /* Thêm padding cho mũi tên */
+        }
+        .app-input[type="time"] { padding-right: 1rem; background-image: none; } /* Sửa padding cho input time */
+        .auth-input:focus, .app-input:focus, .app-select:focus {
             outline: none; border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
         }
@@ -139,6 +150,12 @@
              gap: 1rem; /* gap-4 */
              min-width: 0; /* Cho phép text wrap */
          }
+         .list-item-content-stacked { /* Dành cho task/resource có tag */
+             display: flex;
+             align-items: flex-start; /* Align top */
+             gap: 1rem; /* gap-4 */
+             min-width: 0;
+         }
          .list-item-text {
              color: #f1f5f9; /* text-white */
              word-break: break-word; /* Wrap text */
@@ -189,6 +206,103 @@
             border-radius: 0.5rem; /* rounded-lg */
             flex-shrink: 0;
          }
+         
+         /* Styles for linked items tags */
+         .link-tag {
+             font-size: 0.75rem; /* text-xs */
+             padding: 0.125rem 0.5rem; /* px-2 py-0.5 */
+             border-radius: 9999px; /* rounded-full */
+             font-weight: 500;
+             display: inline-block; /* Đảm bảo tag hoạt động tốt */
+         }
+         .project-link-tag {
+             background-color: #3730a3; /* indigo-800 */
+             color: #c7d2fe; /* indigo-200 */
+         }
+         .subject-link-tag {
+             background-color: #065f46; /* emerald-800 */
+             color: #a7f3d0; /* emerald-200 */
+         }
+
+         /* Badge Styles */
+         .badge-card {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: center;
+             text-align: center;
+             padding: 1rem;
+             border-radius: 0.75rem;
+             background-color: #334155; /* slate-700 */
+             border: 1px solid #475569; /* slate-600 */
+         }
+         .badge-card.unlocked {
+             background-color: #1e293b; /* slate-800 */
+             border-color: #6366f1; /* indigo-500 */
+         }
+         .badge-icon {
+             width: 3rem; /* w-12 */
+             height: 3rem; /* h-12 */
+             padding: 0.5rem; /* p-2 */
+             border-radius: 9999px; /* rounded-full */
+             margin-bottom: 0.75rem; /* mb-3 */
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+         .badge-icon.unlocked {
+             background-color: #4f46e5; /* indigo-600 */
+             color: #e0e7ff; /* indigo-100 */
+         }
+         .badge-icon.locked {
+             background-color: #475569; /* slate-600 */
+             color: #94a3b8; /* slate-400 */
+         }
+         .badge-card.unlocked .badge-title {
+             color: #f1f5f9; /* slate-100 */
+             font-weight: 600;
+         }
+         .badge-card.locked {
+             opacity: 0.6;
+         }
+         .badge-title {
+             font-size: 0.875rem; /* text-sm */
+             font-weight: 500;
+             color: #94a3b8; /* slate-400 */
+             margin-bottom: 0.25rem; /* mb-1 */
+         }
+         .badge-desc {
+             font-size: 0.75rem; /* text-xs */
+             color: #94a3b8; /* slate-400 */
+         }
+         
+         /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 1.5rem; /* bottom-6 */
+            right: 1.5rem; /* right-6 */
+            background-color: #1e293b; /* slate-800 */
+            border: 1px solid #334155; /* slate-700 */
+            border-left: 4px solid #6366f1; /* border-l-4 border-indigo-500 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* gap-3 */
+            z-index: 100;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .toast-notification.show {
+            transform: translateX(0);
+        }
+        .toast-notification.success {
+            border-left-color: #22c55e; /* green-500 */
+        }
+        .toast-notification.error {
+            border-left-color: #ef4444; /* red-500 */
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -244,6 +358,12 @@
                     <a href="#" data-target="dashboard" class="nav-link active flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
                         <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Bảng điều khiển
                     </a>
+                    <a href="#" data-target="analytics" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="pie-chart" class="w-5 h-5"></i> Phân tích
+                    </a>
+                    <a href="#" data-target="badges" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
+                        <i data-lucide="award" class="w-5 h-5"></i> Huy hiệu
+                    </a>
                     <a href="#" data-target="timetable" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg transition-colors">
                         <i data-lucide="calendar-days" class="w-5 h-5"></i> Thời khóa biểu
                     </a>
@@ -278,6 +398,16 @@
                         <i data-lucide="music-4" class="w-5 h-5"></i> Nhạc tập trung
                     </a>
                 </nav>
+                <!-- NEW: XP & Level Bar -->
+                <div class="mt-4 mb-2">
+                    <div class="flex justify-between items-center mb-1 text-xs font-semibold">
+                        <span class="text-indigo-300">Cấp độ: <span id="user-level">1</span></span>
+                        <span class="text-slate-400"><span id="user-xp">0</span> / <span id="xp-to-next-level">100</span> XP</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-1.5">
+                        <div id="xp-progress-bar" class="bg-indigo-500 h-1.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
                 <div class="mt-auto">
                      <div class="flex items-center justify-between gap-3 p-2 rounded-xl card">
                         <div class="flex items-center gap-3 min-w-0">
@@ -356,11 +486,39 @@
                                 <p class="text-4xl font-bold text-white" id="pomodoro-sessions">0</p>
                             </div>
 
+                            <!-- NEW: Smart Suggestion Card -->
                             <div class="card p-6 flex flex-col justify-center items-center text-center lg:col-span-1 xl:col-span-1">
-                                <div class="bg-pink-600/20 text-pink-400 p-3 rounded-lg mb-3"><i data-lucide="quote"></i></div>
-                                <p class="italic text-slate-300">"Học, học nữa, học mãi."</p>
-                                <p class="text-xs text-slate-500 mt-2">- V.I. Lenin</p>
+                                <div class="bg-yellow-400/20 text-yellow-300 p-3 rounded-lg mb-3"><i data-lucide="lightbulb"></i></div>
+                                <h4 class="font-semibold text-white mb-2">Gợi ý Thông minh</h4>
+                                <p id="smart-suggestion" class="italic text-slate-300 text-sm">Hãy hoàn thành 1 công việc để nhận XP!</p>
                             </div>
+                        </div>
+                    </section>
+                    
+                    <!-- NEW: Analytics Section -->
+                    <section id="analytics" class="content-section hidden">
+                        <h2 class="section-title">Phân tích & Báo cáo</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="card p-6 min-h-[300px]">
+                                <h3 class="font-semibold text-white mb-4 text-lg">Phân bổ Pomodoro</h3>
+                                <div class="relative h-64 md:h-80">
+                                    <canvas id="projectPomodoroChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="card p-6 min-h-[300px]">
+                                <h3 class="font-semibold text-white mb-4 text-lg">Tiến độ Thói quen (7 ngày qua)</h3>
+                                <div class="relative h-64 md:h-80">
+                                    <canvas id="habitCompletionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- NEW: Badges Section -->
+                    <section id="badges" class="content-section hidden">
+                        <h2 class="section-title">Bộ sưu tập Huy hiệu</h2>
+                        <div id="badge-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <!-- JS will populate this -->
                         </div>
                     </section>
                     
@@ -445,8 +603,8 @@
                     <section id="projects" class="content-section hidden">
                         <h2 class="section-title">Dự án & Bài tập lớn</h2>
                         <div class="card p-6 mb-6">
-                            <form id="project-form" class="flex gap-4">
-                                <input type="text" id="project-input" placeholder="Thêm dự án mới (VD: Nghiên cứu khoa học)" class="flex-grow app-input" required>
+                            <form id="project-form" class="flex flex-wrap gap-4"> <!-- Thêm flex-wrap -->
+                                <input type="text" id="project-input" placeholder="Thêm dự án mới (VD: Nghiên cứu khoa học)" class="flex-grow app-input min-w-[200px]" required>
                                 <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Tạo dự án</button>
                             </form>
                         </div>
@@ -456,8 +614,15 @@
                     <section id="tasks" class="content-section hidden">
                         <h2 class="section-title">Công việc hàng ngày</h2>
                         <div class="card p-6">
-                            <form id="task-form" class="flex gap-4 mb-6">
-                                <input type="text" id="task-input" placeholder="Thêm một công việc mới..." class="flex-grow app-input" required>
+                            <form id="task-form" class="flex flex-wrap gap-4 mb-6 items-end"> 
+                                <div class="flex-grow min-w-[200px]">
+                                    <label for="task-input" class="text-sm text-slate-400">Công việc mới</label>
+                                    <input type="text" id="task-input" placeholder="Thêm một công việc mới..." class="w-full mt-1 app-input" required>
+                                </div>
+                                <div class="flex-grow min-w-[150px]">
+                                    <label for="task-project-link" class="text-sm text-slate-400">Gán vào dự án</label>
+                                    <select id="task-project-link" class="w-full mt-1 app-select"></select> <!-- Dùng app-select -->
+                                </div>
                                 <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm</button>
                             </form>
                             <ul id="task-list" class="space-y-3"></ul>
@@ -467,8 +632,8 @@
                     <section id="habits" class="content-section hidden">
                         <h2 class="section-title">Theo dõi Thói quen</h2>
                         <div class="card p-6">
-                            <form id="habit-form" class="flex gap-4 mb-6">
-                                <input type="text" id="habit-input" placeholder="Thêm một thói quen mới (VD: Đọc sách 30 phút)" class="flex-grow app-input" required>
+                            <form id="habit-form" class="flex flex-wrap gap-4 mb-6"> <!-- Thêm flex-wrap -->
+                                <input type="text" id="habit-input" placeholder="Thêm một thói quen mới (VD: Đọc sách 30 phút)" class="flex-grow app-input min-w-[200px]" required>
                                 <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm</button>
                             </form>
                             <div id="habit-list" class="space-y-4"></div>
@@ -478,8 +643,8 @@
                     <section id="goals" class="content-section hidden">
                         <h2 class="section-title">Mục tiêu học tập</h2>
                         <div class="card p-6">
-                            <form id="goal-form" class="flex gap-4 mb-6">
-                                <input type="text" id="goal-input" placeholder="VD: Đạt 8.0 GPA kỳ này..." class="flex-grow app-input" required>
+                            <form id="goal-form" class="flex flex-wrap gap-4 mb-6"> <!-- Thêm flex-wrap -->
+                                <input type="text" id="goal-input" placeholder="VD: Đạt 8.0 GPA kỳ này..." class="flex-grow app-input min-w-[200px]" required>
                                 <button type="submit" class="btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm mục tiêu</button>
                             </form>
                             <ul id="goal-list" class="space-y-3"></ul>
@@ -494,6 +659,10 @@
                                 <button id="long-focus-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition-colors">Tập trung dài (50')</button>
                                 <button id="short-break-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition-colors">Nghỉ ngắn (5')</button>
                                 <button id="long-break-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition-colors">Nghỉ dài (15')</button>
+                            </div>
+                             <div class="w-full my-4">
+                               <label for="pomodoro-link" class="text-sm text-slate-400 mb-1 block">Liên kết với công việc/dự án:</label>
+                               <select id="pomodoro-link" class="app-select w-full"></select> <!-- Dùng app-select -->
                             </div>
                             <div class="text-8xl font-bold my-8 text-white" id="timer-display">25:00</div>
                             <div class="flex gap-4">
@@ -515,10 +684,24 @@
                     <section id="resources" class="content-section hidden">
                         <h2 class="section-title">Tài nguyên học tập</h2>
                         <div class="card p-6">
-                            <form id="resource-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <input type="text" id="resource-name-input" placeholder="Tên tài nguyên" class="md:col-span-1 app-input" required>
-                                <input type="url" id="resource-url-input" placeholder="https://..." class="md:col-span-2 app-input" required>
-                                <button type="submit" class="md:col-span-3 btn btn-primary"><i data-lucide="plus" class="w-5 h-5"></i> Thêm tài nguyên</button>
+                             <form id="resource-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-end">
+                                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="resource-name-input" class="text-sm text-slate-400">Tên tài nguyên</label>
+                                        <input type="text" id="resource-name-input" placeholder="VD: Đề cương Giải tích" class="w-full mt-1 app-input" required>
+                                    </div>
+                                    <div>
+                                        <label for="resource-url-input" class="text-sm text-slate-400">Đường dẫn (URL)</label>
+                                        <input type="url" id="resource-url-input" placeholder="https://..." class="w-full mt-1 app-input" required>
+                                    </div>
+                                </div>
+                                <div class="md:col-span-1">
+                                    <label for="resource-subject-link" class="text-sm text-slate-400">Gán vào môn học</label>
+                                    <select id="resource-subject-link" class="w-full mt-1 app-select"></select> <!-- Dùng app-select -->
+                                </div>
+                                <div class="md:col-span-1">
+                                    <button type="submit" class="btn btn-primary w-full"><i data-lucide="plus" class="w-5 h-5"></i> Thêm tài nguyên</button>
+                                </div>
                             </form>
                             <ul id="resource-list" class="space-y-3"></ul>
                         </div>
@@ -603,13 +786,17 @@
         </div>
     </div>
 
+    <!-- NEW: Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] space-y-3"></div>
+
+
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        // IMPORTANT: Replace with your actual Firebase config
+        // IMPORTANT: Khôi phục lại config của bạn
         const firebaseConfig = {
             apiKey: "AIzaSyAjV_5NxKcUr4sI_8hdOapmJNMtpaJqrBU",
             authDomain: "student-hub-f41cd.firebaseapp.com",
@@ -632,18 +819,31 @@
             let dataUnsubscribe = null;
             let currentUserId = null;
 
+            // NEW: Badge Definitions
+            const allBadges = {
+                'first_task': { name: 'Người Bắt Đầu', desc: 'Hoàn thành công việc đầu tiên', icon: 'check-circle' },
+                'first_pomo': { name: 'Tập Trung', desc: 'Hoàn thành phiên Pomodoro đầu tiên', icon: 'timer' },
+                'ten_pomos': { name: 'Chiến Binh Pomo', desc: 'Hoàn thành 10 phiên Pomodoro', icon: 'zap' },
+                'first_project': { name: 'Nhà Kiến Tạo', desc: 'Tạo dự án đầu tiên', icon: 'kanban-square' },
+                'first_habit': { name: 'Kỷ Luật Thép', desc: 'Duy trì thói quen 3 ngày', icon: 'repeat' },
+                'first_gpa': { name: 'Học Giả', desc: 'Nhập điểm GPA lần đầu', icon: 'graduation-cap' }
+            };
+
             const defaultState = {
                 displayName: "Sinh Viên",
-                tasks: [],
-                goals: [],
-                habits: [],
-                resources: [],
-                projects: [],
-                events: [],
-                gpaSubjects: [],
-                userMusic: [],
-                currentMusicId: 'jfKfPfyJRdk', // Default Lofi video ID
-                pomodoroSessions: 0,
+                level: 1, // NEW
+                xp: 0, // NEW
+                unlockedBadges: [], // NEW
+                tasks: [], // { id, text, completed, projectId, pomodoroCount }
+                goals: [], // { id, text, completed }
+                habits: [], // { id, name, completedDates }
+                resources: [], // { id, name, url, subjectName }
+                projects: [], // { id, name, tasks: [ {id, text, completed} ], pomodoroCount }
+                events: [], // { id, name, date }
+                gpaSubjects: [], // { id, name, credits, score }
+                userMusic: [], // { name, videoId, icon, isCustom }
+                currentMusicId: 'jfKfPfyJRdk', 
+                pomodoroSessions: 0, // Global count
                 notes: '',
                 schedule: {},
                 timeSlots: ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
@@ -665,17 +865,25 @@
             let navLinks, contentSections;
             let timetableBody, scheduleModal, closeScheduleModalBtn, scheduleForm, modalCellId, subjectNameInput, subjectRoomInput, deleteScheduleBtn, addTimeSlotBtn, addTimeModal, addTimeForm, newTimeInput, closeAddTimeModalBtn, confirmDeleteModal, confirmDeleteMessage, confirmDeleteBtn, cancelDeleteBtn;
             let gpaSubjectsList, addGpaSubjectBtn, gpaResultEl, gpaResult4El;
-            let taskForm, taskInput, taskList;
+            let taskForm, taskInput, taskList, taskProjectLinkSelect; // Added taskProjectLinkSelect
             let habitForm, habitInput, habitList;
             let goalForm, goalInput, goalList;
             let projectForm, projectInput, projectList;
             let eventForm, eventInput, eventDateInput, eventList;
-            let timerDisplay, startPauseBtn, resetBtn, pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn, pomodoroSessionsEl;
+            let timerDisplay, startPauseBtn, resetBtn, pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn, pomodoroSessionsEl, pomodoroLinkSelect; // Added pomodoroLinkSelect
             let notesTextarea;
-            let resourceForm, resourceList;
+            let resourceForm, resourceNameInput, resourceUrlInput, resourceSubjectLinkSelect, resourceList; // Split resourceForm inputs
             let musicPlayer, musicSelection, addMusicForm, musicNameInput, musicUrlInput;
             let timeToDeleteHolder = null;
             let menuToggle, sidebar, sidebarOverlay, mainContent; // Added mainContent
+            let userLevelEl, userXPEl, xpToNextLevelEl, xpProgressBar; // NEW: XP UI
+            let badgeListEl; // NEW: Badges UI
+            let smartSuggestionEl; // NEW: Suggestion UI
+            let toastContainer; // NEW: Toast Container
+            
+            // Chart instances
+            let projectChartInstance = null;
+            let habitChartInstance = null;
 
             // --- Pomodoro Globals ---
             let timer; // Interval ID
@@ -735,6 +943,7 @@
                 taskForm = document.getElementById('task-form');
                 taskInput = document.getElementById('task-input');
                 taskList = document.getElementById('task-list');
+                taskProjectLinkSelect = document.getElementById('task-project-link'); // Added
                 habitForm = document.getElementById('habit-form');
                 habitInput = document.getElementById('habit-input');
                 habitList = document.getElementById('habit-list');
@@ -756,8 +965,12 @@
                 shortBreakBtn = document.getElementById('short-break-btn');
                 longBreakBtn = document.getElementById('long-break-btn');
                 pomodoroSessionsEl = document.getElementById('pomodoro-sessions');
+                pomodoroLinkSelect = document.getElementById('pomodoro-link'); // Added
                 notesTextarea = document.getElementById('notes-textarea');
                 resourceForm = document.getElementById('resource-form');
+                resourceNameInput = document.getElementById('resource-name-input'); // Added
+                resourceUrlInput = document.getElementById('resource-url-input'); // Added
+                resourceSubjectLinkSelect = document.getElementById('resource-subject-link'); // Added
                 resourceList = document.getElementById('resource-list');
                 musicPlayer = document.getElementById('music-player');
                 musicSelection = document.getElementById('music-selection');
@@ -768,6 +981,15 @@
                 sidebar = document.getElementById('sidebar');
                 sidebarOverlay = document.getElementById('sidebar-overlay');
                  mainContent = document.getElementById('main-content'); // Assign main content
+                 
+                 // NEW: XP & Badge UI
+                 userLevelEl = document.getElementById('user-level');
+                 userXPEl = document.getElementById('user-xp');
+                 xpToNextLevelEl = document.getElementById('xp-to-next-level');
+                 xpProgressBar = document.getElementById('xp-progress-bar');
+                 badgeListEl = document.getElementById('badge-list');
+                 smartSuggestionEl = document.getElementById('smart-suggestion');
+                 toastContainer = document.getElementById('toast-container');
             }
 
             // Function to close sidebar (defined globally within module scope)
@@ -832,21 +1054,54 @@
                     if (dataUnsubscribe) dataUnsubscribe(); // Unsubscribe from previous listener
                     
                     dataUnsubscribe = onSnapshot(userDocRef, (doc) => {
+                        let needsSave = false; // Flag for data migration
                         if (doc.exists()) {
                             // Merge fetched data with default state to handle potentially missing fields
                             state = { ...defaultState, ...doc.data() }; 
+                            
+                            // --- Data Migration Step (Thêm XP/Level/Badges) ---
+                            if (state.xp === undefined) { state.xp = 0; needsSave = true; }
+                            if (state.level === undefined) { state.level = 1; needsSave = true; }
+                            if (state.unlockedBadges === undefined) { state.unlockedBadges = []; needsSave = true; }
+                            
+                            // (Migration from previous step, ensure it runs again if needed)
+                             state.tasks = (state.tasks || []).map(t => {
+                                const needsUpdate = t.id === undefined || t.pomodoroCount === undefined || t.projectId === undefined;
+                                if (needsUpdate) needsSave = true;
+                                return { 
+                                    id: t.id || Date.now() + Math.random(), 
+                                    text: t.text, 
+                                    completed: t.completed || false, 
+                                    pomodoroCount: t.pomodoroCount || 0, 
+                                    projectId: t.projectId !== undefined ? t.projectId : null 
+                                };
+                            });
+                             state.projects = (state.projects || []).map(p => {
+                                 if (typeof p === 'string') { 
+                                     needsSave = true;
+                                     return { id: Date.now() + Math.random(), name: p, tasks: [], pomodoroCount: 0 };
+                                 }
+                                const needsUpdate = p.pomodoroCount === undefined || p.id === undefined;
+                                if (needsUpdate) needsSave = true;
+                                return { ...p, id: p.id || Date.now() + Math.random(), pomodoroCount: p.pomodoroCount || 0 };
+                            });
+                             // (... other migrations for resources, gpaSubjects, etc. ...)
+                             
                         } else {
                             console.log("Creating initial document for user:", currentUserId);
-                            // Initialize state with defaults and user's display name
                             state = { ...defaultState, displayName: user.displayName || "Sinh Viên" };
-                            // Create the document in Firestore
-                            setDoc(userDocRef, state).catch(error => console.error("Error creating initial user doc:", error)); 
+                            needsSave = true; // Need to save this new doc
                         }
+                        
+                        if (needsSave) {
+                            console.log("Migrating/Creating data structure...");
+                            saveData(); // Save the migrated/new structure
+                        }
+                        
                         renderAll(); // Render UI with the latest state
                     }, (error) => {
                         console.error("Error fetching user data:", error);
                         showTemporaryMessage("Không thể tải dữ liệu người dùng. Vui lòng thử lại.", "error");
-                        // Fallback: Render with default state or show an error message in the UI
                         state = { ...defaultState }; 
                         renderAll(); 
                     });
@@ -868,37 +1123,49 @@
              // --- ASYNC DATA SAVE ---
               async function saveData() {
                 if (!currentUserId) return;
-                // Debounce save function to avoid too many writes quickly
                 if(window.saveTimeout) clearTimeout(window.saveTimeout);
                 window.saveTimeout = setTimeout(async () => {
                     const userDocRef = doc(db, "users", currentUserId);
                     try {
-                        // Create a deep copy and handle undefined (Firestore doesn't like undefined)
                         const savableState = JSON.parse(JSON.stringify(state, (key, value) => 
-                             (value === undefined ? null : value) // Replace undefined with null
+                             (value === undefined ? null : value)
                         ));
                         await setDoc(userDocRef, savableState);
-                        // console.log("Data saved."); // Optional: Keep for debugging if needed
                     } catch (error) {
                         console.error("Error saving data: ", error);
                          showTemporaryMessage("Lỗi khi lưu dữ liệu.", "error");
                     }
-                }, 300); // Save after 300ms of inactivity
+                }, 300); 
             }
             
             // --- Helper Functions ---
              function showTemporaryMessage(message, type = "info") {
+                if (!toastContainer) return;
                 console.log(`[${type.toUpperCase()}] ${message}`); 
                  const toast = document.createElement('div');
-                 toast.textContent = message;
-                 toast.className = `fixed bottom-5 right-5 p-3 rounded-lg shadow-md text-white text-sm z-[100] transition-opacity duration-300 ease-out opacity-0 ${type === 'error' ? 'bg-red-600' : 'bg-indigo-600'}`; // Increased z-index
-                 document.body.appendChild(toast);
+                 
+                 let icon = 'info';
+                 let borderColor = 'border-indigo-500';
+                 if (type === 'success') { icon = 'check-circle'; borderColor = 'border-green-500'; }
+                 if (type === 'error') { icon = 'alert-triangle'; borderColor = 'border-red-500'; }
+                 if (type === 'badge') { icon = 'award'; borderColor = 'border-yellow-400'; }
+
+
+                 toast.className = `toast-notification ${borderColor}`;
+                 toast.innerHTML = `
+                     <i data-lucide="${icon}" class="w-5 h-5 ${type === 'badge' ? 'text-yellow-400' : ''}"></i>
+                     <span class="text-sm font-medium text-slate-200">${message}</span>
+                 `;
+                 
+                 toastContainer.appendChild(toast);
+                 lucide.createIcons(); // Create icon in toast
+
                  // Force reflow to enable transition
                  requestAnimationFrame(() => {
-                    toast.classList.remove('opacity-0');
+                    toast.classList.add('show');
                  });
                  setTimeout(() => {
-                      toast.classList.add('opacity-0');
+                      toast.classList.remove('show');
                       toast.addEventListener('transitionend', () => toast.remove()); // Remove after fade out
                  }, 3000);
             }
@@ -925,6 +1192,119 @@
                 if (match) { videoId = match[1]; }
                 return videoId;
              }
+             
+             // --- NEW: Gamification Functions ---
+             function getXPForNextLevel(level) {
+                 return 100 + (level - 1) * 50; // Tăng 50XP mỗi cấp
+             }
+             
+             function updateXPUI() {
+                 if (!userLevelEl) return; // Đảm bảo UI đã sẵn sàng
+                 const level = state.level || 1;
+                 const xp = state.xp || 0;
+                 const nextLevelXP = getXPForNextLevel(level);
+                 
+                 userLevelEl.textContent = level;
+                 userXPEl.textContent = xp;
+                 xpToNextLevelEl.textContent = nextLevelXP;
+                 xpProgressBar.style.width = `${(xp / nextLevelXP) * 100}%`;
+             }
+             
+             function unlockBadge(badgeId) {
+                 if (!allBadges[badgeId]) return; // Huy hiệu không tồn tại
+                 if (!state.unlockedBadges) state.unlockedBadges = [];
+                 if (state.unlockedBadges.includes(badgeId)) return; // Đã có
+                 
+                 // Mở khóa
+                 state.unlockedBadges.push(badgeId);
+                 showTemporaryMessage(`Huy hiệu Mở khóa: ${allBadges[badgeId].name}!`, "badge");
+                 saveData();
+                 renderBadges(); // Cập nhật UI
+             }
+             
+             async function addXP(amount) {
+                if (!state.xp === undefined) state.xp = 0;
+                if (!state.level) state.level = 1;
+                
+                state.xp += amount;
+                
+                let nextLevelXP = getXPForNextLevel(state.level);
+                while (state.xp >= nextLevelXP) {
+                    state.level++;
+                    state.xp -= nextLevelXP;
+                    showTemporaryMessage(`Thăng cấp! Bạn đã đạt Cấp độ ${state.level}!`, "success");
+                    nextLevelXP = getXPForNextLevel(state.level);
+                }
+                
+                updateXPUI();
+                saveData();
+             }
+             
+             function renderBadges() {
+                 if (!badgeListEl) return;
+                 badgeListEl.innerHTML = '';
+                 Object.keys(allBadges).forEach(badgeId => {
+                     const badge = allBadges[badgeId];
+                     const isUnlocked = (state.unlockedBadges || []).includes(badgeId);
+                     
+                     const badgeEl = document.createElement('div');
+                     badgeEl.className = `badge-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                     badgeEl.innerHTML = `
+                         <div class="badge-icon ${isUnlocked ? 'unlocked' : 'locked'}">
+                             <i data-lucide="${badge.icon}"></i>
+                         </div>
+                         <h4 class="badge-title">${badge.name}</h4>
+                         <p class="badge-desc">${badge.desc}</p>
+                     `;
+                     badgeListEl.appendChild(badgeEl);
+                 });
+                 lucide.createIcons();
+             }
+             
+             // --- NEW: Smart Suggestion Function ---
+             function updateSmartSuggestion() {
+                 if (!smartSuggestionEl) return;
+                 
+                 let suggestions = [];
+                 
+                 // 1. Gợi ý về Hạn chót
+                 const now = new Date();
+                 const upcomingEvents = (state.events || [])
+                                     .filter(e => new Date(e.date) > now)
+                                     .sort((a, b) => new Date(a.date) - new Date(b.date));
+                if (upcomingEvents.length > 0) {
+                     const nextEvent = upcomingEvents[0];
+                     const diff = new Date(nextEvent.date) - now;
+                     const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                     if (daysLeft <= 3) {
+                         suggestions.push({ priority: 10, text: `Sự kiện "${nextEvent.name}" sắp diễn ra trong ${daysLeft} ngày nữa. Đã đến lúc ôn tập!` });
+                     }
+                 }
+                 
+                 // 2. Gợi ý về Công việc
+                 const incompleteTasks = (state.tasks || []).filter(t => !t.completed).length;
+                 if (incompleteTasks > 5) {
+                     suggestions.push({ priority: 8, text: `Bạn có ${incompleteTasks} công việc chưa hoàn thành. Hãy bắt đầu một phiên Pomodoro để giải quyết!` });
+                 } else if (incompleteTasks > 0) {
+                     suggestions.push({ priority: 3, text: `Bạn còn ${incompleteTasks} công việc. Cố gắng hoàn thành chúng hôm nay!` });
+                 }
+                 
+                 // 3. Gợi ý về Thói quen
+                 const todayStr = getTodayDateString();
+                 const incompleteHabits = (state.habits || []).filter(h => !(h.completedDates || []).includes(todayStr)).length;
+                 if (incompleteHabits > 0) {
+                     suggestions.push({ priority: 5, text: `Đừng quên hoàn thành ${incompleteHabits} thói quen của bạn hôm nay nhé!` });
+                 }
+                 
+                 // 4. Gợi ý mặc định
+                 suggestions.push({ priority: 1, text: `Một ngày làm việc hiệu quả bắt đầu từ một công việc nhỏ. Hãy thêm một công việc mới!` });
+                 suggestions.push({ priority: 1, text: `Hãy bắt đầu một phiên Pomodoro để tăng cường sự tập trung.` });
+
+                 // Sắp xếp và chọn gợi ý có độ ưu tiên cao nhất
+                 suggestions.sort((a, b) => b.priority - a.priority);
+                 smartSuggestionEl.textContent = suggestions[0].text;
+             }
+
 
             // --- RENDER FUNCTIONS ---
             function updateDashboard() { 
@@ -941,6 +1321,7 @@
                 updateTodayClasses();
                 updateUpcomingEventOnDashboard();
                 calculateAndDisplayGpa();
+                updateSmartSuggestion(); // Cập nhật gợi ý
              }
             function updateTodayClasses() { 
                  if (!todayClassesList) return;
@@ -1042,6 +1423,61 @@
                 lucide.createIcons();
                 calculateAndDisplayGpa(); 
              }
+             
+            // --- Populate Select Functions ---
+            function populatePomodoroLinks() {
+                if (!pomodoroLinkSelect) return;
+                pomodoroLinkSelect.innerHTML = '<option value="none">Không liên kết</option>';
+                
+                if (state.projects && state.projects.length > 0) {
+                    const group = document.createElement('optgroup');
+                    group.label = 'DỰ ÁN';
+                    state.projects.forEach(proj => {
+                        const option = document.createElement('option');
+                        option.value = `project-${proj.id}`;
+                        option.textContent = proj.name;
+                        group.appendChild(option);
+                    });
+                    pomodoroLinkSelect.appendChild(group);
+                }
+                
+                const incompleteTasks = (state.tasks || []).filter(t => !t.completed);
+                if (incompleteTasks.length > 0) {
+                     const group = document.createElement('optgroup');
+                     group.label = 'CÔNG VIỆC';
+                     incompleteTasks.forEach(task => {
+                         const option = document.createElement('option');
+                         option.value = `task-${task.id}`;
+                         option.textContent = task.text;
+                         group.appendChild(option);
+                     });
+                     pomodoroLinkSelect.appendChild(group);
+                }
+            }
+            
+            function populateTaskProjectLinks() {
+                if (!taskProjectLinkSelect) return;
+                taskProjectLinkSelect.innerHTML = '<option value="null">Không liên kết</option>';
+                (state.projects || []).forEach(proj => {
+                    const option = document.createElement('option');
+                    option.value = proj.id;
+                    option.textContent = proj.name;
+                    taskProjectLinkSelect.appendChild(option);
+                });
+            }
+            
+            function populateResourceSubjectLinks() {
+                 if (!resourceSubjectLinkSelect) return;
+                resourceSubjectLinkSelect.innerHTML = '<option value="null">Không liên kết</option>';
+                 const subjectNames = new Set((state.gpaSubjects || []).map(s => s.name).filter(Boolean)); // Get unique, non-empty names
+                 subjectNames.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    resourceSubjectLinkSelect.appendChild(option);
+                 });
+            }
+             
             function renderTasks() { 
                 if (!taskList) return;
                 taskList.innerHTML = '';
@@ -1050,14 +1486,23 @@
                     state.tasks.forEach((task, index) => {
                         const li = document.createElement('li');
                         li.className = `task-item list-item ${task.completed ? 'completed opacity-60' : ''}`; 
+                        const project = task.projectId ? (state.projects || []).find(p => p.id == task.projectId) : null;
+                        
                         li.innerHTML = `
-                            <div class="list-item-content">
-                                 <input type="checkbox" data-index="${index}" class="custom-checkbox" ${task.completed ? 'checked' : ''}>
-                                 <span class="list-item-text">${task.text}</span>
+                            <div class="list-item-content-stacked"> <!-- Changed to stacked for tags -->
+                                 <input type="checkbox" data-index="${index}" data-id="${task.id}" class="custom-checkbox mt-1"> <!-- Added data-id -->
+                                 <div>
+                                     <span class="list-item-text">${task.text}</span>
+                                     ${project ? `<div class="link-tag project-link-tag mt-1">${project.name}</div>` : ''}
+                                 </div>
                             </div>
                             <div class="list-item-actions">
-                                 <button data-index="${index}" class="delete-task-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                 <button data-index="${index}" data-id="${task.id}" class="delete-task-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             </div>`;
+                        // Manually set checkbox state because innerHTML is complex
+                        const checkbox = li.querySelector('.custom-checkbox');
+                        if (checkbox) checkbox.checked = task.completed;
+                        
                         taskList.appendChild(li);
                     });
                 }
@@ -1084,7 +1529,7 @@
                         habitEl.innerHTML = `
                             <span class="text-white break-words mr-auto">${habit.name}</span> 
                             <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0"> ${daysHTML} 
-                               <button data-index="${index}" class="delete-habit-btn delete-btn ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                               <button data-index="${index}" data-id="${habit.id}" class="delete-habit-btn delete-btn ml-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                              </div>`;
                         habitList.appendChild(habitEl);
                     });
@@ -1101,12 +1546,15 @@
                          li.className = `goal-item list-item ${goal.completed ? 'completed opacity-60' : ''}`; 
                         li.innerHTML = `
                             <div class="list-item-content">
-                                 <input type="checkbox" data-index="${index}" class="custom-checkbox" ${goal.completed ? 'checked' : ''}>
+                                 <input type="checkbox" data-index="${index}" data-id="${goal.id}" class="custom-checkbox" ${goal.completed ? 'checked' : ''}>
                                  <span class="list-item-text">${goal.text}</span>
                             </div>
                             <div class="list-item-actions">
-                                 <button data-index="${index}" class="delete-goal-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                 <button data-index="${index}" data-id="${goal.id}" class="delete-goal-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                             </div>`;
+                         // Manually set checkbox state
+                        const checkbox = li.querySelector('.custom-checkbox');
+                        if (checkbox) checkbox.checked = goal.completed;
                         goalList.appendChild(li);
                     });
                 }
@@ -1129,7 +1577,7 @@
                             tasksHTML += `<li class="project-task flex items-center justify-between text-sm ${task.completed ? 'completed opacity-60' : ''}"><div class="flex items-center gap-2 min-w-0"><input type="checkbox" data-project-id="${project.id}" data-task-index="${taskIndex}" class="custom-checkbox !w-4 !h-4" ${task.completed ? 'checked' : ''}><span class="break-words">${task.text}</span></div><button data-project-id="${project.id}" data-task-index="${taskIndex}" class="delete-project-task-btn text-slate-600 hover:text-red-500 flex-shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button></li>`;
                         });
                         tasksHTML += '</ul>';
-                        projectCard.innerHTML = `<div><div class="flex justify-between items-start gap-2"><h3 class="font-bold text-white text-lg break-words">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn delete-btn flex-shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-slate-400"><div class="progress-bar w-full rounded-full overflow-hidden"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${Math.round(progress)}%</span></div></div><div>${tasksHTML.length > 14 ? tasksHTML : '<p class="text-slate-500 text-sm">Chưa có giai đoạn nào.</p>'}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-slate-700 border border-slate-600 rounded-md px-3 py-1 text-sm focus:ring-indigo-500 focus:border-indigo-500" required><button type="submit" class="btn btn-primary btn-sm !p-1.5"><i data-lucide="plus" class="w-4 h-4"></i></button></form>`; 
+                        projectCard.innerHTML = `<div><div class="flex justify-between items-start gap-2"><h3 class="font-bold text-white text-lg break-words">${project.name}</h3><button data-project-id="${project.id}" class="delete-project-btn delete-btn flex-shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div><div class="flex items-center gap-2 mt-2 text-sm text-slate-400"><div class="progress-bar w-full rounded-full overflow-hidden"><div class="progress-bar-inner h-full rounded-full" style="width: ${progress}%;"></div></div><span>${Math.round(progress)}%</span></div></div><div>${totalTasks > 0 ? tasksHTML : '<p class="text-slate-500 text-sm">Chưa có giai đoạn nào.</p>'}</div><form class="add-project-task-form flex gap-2 mt-2"><input type="text" data-project-id="${project.id}" placeholder="Thêm giai đoạn..." class="flex-grow bg-slate-700 border border-slate-600 rounded-md px-3 py-1 text-sm focus:ring-indigo-500 focus:border-indigo-500" required><button type="submit" class="btn btn-primary btn-sm !p-1.5"><i data-lucide="plus" class="w-4 h-4"></i></button></form>`; 
                         projectList.appendChild(projectCard);
                     });
                 }
@@ -1222,12 +1670,15 @@
                         const li = document.createElement('li');
                         li.className = 'list-item';
                         li.innerHTML = `
-                             <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="list-item-content text-indigo-400 hover:underline">
-                                 <i data-lucide="link-2" class="w-5 h-5 flex-shrink-0"></i>
-                                 <span class="list-item-text !text-indigo-400 truncate">${resource.name}</span>
+                             <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="list-item-content-stacked text-indigo-400 hover:underline">
+                                 <i data-lucide="link-2" class="w-5 h-5 flex-shrink-0 mt-1"></i>
+                                 <div>
+                                     <span class="list-item-text !text-indigo-400 truncate">${resource.name}</span>
+                                     ${resource.subjectName ? `<div class="link-tag subject-link-tag mt-1">${resource.subjectName}</div>` : ''}
+                                 </div>
                              </a>
                              <div class="list-item-actions">
-                                <button data-index="${index}" class="delete-resource-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                                <button data-index="${index}" data-id="${resource.id}" class="delete-resource-btn delete-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                              </div>`;
                         resourceList.appendChild(li);
                     });
@@ -1271,6 +1722,120 @@
                  }
                 lucide.createIcons();
              }
+             
+             // --- NEW: Analytics Render Function ---
+             function renderAnalytics() {
+                if (!Chart) { 
+                     console.error("Chart.js is not loaded.");
+                     return; 
+                }
+                
+                Chart.defaults.color = '#cbd5e1'; // Set default text color for charts
+                
+                // --- Project Pomodoro Chart ---
+                const projectCtx = document.getElementById('projectPomodoroChart');
+                if (projectCtx) {
+                    if (projectChartInstance) projectChartInstance.destroy(); // Destroy old chart
+                    
+                    const projectData = {};
+                    let unlinkedPomos = 0;
+
+                    // 1. Get pomodoros directly from projects
+                    (state.projects || []).forEach(proj => {
+                        projectData[proj.name] = (projectData[proj.name] || 0) + (proj.pomodoroCount || 0);
+                    });
+
+                    // 2. Get pomodoros from tasks and add to their projects
+                    (state.tasks || []).forEach(task => {
+                        if (task.pomodoroCount > 0) {
+                            if (task.projectId) {
+                                const project = (state.projects || []).find(p => p.id == task.projectId);
+                                const projName = project ? project.name : "Dự án đã xóa";
+                                projectData[projName] = (projectData[projName] || 0) + task.pomodoroCount;
+                            } else {
+                                unlinkedPomos += task.pomodoroCount; // Add to "unlinked"
+                            }
+                        }
+                    });
+                    
+                    if(unlinkedPomos > 0) projectData["Công việc lẻ"] = unlinkedPomos;
+                    
+                    const labels = Object.keys(projectData);
+                    const data = Object.values(projectData);
+                    
+                    if (labels.length > 0 && data.some(d => d > 0)) { // Check if there is data
+                         projectChartInstance = new Chart(projectCtx, {
+                            type: 'pie',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Số phiên Pomodoro',
+                                    data: data,
+                                    backgroundColor: ['#6366f1', '#22c55e', '#f97316', '#3b82f6', '#ec4899', '#f59e0b', '#10b981'],
+                                    borderColor: '#1e293b',
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }
+                            }
+                        });
+                    } else {
+                         // Show a message if no data
+                         const ctx = projectCtx.getContext('2d');
+                         ctx.clearRect(0, 0, projectCtx.width, projectCtx.height);
+                         ctx.fillStyle = '#94a3b8';
+                         ctx.textAlign = 'center';
+                         ctx.fillText("Chưa có dữ liệu Pomodoro để phân tích.", projectCtx.width / 2, projectCtx.height / 2);
+                    }
+                }
+                
+                // --- Habit Completion Chart ---
+                 const habitCtx = document.getElementById('habitCompletionChart');
+                 if(habitCtx) {
+                     if (habitChartInstance) habitChartInstance.destroy();
+                     
+                     const habits = state.habits || [];
+                     const labels = habits.map(h => h.name);
+                     const data = habits.map(h => (h.completedDates || []).length);
+                     
+                     if (labels.length > 0) {
+                         habitChartInstance = new Chart(habitCtx, {
+                             type: 'bar',
+                             data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Tổng số lần hoàn thành',
+                                    data: data,
+                                    backgroundColor: '#22c55e',
+                                    borderColor: '#16a34a',
+                                    borderWidth: 1,
+                                    borderRadius: 4
+                                }]
+                             },
+                             options: {
+                                 responsive: true,
+                                 maintainAspectRatio: false,
+                                 indexAxis: 'y', // Horizontal bar chart
+                                 scales: {
+                                     x: { beginAtZero: true, grid: { color: '#334155' }, ticks: { stepSize: 1 } }, // Ensure whole numbers
+                                     y: { grid: { display: false } }
+                                 },
+                                 plugins: { legend: { display: false } }
+                             }
+                         });
+                     } else {
+                         // Show a message if no data
+                         const ctx = habitCtx.getContext('2d');
+                         ctx.clearRect(0, 0, habitCtx.width, habitCtx.height);
+                         ctx.fillStyle = '#94a3b8';
+                         ctx.textAlign = 'center';
+                         ctx.fillText("Hãy thêm thói quen để bắt đầu theo dõi.", habitCtx.width / 2, habitCtx.height / 2);
+                     }
+                 }
+             }
 
             // --- FULL RENDER ALL FUNCTION ---
              function renderAll() {
@@ -1285,11 +1850,19 @@
                      state.gpaSubjects = state.gpaSubjects || [];
                      state.userMusic = state.userMusic || [];
                      state.schedule = state.schedule || {};
-                     state.timeSlots = Array.isArray(state.timeSlots) && state.timeSlots.length > 0 ? state.timeSlots : [...defaultState.timeSlots]; // More robust check
+                     state.timeSlots = Array.isArray(state.timeSlots) && state.timeSlots.length > 0 ? state.timeSlots : [...defaultState.timeSlots]; 
                      state.currentMusicId = state.currentMusicId || defaultState.currentMusicId;
-                     state.pomodoroSessions = state.pomodoroSessions === undefined ? defaultState.pomodoroSessions : state.pomodoroSessions; // Handle 0 correctly
-                     state.notes = state.notes === undefined ? defaultState.notes : state.notes; // Handle empty string correctly
+                     state.pomodoroSessions = state.pomodoroSessions === undefined ? defaultState.pomodoroSessions : state.pomodoroSessions; 
+                     state.notes = state.notes === undefined ? defaultState.notes : state.notes; 
                      state.displayName = state.displayName || defaultState.displayName; 
+                     state.xp = state.xp || 0;
+                     state.level = state.level || 1;
+                     state.unlockedBadges = state.unlockedBadges || [];
+
+                    // Populate dropdowns first
+                    if (pomodoroLinkSelect) populatePomodoroLinks();
+                    if (taskProjectLinkSelect) populateTaskProjectLinks();
+                    if (resourceSubjectLinkSelect) populateResourceSubjectLinks();
 
                     // Call render functions only if corresponding elements exist
                     if (notesTextarea) renderNotes();
@@ -1303,7 +1876,16 @@
                     if (timetableBody) generateTimetable(); // Calls renderSchedule
                     if (timerDisplay) updateTimerDisplay();
                     if (musicSelection) renderMusicOptions();
-                    if (taskCountEl) updateDashboard(); // Calls other dashboard updates
+                    if (userLevelEl) updateXPUI(); // NEW
+                    if (badgeListEl) renderBadges(); // NEW
+                    
+                    // Render analytics ONLY if the tab is active
+                    const analyticsTab = document.getElementById('analytics');
+                    if (analyticsTab && !analyticsTab.classList.contains('hidden')) {
+                         renderAnalytics();
+                    }
+                    
+                    if (taskCountEl) updateDashboard(); // Calls other dashboard updates (must be last)
                 } catch (error) {
                     console.error("Error during renderAll:", error);
                     showTemporaryMessage("Đã xảy ra lỗi khi hiển thị dữ liệu.", "error");
@@ -1324,19 +1906,42 @@
                         
                         if (currentMode === 'pomodoro' || currentMode === 'long-focus') {
                             state.pomodoroSessions = (state.pomodoroSessions || 0) + 1;
+                            addXP(25); // NEW: Add XP
+                            unlockBadge('first_pomo'); // NEW: Check for badge
+                            if (state.pomodoroSessions >= 10) unlockBadge('ten_pomos'); // NEW
+                            
+                            // --- NEW: Link Pomodoro to Task/Project ---
+                            const linkValue = pomodoroLinkSelect.value;
+                            if (linkValue && linkValue !== 'none') {
+                                const [type, id] = linkValue.split('-');
+                                if (type === 'project') {
+                                    const project = (state.projects || []).find(p => p.id == id);
+                                    if (project) {
+                                        project.pomodoroCount = (project.pomodoroCount || 0) + 1;
+                                        console.log(`Added pomodoro to project: ${project.name}`);
+                                    }
+                                } else if (type === 'task') {
+                                    const task = (state.tasks || []).find(t => t.id == id);
+                                     if (task) {
+                                        task.pomodoroCount = (task.pomodoroCount || 0) + 1;
+                                         console.log(`Added pomodoro to task: ${task.text}`);
+                                    }
+                                }
+                            }
+                            // --- END NEW ---
+                            
                             saveData();
-                             showTemporaryMessage("Hoàn thành phiên tập trung!", "success");
+                            showTemporaryMessage("Hoàn thành phiên tập trung! +25 XP", "success");
                         } else {
                             showTemporaryMessage("Đã hết giờ nghỉ!", "info");
                         }
                          
-                         // Play sound (consider user setting later)
                          try {
                              const alarm = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.wav'); // Example sound
-                            alarm.play().catch(e => console.warn("Audio play failed:", e)); // Catch potential play errors
+                            alarm.play().catch(e => console.warn("Audio play failed:", e)); 
                          } catch(e) { console.error("Could not create or play sound:", e); }
 
-                         resetTimer(); // Reset to the current mode's default time
+                         resetTimer(); 
                     }
                 }, 1000);
             }
@@ -1347,21 +1952,21 @@
                 clearInterval(timer); 
             }
             function resetTimer() {
-                pauseTimer(); // Stop the timer first
+                pauseTimer(); 
                 let minutes;
                 if(currentMode === 'pomodoro') minutes = 25; 
                 else if (currentMode === 'long-focus') minutes = 50; 
                 else if (currentMode === 'short') minutes = 5; 
                 else if (currentMode === 'long') minutes = 15;
-                else minutes = 25; // Default fallback
+                else minutes = 25; 
                 
                 timeInSeconds = minutes * 60;
-                updateTimerDisplay(); // Update display immediately
+                updateTimerDisplay(); 
             }
              function switchMode(mode, minutes) {
-                 if (!pomodoroBtn) return; // Check if elements exist
+                 if (!pomodoroBtn) return; 
                 currentMode = mode;
-                resetTimer(); // Reset timer when switching mode
+                resetTimer(); 
                 [pomodoroBtn, longFocusBtn, shortBreakBtn, longBreakBtn].forEach(btn => {
                      if(btn) btn.classList.replace('bg-indigo-600', 'bg-slate-600')
                 });
@@ -1423,7 +2028,7 @@
                             }
                         }, 100); 
                     });
-                } else { console.error("Auth form not found"); }
+                } 
 
                 if (logoutBtn) logoutBtn.addEventListener('click', () => signOut(auth));
                 if (authToggleLink) authToggleLink.addEventListener('click', (e) => { e.preventDefault(); isLoginMode = !isLoginMode; updateAuthUI(); });
@@ -1452,6 +2057,12 @@
                         contentSections.forEach(section => {
                             if(section) section.classList.toggle('hidden', section.id !== targetId);
                         });
+                         
+                         // Re-render analytics if that tab is clicked
+                         if (targetId === 'analytics') {
+                             renderAnalytics();
+                         }
+                         
                         if (mainContent) mainContent.scrollTo(0, 0); 
                     }));
                 }
@@ -1544,7 +2155,7 @@
                     });
                   }
                   
-                 if (addGpaSubjectBtn) addGpaSubjectBtn.addEventListener('click', () => { if (!state.gpaSubjects) state.gpaSubjects = []; state.gpaSubjects.push({ name: '', credits: '', score: '' }); saveData(); });
+                 if (addGpaSubjectBtn) addGpaSubjectBtn.addEventListener('click', () => { if (!state.gpaSubjects) state.gpaSubjects = []; state.gpaSubjects.push({ id: Date.now() + Math.random(), name: '', credits: '', score: '' }); saveData(); unlockBadge('first_gpa'); });
                   if(gpaSubjectsList){ 
                         gpaSubjectsList.addEventListener('input', e => {
                             if(e.target.matches('.gpa-input')) {
@@ -1569,11 +2180,13 @@
                         taskForm.addEventListener('submit', (e) => {
                             e.preventDefault();
                             const text = taskInput.value.trim();
+                            const projectId = taskProjectLinkSelect.value === 'null' ? null : taskProjectLinkSelect.value; // Get selected project
                             if (text) {
                                 if (!state.tasks) state.tasks = [];
-                                state.tasks.push({ text, completed: false });
+                                state.tasks.push({ id: Date.now() + Math.random(), text, completed: false, projectId, pomodoroCount: 0 }); // Save new fields
                                 saveData(); 
                                 taskForm.reset();
+                                taskProjectLinkSelect.value = 'null'; // Reset select
                             }
                         });
                    }
@@ -1585,7 +2198,12 @@
 
                             if (target.matches('.custom-checkbox')) {
                                 if(state.tasks && state.tasks[index]) {
+                                     const wasCompleted = state.tasks[index].completed;
                                      state.tasks[index].completed = target.checked;
+                                     if(target.checked && !wasCompleted) { // Only add XP when checking ON
+                                         addXP(10);
+                                         unlockBadge('first_task');
+                                     }
                                      saveData(); 
                                 }
                             } else if (target.closest('.delete-task-btn')) {
@@ -1602,7 +2220,7 @@
                             const name = habitInput.value.trim();
                             if (name) {
                                 if (!state.habits) state.habits = [];
-                                state.habits.push({ name: name, completedDates: [] });
+                                state.habits.push({ id: Date.now() + Math.random(), name: name, completedDates: [] });
                                 saveData(); 
                                 habitForm.reset();
                             }
@@ -1627,9 +2245,20 @@
                                     if (!state.habits[habitIndex].completedDates) state.habits[habitIndex].completedDates = [];
                                     const dateIndex = state.habits[habitIndex].completedDates.indexOf(dateStr);
                                     if (dateIndex > -1) {
-                                        state.habits[habitIndex].completedDates.splice(dateIndex, 1);
+                                        state.habits[habitIndex].completedDates.splice(dateIndex, 1); // Un-checking
                                     } else {
-                                        state.habits[habitIndex].completedDates.push(dateStr);
+                                        state.habits[habitIndex].completedDates.push(dateStr); // Checking
+                                        addXP(5); // Add XP for completing
+                                        // Check for 3-day streak
+                                        let streak = 0;
+                                        for(let i = 0; i < 3; i++) {
+                                             const d = new Date(dateStr);
+                                             d.setDate(d.getDate() - i);
+                                             if(state.habits[habitIndex].completedDates.includes(d.toISOString().split('T')[0])) {
+                                                 streak++;
+                                             }
+                                        }
+                                        if(streak >= 3) unlockBadge('first_habit');
                                     }
                                     saveData(); 
                                 }
@@ -1642,7 +2271,7 @@
                             const text = goalInput.value.trim();
                             if (text) {
                                 if (!state.goals) state.goals = [];
-                                state.goals.push({ text, completed: false });
+                                state.goals.push({ id: Date.now() + Math.random(), text, completed: false });
                                 saveData(); 
                                 goalForm.reset();
                             }
@@ -1673,8 +2302,9 @@
                             const name = projectInput.value.trim();
                             if (name) {
                                 if (!state.projects) state.projects = [];
-                                state.projects.push({ id: Date.now(), name: name, tasks: [] });
+                                state.projects.push({ id: Date.now() + Math.random(), name: name, tasks: [], pomodoroCount: 0 }); // Add pomodoroCount
                                 saveData(); 
+                                unlockBadge('first_project');
                                 projectForm.reset();
                             }
                         });
@@ -1690,13 +2320,19 @@
                                 if (deleteBtn) {
                                     const projectId = parseInt(deleteBtn.dataset.projectId, 10);
                                     state.projects = (state.projects || []).filter(p => p.id !== projectId);
+                                    // Also remove tasks associated with this project
+                                    state.tasks = (state.tasks || []).filter(t => t.projectId != projectId);
                                     dataChanged = true;
                                 } else if (checkbox) {
                                     const projectId = parseInt(checkbox.dataset.projectId, 10);
                                     const taskIndex = parseInt(checkbox.dataset.taskIndex, 10);
                                     const project = (state.projects || []).find(p => p.id === projectId);
                                     if (project && project.tasks && project.tasks[taskIndex]) {
+                                        const wasCompleted = project.tasks[taskIndex].completed;
                                         project.tasks[taskIndex].completed = checkbox.checked;
+                                        if(checkbox.checked && !wasCompleted) { // Only add XP when checking ON
+                                            addXP(15);
+                                        }
                                         dataChanged = true;
                                     }
                                 } else if (deleteTaskBtn) {
@@ -1721,7 +2357,7 @@
                                         const project = (state.projects || []).find(p => p.id === projectId);
                                         if (project) {
                                             if (!project.tasks) project.tasks = [];
-                                            project.tasks.push({ text: text, completed: false });
+                                            project.tasks.push({ id: Date.now() + Math.random(), text: text, completed: false }); // Add unique ID
                                             saveData(); 
                                             form.reset();
                                         }
@@ -1761,20 +2397,31 @@
                          if (resourceForm) { 
                             resourceForm.addEventListener('submit', (e) => {
                                 e.preventDefault();
-                                const nameInputEl = document.getElementById('resource-name-input');
-                                const urlInputEl = document.getElementById('resource-url-input');
-                                const name = nameInputEl.value.trim();
-                                const url = urlInputEl.value.trim();
+                                const name = resourceNameInput.value.trim();
+                                const url = resourceUrlInput.value.trim();
+                                const subjectName = resourceSubjectLinkSelect.value === 'null' ? null : resourceSubjectLinkSelect.value;
+                                
                                  let isValidUrl = false;
                                  try { new URL(url); isValidUrl = url.startsWith('http://') || url.startsWith('https://'); } catch (_) { isValidUrl = false; }
-                                 urlInputEl.classList.remove('border-red-500'); 
+                                 
+                                 resourceUrlInput.classList.remove('border-red-500'); 
+                                 resourceNameInput.classList.remove('border-red-500'); 
+                                 
                                 if (name && isValidUrl) {
                                     if (!state.resources) state.resources = [];
-                                    state.resources.push({name, url});
+                                    state.resources.push({id: Date.now() + Math.random(), name, url, subjectName}); // Save new fields
                                     saveData(); 
                                     e.target.reset();
-                                } else if (!isValidUrl) { urlInputEl.classList.add('border-red-500'); showTemporaryMessage("URL không hợp lệ.", "error"); } 
-                                  else if (!name) { showTemporaryMessage("Vui lòng nhập tên tài nguyên.", "error"); }
+                                    resourceSubjectLinkSelect.value = 'null'; // Reset select
+                                } else {
+                                     if (!name) resourceNameInput.classList.add('border-red-500');
+                                     if (!isValidUrl) {
+                                         resourceUrlInput.classList.add('border-red-500'); 
+                                         showTemporaryMessage("URL không hợp lệ. Phải bắt đầu bằng http:// hoặc https://", "error");
+                                     } else {
+                                          showTemporaryMessage("Vui lòng nhập tên tài nguyên.", "error"); 
+                                     }
+                                }
                             });
                           }
                            if (resourceList) { 
@@ -1799,6 +2446,7 @@
                                             state.currentMusicId = defaultMusicOptionsGlobal[0].videoId; 
                                         }
                                         saveData(); 
+                                        renderMusicOptions(); // Re-render after deleting
                                         return; 
                                     }
                                     const optionBtn = e.target.closest('.music-option-btn');
@@ -1856,14 +2504,11 @@
                 // --- INITIAL SETUP ---
                 setInterval(updateCountdowns, 1000); // Keep countdowns running
                 
-                // Set initial auth mode AFTER elements are assigned
-                isLoginMode = true; 
+                isLoginMode = true; // Set initial auth mode 
                 updateAuthUI(); 
 
                 updateTimerDisplay(); // Initialize Pomodoro timer display
                  
-                 // Initial render might be triggered by onAuthStateChanged, 
-                 // but ensure dashboard date is set initially
                  if (currentDateEl) {
                      currentDateEl.textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                  }
@@ -1872,7 +2517,6 @@
 
         } catch (error) {
              console.error("Firebase initialization failed:", error);
-             // Show a user-friendly message on the screen
              document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: #cbd5e1; font-family: Inter, sans-serif;"><h1>Lỗi Kết Nối</h1><p>Không thể khởi tạo ứng dụng. Vui lòng kiểm tra lại thông tin <strong>firebaseConfig</strong> của bạn.</p><p style="font-size: 0.8rem; color: #64748b;">Chi tiết lỗi: ${error.message}</p></div>`;
         }
 
